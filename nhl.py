@@ -8,6 +8,8 @@ import requests
 schedule_url = "https://statsapi.web.nhl.com/api/v1/schedule?teamId=12&season=20202021"
 roster_url = "https://statsapi.web.nhl.com/api/v1/teams/12?expand=team.roster"
 player_url = "http://statsapi.web.nhl.com/api/v1/people/"
+player_overall_stats_url = "http://statsapi.web.nhl.com/api/v1/people/{}/stats?stats=statsSingleSeason&season=20192020"
+
 
 # Locations dictionary used to specify game location based on home/away and/or opponent:
 locations = {
@@ -63,8 +65,7 @@ def player_list_build(url: str) -> list:
 def roster_build(player_list: list) -> list:
     roster = []
     for id in player_list:
-        url = player_url + str(id)
-        response = requests.get(url).json()
+        response = requests.get(player_url + str(id)).json()
         for x in response["people"]:
             player_id = str(x["id"])
             name = x["fullName"]
@@ -86,13 +87,23 @@ def roster_build(player_list: list) -> list:
             roster.append(player)
     return roster
 
+def overall_skater_stats_basic_build(player_list: list) -> list:
+    overall_basic_skater_stats = []
+    for id in player_list:
+        url = player_overall_stats_url.format(id)
+        response = requests.get(player_overall_stats_url.format(str(id))).json()
+        for x in response["stats"][0]["splits"]:
+            toipg = str(x["stat"]["timeOnIcePerGame"])
+        overall_basic_skater_stats.append(toipg)
+    return overall_basic_skater_stats
 
 def main():
     # Generate the schedule:
     #for game in schedule_build(schedule_url):
     #    print(game)
     # Generate the roster:
-    for player in roster_build(player_list_build(roster_url)):
+    #for player in roster_build(player_list_build(roster_url)):
+    for player in overall_skater_stats_basic_build(player_list_build(roster_url)):
         print(player)
     
 
