@@ -8,7 +8,8 @@ import requests
 schedule_url = "https://statsapi.web.nhl.com/api/v1/schedule?teamId=12&season=20202021"
 roster_url = "https://statsapi.web.nhl.com/api/v1/teams/12?expand=team.roster"
 player_url = "http://statsapi.web.nhl.com/api/v1/people/"
-player_overall_stats_url = "http://statsapi.web.nhl.com/api/v1/people/{}/stats?stats=statsSingleSeason&season=20192020"
+player_overall_stats_url_1 = "http://statsapi.web.nhl.com/api/v1/people/"
+player_overall_stats_url_2 = "/stats?stats=statsSingleSeason&season=20192020"
 
 
 # Locations dictionary used to specify game location based on home/away and/or opponent:
@@ -24,7 +25,7 @@ locations = {
 }
 
 # Function used to build the game schedule. It accepts the API URL as the parameter and returns a list of games:
-def schedule_build(url: str) -> list:
+def schedule_build(url:str) -> list:
     # Initialize the schedule list:
     schedule = []
     # Get the API response as JSON:
@@ -36,8 +37,8 @@ def schedule_build(url: str) -> list:
         # Parse the game date:
         date = str(x["date"])
         # Parse the away and home teams:
-        away = str(x["games"][0]["teams"]["home"]["team"]["name"])
-        home = str(x["games"][0]["teams"]["away"]["team"]["name"])
+        away = x["games"][0]["teams"]["home"]["team"]["name"]
+        home = x["games"][0]["teams"]["away"]["team"]["name"]
         # Set the opponent based on the away and home teams:
         if  (away == "Carolina Hurricanes"):
             opponent = home
@@ -54,58 +55,104 @@ def schedule_build(url: str) -> list:
     # Return the final schedule:
     return schedule
 
-def player_list_build(url: str) -> list:
+# Function used to build the list of player IDs. This list is used for subsuqent functions. It accepts the API URL as the parameter and returns a list of player IDs:
+def player_list_build(url:str) -> list:
+    # Initialize the player list:
     player_list = []
+    # Get the API response as JSON:
     response = requests.get(url).json()
+    # Iterate through each person on the roster:
     for x in response["teams"][0]["roster"]["roster"]:
+        # Parse the player's ID:
         player_id = str(x["person"]["id"])
+        # Append the ID to the player list:
         player_list.append(player_id)
+    # Return the list of player IDs:
     return player_list
 
-def roster_build(player_list: list) -> list:
+# Function used to build the team roster. It accepts the list of player IDs and the API URL as parameters and returns the roster as a list of players:
+def roster_build(player_list:list, url:str) -> list:
+    # Initialize the roster list:
     roster = []
+    # Iterate through each player ID in the player list:
     for id in player_list:
-        response = requests.get(player_url + str(id)).json()
+        # Get the API response as JSON. This uses the individual player URL by their ID:
+        response = requests.get(url + str(id)).json()
+        # Iterate through the player attributes:
         for x in response["people"]:
+            # Parse the player ID:
             player_id = str(x["id"])
+            # Parse the player name:
             name = x["fullName"]
+            # Check if player has a jersey number:
             if "primaryNumber" in x:
+                # If so, parse the jersey number:
                 jersey = str(x["primaryNumber"])
             else:
+                # Otherwise, assign "N/A":
                 jersey = "N/A"
+            # Parse the player age:
             age = str(x["currentAge"])
+            # Parse the player height:
             height = str(x["height"])
+            # Parse the player weight:
             weight = str(x["weight"])
+            # Parse the player position group:
             group = x["primaryPosition"]["type"]
+            # Parse the player position:
             position = x["primaryPosition"]["code"]
+            # Check if player has a birth province or state:
             if "birthStateProvince" in x:
+                # If so, parse birthplace to include city, state/province, and country:
                 birthplace = x["birthCity"] + ', ' + x["birthStateProvince"] + ', ' + x["birthCountry"]
             else:
+                # Otherwise, parse birthdate to include city and country:
                 birthplace = x["birthCity"] + ', ' + x["birthCountry"]
+            # Parse the player birthdate:
             birthdate = str(x["birthDate"])
+            # Generate the player string for database storage:
             player = player_id + ' ' + name + ' ' + jersey + ' ' + age + ' ' + height + ' ' + weight + ' ' + group + ' ' + position + ' ' + birthplace + ' ' + birthdate
+            # Append the player to the roster list:
             roster.append(player)
+    # Return the final roster list:
     return roster
 
-def overall_skater_stats_basic_build(player_list: list) -> list:
+# Function used to get overall skater stats. 
+def overall_skater_stats_basic_build(player_list:list, url1:str, url2:str) -> list:
     overall_basic_skater_stats = []
     for id in player_list:
-        url = player_overall_stats_url.format(id)
-        response = requests.get(player_overall_stats_url.format(str(id))).json()
+        url = url1 + str(id) + url2
+        response = requests.get(url).json()
         for x in response["stats"][0]["splits"]:
-            toipg = str(x["stat"]["timeOnIcePerGame"])
-        overall_basic_skater_stats.append(toipg)
+            if "ot" in x["stat"]:
+                overall_basic_skater_stats.append("Goalie")
+            else:
+                season = str(x["season"])
+                games = str(x["stat"]["games"])
+                goals = str(x["stat"]["goals"])
+                assists = str(x["stat"]["assists"])
+                points = str(x["stat"]["points"])
+                pim = str(x["stat"]["pim"])
+                plus_minus = str(x["stat"]["plusMinus"])
+                toipg = str(x["stat"]["timeOnIcePerGame"])
+                ppg = str(x["stat"]["powerPlayGoals"])
+                ppa = str(x["stat"]["powerPlayPoints"] - int(ppg))
+                shg = str(x["stat"]["shortHandedGoals"])
+                sha = str(x["stat"]["shortHandedPoints"] - int(shg))
+                skater_stats = season + ' ' + games + ' ' + goals + ' ' + assists + ' ' + points + ' ' + pim + ' ' + plus_minus + ' ' + toipg + ' ' + ppg + ' ' + ppa + ' ' + shg + ' ' + sha    
+                overall_basic_skater_stats.append(skater_stats)
     return overall_basic_skater_stats
 
 def main():
     # Generate the schedule:
-    #for game in schedule_build(schedule_url):
-    #    print(game)
+    schedule = schedule_build(schedule_url)
+    # Generate the player list:
+    player_list = player_list_build(roster_url)
     # Generate the roster:
-    #for player in roster_build(player_list_build(roster_url)):
-    for player in overall_skater_stats_basic_build(player_list_build(roster_url)):
-        print(player)
+    roster = roster_build(player_list, player_url)
+    # Generate the overall basic skater stats:
+    overall_skater_stats_basic = overall_skater_stats_basic_build(player_list, player_overall_stats_url_1, player_overall_stats_url_2)
+    print(overall_skater_stats_basic)
     
-
 if __name__ == "__main__":
     main()
