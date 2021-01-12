@@ -194,6 +194,7 @@ def main():
     #print(json.dumps(roster, indent=4))
     # Generate the overall basic skater stats:
     #overall_stats = overall_stats_total_build(roster, player_overall_stats_url)
+    # Generate game stats for a sample game:
     game_stats = game_stats_total_build(2019020569, game_stats_url)
     print(json.dumps(game_stats, indent=4))
     
