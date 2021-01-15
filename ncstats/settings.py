@@ -23,7 +23,7 @@ load_dotenv(os.path.join(BASE_DIR, '.env'))
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = ''
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'stormstats',
 ]
 
 MIDDLEWARE = [
@@ -79,11 +80,11 @@ WSGI_APPLICATION = 'ncstats.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'djangodb',
-        'USER': os.getenv('A_USER'),
-        'PASSWORD': os.getenv('A_PASS'),
-        'HOST': '127.0.0.1',
-        'PORT': '5432'
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('APP_USER'),
+        'PASSWORD': os.getenv('APP_PASS'),
+        'HOST': os.getenv('HOST_IP'),
+        'PORT': os.getenv('HOST_PORT')
     }
 }
 

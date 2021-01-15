@@ -38,8 +38,8 @@ def schedule_build(url:str) -> dict:
         # Parse the game date:
         game["date"] = x["date"]
         # Parse the away and home teams:
-        away = x["games"][0]["teams"]["home"]["team"]["name"]
-        home = x["games"][0]["teams"]["away"]["team"]["name"]
+        away = x["games"][0]["teams"]["away"]["team"]["name"]
+        home = x["games"][0]["teams"]["home"]["team"]["name"]
         # Set the opponent based on the away and home teams:
         if  (away == "Carolina Hurricanes"):
             game["opponent"] = home
@@ -184,8 +184,8 @@ def game_stats_total_build(game_id:int, url:str) -> dict:
 
 def main():
     # Generate the schedule:
-    #schedule = schedule_build(schedule_url)
-    #print(json.dumps(schedule, indent=4))
+    schedule = schedule_build(schedule_url)
+    print(json.dumps(schedule, indent=4))
     # Generate the player list:
     #players = players_build(roster_url)
     #print(json.dumps(players, indent=4))
@@ -195,8 +195,8 @@ def main():
     # Generate the overall basic skater stats:
     #overall_stats = overall_stats_total_build(roster, player_overall_stats_url)
     # Generate game stats for a sample game:
-    game_stats = game_stats_total_build(2019020569, game_stats_url)
-    print(json.dumps(game_stats, indent=4))
+    #game_stats = game_stats_total_build(2019020569, game_stats_url)
+    #print(json.dumps(game_stats, indent=4))
     
 if __name__ == "__main__":
     main()
