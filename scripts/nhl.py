@@ -73,7 +73,7 @@ def players_build(url:str) -> dict:
     return players
 
 # Function used to build the team roster. It accepts the players dictionary and the API URL as parameters and returns the roster as a dictionary of players:
-def roster_build(players:dict, url:str) -> list:
+def roster_build(players:dict, url:str) -> dict:
     # Initialize the roster dictionary:
     roster = {}
     # Iterate through each player ID in the player list:
@@ -182,10 +182,10 @@ def game_stats_total_build(game_id:int, url:str) -> dict:
     # Return the game stats dictionary:
     return game_stats
 
-def main():
+#def main():
     # Generate the schedule:
-    schedule = schedule_build(schedule_url)
-    print(json.dumps(schedule, indent=4))
+    #schedule = schedule_build(schedule_url)
+    #print(json.dumps(schedule, indent=4))
     # Generate the player list:
     #players = players_build(roster_url)
     #print(json.dumps(players, indent=4))
