@@ -182,10 +182,10 @@ def game_stats_total_build(game_id:int, url:str) -> dict:
     # Return the game stats dictionary:
     return game_stats
 
-#def main():
+def run():
     # Generate the schedule:
-    #schedule = schedule_build(schedule_url)
-    #print(json.dumps(schedule, indent=4))
+    schedule = schedule_build(schedule_url)
+    print(json.dumps(schedule, indent=4))
     # Generate the player list:
     #players = players_build(roster_url)
     #print(json.dumps(players, indent=4))
@@ -197,6 +197,3 @@ def game_stats_total_build(game_id:int, url:str) -> dict:
     # Generate game stats for a sample game:
     #game_stats = game_stats_total_build(2019020569, game_stats_url)
     #print(json.dumps(game_stats, indent=4))
-    
-if __name__ == "__main__":
-    main()
