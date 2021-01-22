@@ -51,6 +51,33 @@ def player_construct(player_dict:dict) -> Player:
     # Return the player object:
     return player
 
+def skater_overall_stats_construct(player_stats: dict) -> SkaterOverallStats:
+    skater_overall_stats = SkaterOverallStats()
+    player_id = player_stats["playerId"]
+    name = player_stats["name"]
+    games = player_stats["games"]
+    goals = player_stats["goals"]
+    assists = player_stats["assists"]
+    points = player_stats["points"]
+    pim = player_stats["pim"]
+    plusmin = player_stats["plusMinus"]
+    toipg = player_stats["timeOnIcePerGame"]
+    ppg = player_stats["powerPlayGoals"]
+    ppa = player_stats["powerPlayPoints"] - ppg
+    shg = player_stats["shortHandedGoals"]
+    sha = player_stats["shortHandedPoints"] - shg
+    etoipg = player_stats["evenTimeOnIcePerGame"]
+    shtoipg = player_stats["shortHandedTimeOnIcePerGame"]
+    pptoipg = player_stats["powerPlayTimeOnIcePerGame"]
+    shots = player_stats["shots"]
+    shotpct = player_stats["shotPct"]
+    fopct = player_stats["faceOffPct"]
+    blocks = player_stats["blocked"]
+    hits = player_stats["hits"]
+    shifts = player_stats["shifts"]
+    gwg = player_stats["gameWinningGoals"]
+    return skater_overall_stats
+
 # Games insert function used to build the schedule, iterate through the games, build each Game object, and insert it into the database:
 def games_insert():
     # Build the schedule using the nhl.schedule_build function:
@@ -75,6 +102,15 @@ def players_insert():
         # Save the object to the database:
         p.save()
 
+def skater_overall_stats_update():
+    players = nhl.players_build(nhl.roster_url)
+    roster = nhl.roster_build(players, nhl.player_url)
+    overall_stats = nhl.overall_stats_total_build(roster, nhl.player_overall_stats_url)
+    for _, val in overall_stats["skater_stats"].items():
+        print(val)
+        #s = skater_overall_stats_construct(val)
+        #s.save()
+
 # Run function needed for the runscripts extension to execute:
 def run():
-    games_insert()
+    skater_overall_stats_update()

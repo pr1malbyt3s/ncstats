@@ -8,7 +8,7 @@ import requests
 schedule_url = "https://statsapi.web.nhl.com/api/v1/schedule?teamId=12&season=20202021"
 roster_url = "https://statsapi.web.nhl.com/api/v1/teams/12?expand=team.roster"
 player_url = "https://statsapi.web.nhl.com/api/v1/people/PLAYER_ID"
-player_overall_stats_url = "https://statsapi.web.nhl.com/api/v1/people/PLAYER_ID/stats?stats=statsSingleSeason&season=20192020"
+player_overall_stats_url = "https://statsapi.web.nhl.com/api/v1/people/PLAYER_ID/stats?stats=statsSingleSeason&season=20202021"
 game_stats_url = "https://statsapi.web.nhl.com/api/v1/game/GAME_ID/boxscore"
 
 # Locations dictionary used to specify game location based on home/away and/or opponent:
@@ -35,6 +35,8 @@ def schedule_build(url:str) -> dict:
         game = {}
         # Parse the game ID:
         game["gameId"] = x["games"][0]["gamePk"]
+        # Parse the game season:
+        game["season"] = x["games"][0]["season"]
         # Parse the game date:
         game["date"] = x["date"]
         # Parse the away and home teams:
@@ -194,6 +196,7 @@ def run():
     #print(json.dumps(roster, indent=4))
     # Generate the overall basic skater stats:
     #overall_stats = overall_stats_total_build(roster, player_overall_stats_url)
+    #print(json.dumps(overall_stats, indent=4))
     # Generate game stats for a sample game:
-    #game_stats = game_stats_total_build(2019020569, game_stats_url)
+    #game_stats = game_stats_total_build(2020020052, game_stats_url)
     #print(json.dumps(game_stats, indent=4))
