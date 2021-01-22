@@ -5,10 +5,10 @@ import json
 import requests
 
 # Set API Urls:
-schedule_url = "https://statsapi.web.nhl.com/api/v1/schedule?teamId=12&season=20202021"
+schedule_url = "https://statsapi.web.nhl.com/api/v1/schedule?teamId=12&season=SEASON"
 roster_url = "https://statsapi.web.nhl.com/api/v1/teams/12?expand=team.roster"
 player_url = "https://statsapi.web.nhl.com/api/v1/people/PLAYER_ID"
-player_overall_stats_url = "https://statsapi.web.nhl.com/api/v1/people/PLAYER_ID/stats?stats=statsSingleSeason&season=20202021"
+player_overall_stats_url = "https://statsapi.web.nhl.com/api/v1/people/PLAYER_ID/stats?stats=statsSingleSeason&season=SEASON"
 game_stats_url = "https://statsapi.web.nhl.com/api/v1/game/GAME_ID/boxscore"
 
 # Locations dictionary used to specify game location based on home/away and/or opponent:
@@ -24,11 +24,12 @@ locations = {
 }
 
 # Function used to build the game schedule. It accepts the API URL as the parameter and returns a dictionary of games:
-def schedule_build(url:str) -> dict:
+def schedule_build(url:str, season:int) -> dict:
     # Initialize the schedule dictionary:
     schedule = {}
+    url2 = url.replace("SEASON", str(season))
     # Get the API response as JSON:
-    response = requests.get(url).json()
+    response = requests.get(url2).json()
     # Iterate through each game:
     for x in response["dates"]:
         # Initialize the individual game dictionary:
@@ -51,6 +52,12 @@ def schedule_build(url:str) -> dict:
         game["location"] = locations[home]
         # Parse the gameDate datetime object, convert it to Eastern time, and return the HH:MM format:
         game["time"] = parse(x["games"][0]["gameDate"]).astimezone(timezone("US/Eastern")).strftime("%H:%M")
+        # Parse the game state and mark it True for played and false for not played:
+        status = x["games"][0]["status"]["detailedState"]
+        if (status == "Final"):
+            game["played"] = True
+        else:
+            game["played"] = False
         # Add the game to the schedule dictionary:
         schedule[game["gameId"]] = game
     # Return the final schedule:
@@ -111,7 +118,7 @@ def overall_stats_individual_build(stats:list, player_id:int, name:str) -> dict:
     return player    
 
 # Function used to get overall stats. It accepts the roster dictionary and the API url as parameters and returns a dictionary of overall stats for every player:
-def overall_stats_total_build(roster:dict, url:str) -> dict:
+def overall_stats_total_build(roster:dict, url:str, season:int) -> dict:
     # Initialize the goalie stats dictionary:
     goalie_stats = {}
     # Initialize the skater stats dictionary:
@@ -119,7 +126,7 @@ def overall_stats_total_build(roster:dict, url:str) -> dict:
     # Iterate through each player on the roster:
     for key in roster:
         # Adjust the API url for player_id:
-        url2 = url.replace("PLAYER_ID", str(key))
+        url2 = url.replace("PLAYER_ID", str(key)).replace("SEASON", str(season))
         # Get the API response as JSON. This uses the individual player URL by their ID:
         response = requests.get(url2).json()
         # Check if the player is a goalie:
@@ -186,17 +193,17 @@ def game_stats_total_build(game_id:int, url:str) -> dict:
 
 def run():
     # Generate the schedule:
-    schedule = schedule_build(schedule_url)
+    schedule = schedule_build(schedule_url, 20202021)
     print(json.dumps(schedule, indent=4))
     # Generate the player list:
-    #players = players_build(roster_url)
+    players = players_build(roster_url)
     #print(json.dumps(players, indent=4))
     # Generate the roster:
-    #roster = roster_build(players, player_url)
+    roster = roster_build(players, player_url)
     #print(json.dumps(roster, indent=4))
     # Generate the overall basic skater stats:
-    #overall_stats = overall_stats_total_build(roster, player_overall_stats_url)
+    #overall_stats = overall_stats_total_build(roster, player_overall_stats_url, 20202021)
     #print(json.dumps(overall_stats, indent=4))
     # Generate game stats for a sample game:
-    #game_stats = game_stats_total_build(2020020052, game_stats_url)
-    #print(json.dumps(game_stats, indent=4))
+    game_stats = game_stats_total_build(2020020010, game_stats_url)
+    print(json.dumps(game_stats, indent=4))
