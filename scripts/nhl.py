@@ -168,7 +168,7 @@ def game_stats_individual_build(player:dict) -> dict:
 # Function used to get individual game stats. It accepts the game_id and the API url and returns a dictionary of stats for the provided game_id:
 def game_stats_total_build(game_id:int, url:str) -> dict:
     # Initialize the game_stats dictionary with the game_id:
-    game_stats = {"gameId": game_id}
+    game_stats = {}
     # Update the url based on the game_id:
     url2 = url.replace("GAME_ID", str(game_id))
     # Get the API response as JSON:
@@ -193,13 +193,13 @@ def game_stats_total_build(game_id:int, url:str) -> dict:
 
 def run():
     # Generate the schedule:
-    schedule = schedule_build(schedule_url, 20202021)
-    print(json.dumps(schedule, indent=4))
+    #schedule = schedule_build(schedule_url, 20202021)
+    #print(json.dumps(schedule, indent=4))
     # Generate the player list:
-    players = players_build(roster_url)
+    #players = players_build(roster_url)
     #print(json.dumps(players, indent=4))
     # Generate the roster:
-    roster = roster_build(players, player_url)
+    #roster = roster_build(players, player_url)
     #print(json.dumps(roster, indent=4))
     # Generate the overall basic skater stats:
     #overall_stats = overall_stats_total_build(roster, player_overall_stats_url, 20202021)
