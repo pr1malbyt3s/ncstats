@@ -205,5 +205,5 @@ def run():
     #overall_stats = overall_stats_total_build(roster, player_overall_stats_url, 20202021)
     #print(json.dumps(overall_stats, indent=4))
     # Generate game stats for a sample game:
-    game_stats = game_stats_total_build(2020020010, game_stats_url)
+    game_stats = game_stats_total_build(2020020025, game_stats_url)
     print(json.dumps(game_stats, indent=4))

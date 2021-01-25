@@ -26,7 +26,7 @@ class Player(models.Model):
 # SkaterOverallStats model:
 class SkaterOverallStats(models.Model):
     season = models.PositiveIntegerField()
-    player = models.OneToOneField(Player, on_delete=models.CASCADE)
+    player = models.ForeignKey(Player, on_delete=models.CASCADE)
     games = models.PositiveIntegerField()
     goals = models.PositiveIntegerField()
     assists = models.PositiveIntegerField()
@@ -50,12 +50,14 @@ class SkaterOverallStats(models.Model):
     gwg = models.PositiveIntegerField()
 
     class Meta:
-        unique_together = (("season","player"),)
+        constraints = [
+            models.UniqueConstraint(fields= ['player','season'], name='unique_skater_season'),
+        ]
 
 # GoalieOverallStats model:
 class GoalieOverallStats(models.Model):
     season = models.PositiveIntegerField()
-    player = models.OneToOneField(Player, on_delete=models.CASCADE)
+    player = models.ForeignKey(Player, on_delete=models.CASCADE)
     games = models.PositiveIntegerField()
     wins = models.PositiveIntegerField()
     losses = models.PositiveIntegerField()
@@ -80,12 +82,14 @@ class GoalieOverallStats(models.Model):
     shsvpct = models.DecimalField(max_digits=5, decimal_places=2)
 
     class Meta:
-        unique_together = (("season","player"),)
+        constraints = [
+            models.UniqueConstraint(fields= ['player','season'], name='unique_goalie_season'),
+        ]
 
 # SkaterGameStats model:
 class SkaterGameStats(models.Model):
-    game = models.OneToOneField(Game, on_delete=models.CASCADE)
-    player = models.OneToOneField(Player, on_delete=models.CASCADE)
+    game = models.ForeignKey(Game, on_delete=models.CASCADE)
+    player = models.ForeignKey(Player, on_delete=models.CASCADE)
     goals = models.PositiveIntegerField()
     assists = models.PositiveIntegerField()
     points = models.PositiveIntegerField()
@@ -108,12 +112,14 @@ class SkaterGameStats(models.Model):
     ga = models.PositiveIntegerField()
 
     class Meta:
-        unique_together = (("game","player"),)
+        constraints = [
+            models.UniqueConstraint(fields= ['player','game'], name='unique_skater_game'),
+        ]
 
 # GoalieGameStats model:
 class GoalieGameStats(models.Model):
-    game = models.OneToOneField(Game, on_delete=models.CASCADE)
-    player = models.OneToOneField(Player, on_delete=models.CASCADE)
+    game = models.ForeignKey(Game, on_delete=models.CASCADE)
+    player = models.ForeignKey(Player, on_delete=models.CASCADE)
     wl = models.CharField(max_length=2)
     goalsa = models.PositiveIntegerField()
     shotsa = models.PositiveIntegerField()
@@ -134,4 +140,6 @@ class GoalieGameStats(models.Model):
     shsvpct = models.DecimalField(max_digits=5, decimal_places=2)
     
     class Meta:
-        unique_together = (("game","player"),)
+        constraints = [
+            models.UniqueConstraint(fields= ['player','game'], name='unique_goalie_game'),
+        ]

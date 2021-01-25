@@ -221,9 +221,9 @@ def goalie_game_stats_construct(game_id:int, goalie_stats: dict) -> GoalieGameSt
         # Parse the goalie's decision:
         "wl": goalie_stats["decision"],
         # Parse the goalie's goals against:
-        "goalsa": goalie_stats["goalsAgainst"],
+        "goalsa": goalie_stats["shots"] - goalie_stats["saves"],
         # Parse the goalie's shots against:
-        "shotsa": goalie_stats["shotsAgainst"],
+        "shotsa": goalie_stats["shots"],
         # Parse the goalie's saves:
         "saves": goalie_stats["saves"],
         # Parse the goalie's save percentage:
@@ -243,11 +243,11 @@ def goalie_game_stats_construct(game_id:int, goalie_stats: dict) -> GoalieGameSt
         # Parse the goalie's shorthanded saves:
         "shsaves": goalie_stats["shortHandedSaves"],
         # Parse the goalie's even strength shots against:
-        "esshots": goalie_stats["evenShots"],
+        "esshots": goalie_stats["evenShotsAgainst"],
         # Parse the goalie's powerplay shots against:
-        "ppshots": goalie_stats["powerPlayShots"],
+        "ppshots": goalie_stats["powerPlayShotsAgainst"],
         # Parse the goalie's shorthanded shots against:
-        "shshots": goalie_stats["shortHandedShots"],
+        "shshots": goalie_stats["shortHandedShotsAgainst"],
         # Parse the goalie's even strength save percentage:
         "essvpct": goalie_stats["evenStrengthSavePercentage"],
         # Parse the goalie's powerplay save percentage:
@@ -271,6 +271,27 @@ def games_update(season:int):
 
 # Players update function used to iterate through the roster, create/update each Player object, and make changes the database:
 def players_update():
+    # Add Geekie manually until NHL fixes their roster API:
+    roster[8479987] = {
+            "id" : 8479987,
+            "fullName" : "Morgan Geekie",
+            "firstName" : "Morgan",
+            "lastName" : "Geekie",
+            "primaryNumber" : "67",
+            "birthDate" : "1998-07-20",
+            "currentAge" : 22,
+            "birthCity" : "Strathclair",
+            "birthStateProvince" : "MB",
+            "birthCountry" : "CAN",
+            "height" : "6' 3\"",
+            "weight" : 192,
+            "primaryPosition" : {
+              "code" : "C",
+              "name" : "Center",
+              "type" : "Forward",
+              "abbreviation" : "C"
+            }
+          }
     # Iterate through the roster dictionary by player:
     for _, val in roster.items():
         # Construct the Player object from the player's attributes:
@@ -310,7 +331,6 @@ def game_stats_update(game_id:int):
             p = skater_game_stats_construct(game_id, val)
         p.save()
         
-
 # Run function needed for the runscripts extension to execute:
 def run():
     print("Updating Schedule")
