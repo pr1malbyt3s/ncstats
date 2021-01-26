@@ -99,6 +99,127 @@ def roster_build(players:dict, url:str) -> dict:
             player[key] = val
             # Add the player to the roster dictionary:
         roster[player["id"]] = player
+        # Add Taxi Squad players manually until NHL fixes their roster API:
+    roster[8479987] = {
+        "id" : 8479987,
+        "fullName" : "Morgan Geekie",
+        "firstName" : "Morgan",
+        "lastName" : "Geekie",
+        "primaryNumber" : "67",
+        "birthDate" : "1998-07-20",
+        "currentAge" : 22,
+        "birthCity" : "Strathclair",
+        "birthStateProvince" : "MB",
+        "birthCountry" : "CAN",
+        "height" : "6' 3\"",
+        "weight" : 192,
+        "primaryPosition" : {
+            "code" : "C",
+            "name" : "Center",
+            "type" : "Forward",
+            "abbreviation" : "C"
+        }
+    }
+    roster[8478904] = {
+        "id" : 8478904,
+        "fullName" : "Steven Lorentz",
+        "firstName" : "Steven",
+        "lastName" : "Lorentz",
+        "primaryNumber" : "78",
+        "birthDate" : "1996-04-13",
+        "currentAge" : 24,
+        "birthCity" : "Kitchener",
+        "birthStateProvince" : "ON",
+        "birthCountry" : "CAN",
+        "height" : "6' 4\"",
+        "weight" : 206,
+        "primaryPosition" : {
+            "code" : "C",
+            "name" : "Center",
+            "type" : "Forward",
+            "abbreviation" : "C"
+        }
+    }
+    roster[8476323] = {
+        "id" : 8476323,
+        "fullName" : "Max McCormick",
+        "firstName" : "Max",
+        "lastName" : "McCormick",
+        "primaryNumber" : "28",
+        "birthDate" : "1992-05-01",
+        "currentAge" : 28,
+        "birthCity" : "De Pere",
+        "birthStateProvince" : "WI",
+        "birthCountry" : "USA",
+        "height" : "5' 11\"",
+        "weight" : 188,
+        "primaryPosition" : {
+            "code" : "L",
+            "name" : "Left Wing",
+            "type" : "Forward",
+            "abbreviation" : "LW"
+        }
+    }
+    roster[8479402] = {
+        "id" : 8479402,
+        "fullName" : "Jake Bean",
+        "firstName" : "Jake",
+        "lastName" : "Bean",
+        "primaryNumber" : "24",
+        "birthDate" : "1998-06-09",
+        "currentAge" : 22,
+        "birthCity" : "Calgary",
+        "birthStateProvince" : "AB",
+        "birthCountry" : "CAN",
+        "height" : "6' 1\"",
+        "weight" : 186,
+        "primaryPosition" : {
+            "code" : "D",
+            "name" : "Defenseman",
+            "type" : "Defenseman",
+            "abbreviation" : "D"
+        }
+    }
+    roster[8477046] = {
+        "id" : 8477046,
+        "fullName" : "Joakim Ryan",
+        "firstName" : "Joakim",
+        "lastName" : "Ryan",
+        "primaryNumber" : "33",
+        "birthDate" : "1993-06-17",
+        "currentAge" : 27,
+        "birthCity" : "Rumson",
+        "birthStateProvince" : "NJ",
+        "birthCountry" : "USA",
+        "height" : "5' 11\"",
+        "weight" : 185,
+        "primaryPosition" : {
+            "code" : "D",
+            "name" : "Defenseman",
+            "type" : "Defenseman",
+            "abbreviation" : "D"
+        }
+    }
+    roster[8477968] = {
+        "id" : 8477968,
+        "fullName" : "Alex Nedeljkovic",
+        "firstName" : "Alex",
+        "lastName" : "Nedeljkovic",
+        "primaryNumber" : "39",
+        "birthDate" : "1996-01-07",
+        "currentAge" : 25,
+        "birthCity" : "Parma",
+        "birthStateProvince" : "OH",
+        "birthCountry" : "USA",
+        "height" : "6' 0\"",
+        "weight" : 189,
+        "primaryPosition" : {
+            "code" : "G",
+            "name" : "Goalie",
+            "type" : "Goalie",
+        "abbreviation" : "G"
+        }
+    }
     # Return the final roster dictionary:
     return roster
 

@@ -60,50 +60,50 @@ def skater_overall_stats_construct(player_stats:dict) -> SkaterOverallStats:
     # Initialize the SkaterOverallStats object with player_id from Player object:
     skater_overall_stats, _ = SkaterOverallStats.objects.update_or_create(player=Player.objects.get(player_id=player_stats["playerId"]), 
     # Parse the skater's season:
-    season=player_stats["season"],
+    season=player_stats.get("season", 20202021),
     defaults={
         # Parse the skater's games:
-        "games": player_stats["games"],
+        "games": player_stats.get("games", 0),
         # Parse the skater's goals:
-        "goals": player_stats["goals"],
+        "goals": player_stats.get("goals", 0),
         # Parse the skater's assists:
-        "assists": player_stats["assists"],
+        "assists": player_stats.get("assists", 0),
         # Parse the skater's points:
-        "points": player_stats["points"],
+        "points": player_stats.get("points", 0),
         # Parse the skater's penalty minutes:
-        "pim": player_stats["pim"],
+        "pim": player_stats.get("pim", "00:00"),
         # Parse the skater's +/- rating:
-        "plusmin": player_stats["plusMinus"],
+        "plusmin": player_stats.get("plusMinus", 0),
         # Parse the skater's time on ice per game:
-        "toipg": player_stats["timeOnIcePerGame"],
+        "toipg": player_stats.get("timeOnIcePerGame", "00:00"),
         # Parse the skater's powerplay goals:
-        "ppg": player_stats["powerPlayGoals"],
+        "ppg": player_stats.get("powerPlayGoals", 0),
         # Parse the skater's powerplay assists:
-        "ppa": player_stats["powerPlayPoints"] - player_stats["powerPlayGoals"],
+        "ppa": player_stats.get("powerPlayPoints", 0) - player_stats.get("powerPlayGoals", 0),
         # Parse the skater's shorthanded goals:
-        "shg": player_stats["shortHandedGoals"],
+        "shg": player_stats.get("shortHandedGoals", 0),
         # Parse the skater's shorthanded assists:
-        "sha": player_stats["shortHandedPoints"] - player_stats["shortHandedGoals"],
+        "sha": player_stats.get("shortHandedPoints", 0) - player_stats.get("shortHandedGoals", 0),
         # Parse the skater's even time on ice per game:
-        "etoipg": player_stats["evenTimeOnIcePerGame"],
+        "etoipg": player_stats.get("evenTimeOnIcePerGame", "00:00"),
         # Parse the skater's shorthanded time on ice per game:
-        "shtoipg": player_stats["shortHandedTimeOnIcePerGame"],
+        "shtoipg": player_stats.get("shortHandedTimeOnIcePerGame", "00:00"),
         # Parse the skater's powerplay time on ice per game:
-        "pptoipg": player_stats["powerPlayTimeOnIcePerGame"],
+        "pptoipg": player_stats.get("powerPlayTimeOnIcePerGame", "00:00"),
         # Parse the skater's shots:
-        "shots": player_stats["shots"],
+        "shots": player_stats.get("shots", 0),
         # Parse the skater's shot percentage:
-        "shotpct": player_stats["shotPct"],
+        "shotpct": player_stats.get("shotPct", 0),
         # Parse the skater's faceoff percentage:
-        "fopct": player_stats["faceOffPct"],
+        "fopct": player_stats.get("faceOffPct", 0),
         # Parse the skater's blocks:
-        "blocks": player_stats["blocked"],
+        "blocks": player_stats.get("blocked", 0),
         # Parse the skater's hits:
-        "hits": player_stats["hits"],
+        "hits": player_stats.get("hits", 0),
         # Parse the skater's shifts:
-        "shifts": player_stats["shifts"],
+        "shifts": player_stats.get("shifts", 0),
         # Parse the skater's game winning goals:
-        "gwg": player_stats["gameWinningGoals"]
+        "gwg": player_stats.get("gameWinningGoals", 0)
     })
     # Return the skater_overall_stats object:
     return skater_overall_stats
@@ -113,52 +113,52 @@ def goalie_overall_stats_construct(goalie_stats:dict) -> GoalieOverallStats:
     # Initialize the GoalieOverallStats object with player_id from Player object:
     goalie_overall_stats, _ = GoalieOverallStats.objects.update_or_create(player=Player.objects.get(player_id=goalie_stats["playerId"]),
     # Parse the goalie's season:
-    season=goalie_stats["season"],
+    season=goalie_stats.get("season", 20202021),
     defaults={
         # Parse the goalie's games:
-        "games": goalie_stats["games"],
+        "games": goalie_stats.get("games", 0),
         # Parse the goalie's wins:
-        "wins": goalie_stats["wins"],
+        "wins": goalie_stats.get("wins", 0),
         # Parse the goalie's losses:
-        "losses": goalie_stats["losses"],
+        "losses": goalie_stats.get("losses", 0),
         # Parse the goalie's ties:
-        "ties": goalie_stats["ties"],
+        "ties": goalie_stats.get("ties", 0),
         # Parse the goalie's games started:
-        "started": goalie_stats["gamesStarted"],
+        "started": goalie_stats.get("gamesStarted", 0),
         # Parse the goalie's saves:
-        "saves": goalie_stats["saves"],
+        "saves": goalie_stats.get("saves", 0),
         # Parse the goalie's shots against:
-        "shotsa": goalie_stats["shotsAgainst"],
+        "shotsa": goalie_stats.get("shotsAgainst", 0),
         # Parse the goalie's goals against:
-        "goalsa": goalie_stats["goalsAgainst"],
+        "goalsa": goalie_stats.get("goalsAgainst", 0),
         # Parse the goalie's time on ice per game:
-        "toipg": goalie_stats["timeOnIcePerGame"],
+        "toipg": goalie_stats.get("timeOnIcePerGame", "00:00"),
         # Parse the goalie's save percentage:
-        "svpct": goalie_stats["savePercentage"],
+        "svpct": goalie_stats.get("savePercentage", 0),
         # Parse the goalie's goals against average:
-        "gaa": goalie_stats["goalAgainstAverage"],
+        "gaa": goalie_stats.get("goalAgainstAverage", 0),
         # Parse the goalie's overtimes:
-        "ot": goalie_stats["ot"],
+        "ot": goalie_stats.get("ot", 0),
         # Parse the goalie's shutouts:
-        "shutouts": goalie_stats["shutouts"],
+        "shutouts": goalie_stats.get("shutouts", 0),
         # Parse the goalie's even strength saves:
-        "essaves": goalie_stats["evenSaves"],
+        "essaves": goalie_stats.get("evenSaves", 0),
         # Parse the goalie's powerplay saves:
-        "ppsaves": goalie_stats["powerPlaySaves"],
+        "ppsaves": goalie_stats.get("powerPlaySaves", 0),
         # Parse the goalie's shorthanded saves:
-        "shsaves": goalie_stats["shortHandedSaves"],
+        "shsaves": goalie_stats.get("shortHandedSaves", 0),
         # Parse the goalie's even strength shots against:
-        "esshots": goalie_stats["evenShots"],
+        "esshots": goalie_stats.get("evenShots", 0),
         # Parse the goalie's powerplay shots against:
-        "ppshots": goalie_stats["powerPlayShots"],
+        "ppshots": goalie_stats.get("powerPlayShots", 0),
         # Parse the goalie's shorthanded shots against:
-        "shshots": goalie_stats["shortHandedShots"],
+        "shshots": goalie_stats.get("shortHandedShots", 0),
         # Parse the goalie's even strength save percentage:
-        "essvpct": goalie_stats["evenStrengthSavePercentage"],
+        "essvpct": goalie_stats.get("evenStrengthSavePercentage", 0),
         # Parse the goalie's powerplay save percentage:
-        "ppsvpct": goalie_stats["powerPlaySavePercentage"],
+        "ppsvpct": goalie_stats.get("powerPlaySavePercentage", 0),
         # Parse the goalie's shorthanded save percentage:
-        "shsvpct": 100.00
+        "shsvpct": goalie_stats.get("shortHandedSavePercentage", 0)
     })
     return goalie_overall_stats
 
@@ -271,27 +271,6 @@ def games_update(season:int):
 
 # Players update function used to iterate through the roster, create/update each Player object, and make changes the database:
 def players_update():
-    # Add Geekie manually until NHL fixes their roster API:
-    roster[8479987] = {
-            "id" : 8479987,
-            "fullName" : "Morgan Geekie",
-            "firstName" : "Morgan",
-            "lastName" : "Geekie",
-            "primaryNumber" : "67",
-            "birthDate" : "1998-07-20",
-            "currentAge" : 22,
-            "birthCity" : "Strathclair",
-            "birthStateProvince" : "MB",
-            "birthCountry" : "CAN",
-            "height" : "6' 3\"",
-            "weight" : 192,
-            "primaryPosition" : {
-              "code" : "C",
-              "name" : "Center",
-              "type" : "Forward",
-              "abbreviation" : "C"
-            }
-          }
     # Iterate through the roster dictionary by player:
     for _, val in roster.items():
         # Construct the Player object from the player's attributes:
