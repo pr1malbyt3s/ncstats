@@ -1,0 +1,34 @@
+{% extends 'stormstats/base.html' %}
+
+{% block title %}{{ title }}{% endblock title %}
+
+{% block content %}
+    <h2>Roster</h2>
+    <body>
+        Stormstats Roster Page
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Jersey</th>
+                <th>Age</th>
+                <th>Height</th>
+                <th>Weight</th>
+                <th>Birth Place</th>
+                <th>Birthday</th>
+            </tr>
+            {% for player in players %}
+            <tr>
+                <th>
+                    <td>{{ player.name }}</td>
+                    <td>{{ player.jersey }}</td>
+                    <td>{{ player.age }}</td>
+                    <td>{{ player.height }}</td>
+                    <td>{{ player.weight }}</td>
+                    <td>{{ player.birthplace }}</td>
+                    <td>{{ player.birthdate }}</td>
+                </th>
+            </tr>
+            {% endfor %}
+        </table>
+    </body>
+{% endblock content %}

@@ -1,0 +1,24 @@
+<html>
+    <head>
+        {% load static %}
+        <link rel="stylesheet" type="text/css" href="{% static 'stormstats/style.css' %}">
+        <title>
+            {% block title %}
+            {{ page_title|default:"StormStats" }}
+            {% endblock title %}
+        </title>
+    </head>
+    <body>
+        <div class="sidebar">
+            {% block sidebar %}
+            <a {% if activate == 'home' %} class="active" {% endif %} href="{% url 'stormstats:home' %}">Home</a>
+            <a {% if activate == 'about' %} class="active" {% endif %} href="{% url 'stormstats:about' %}">About</a>
+            <a {% if activate == 'roster' %} class="active" {% endif %} href="{% url 'stormstats:roster' %}">Roster</a>
+            {% endblock %}
+        </div>
+        <div class="content">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </body>
+</html>
