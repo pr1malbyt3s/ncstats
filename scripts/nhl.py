@@ -217,7 +217,47 @@ def roster_build(players:dict, url:str) -> dict:
             "code" : "G",
             "name" : "Goalie",
             "type" : "Goalie",
-        "abbreviation" : "G"
+            "abbreviation" : "G"
+        }
+    }
+    roster[8480776] = {
+        "id" : 8480776,
+        "fullName" : "Sheldon Rempal",
+        "firstName" : "Sheldon",
+        "lastName" : "Rempal",
+        "primaryNumber" : "41",
+        "birthDate" : "1995-08-07",
+        "currentAge" : 25,
+        "birthCity" : "Calgary",
+        "birthStateProvince" : "AB",
+        "birthCountry" : "CAN",
+        "height" : "5' 10\"",
+        "weight" : 165,
+        "primaryPosition" : {
+            "code" : "R",
+            "name" : "Right Wing",
+            "type" : "Forward",
+            "abbreviation" : "RW"
+        }
+    }
+    roster[8475213] = {
+        "id" : 8475213,
+        "fullName" : "Drew Shore",
+        "firstName" : "Drew",
+        "lastName" : "Shore",
+        "primaryNumber" : "29",
+        "birthDate" : "1991-01-29",
+        "currentAge" : 30,
+        "birthCity" : "Denver",
+        "birthStateProvince" : "CO",
+        "birthCountry" : "USA",
+        "height" : "6' 2\"",
+        "weight" : 209,
+        "primaryPosition" : {
+            "code" : "C",
+            "name" : "Center",
+            "type" : "Forward",
+            "abbreviation" : "C"
         }
     }
     # Return the final roster dictionary:

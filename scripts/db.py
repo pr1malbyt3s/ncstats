@@ -172,7 +172,7 @@ def skater_game_stats_construct(game_id:int, player_stats:dict) -> SkaterGameSta
         # Parse the skater's assists:
         "assists": player_stats["assists"],
         # Parse the skater's points:
-        "points": 2 * player_stats["goals"] + player_stats["assists"],
+        "points": player_stats["goals"] + player_stats["assists"],
         # Parse the skater's penalty minutes:
         "pim": player_stats["penaltyMinutes"],
         # Parse the skater's +/- rating:
