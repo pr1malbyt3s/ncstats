@@ -1,5 +1,5 @@
 from django.views import generic
-from .models import Player
+from .models import Game, Player, SkaterOverallStats
 
 class HomeView(generic.TemplateView):
     template_name = 'stormstats/home.html'
@@ -23,11 +23,23 @@ class RosterView(generic.TemplateView):
         context = super().get_context_data(**kwargs)
         context['title'] = "StormStats - Roster"
         context['activate'] = 'roster'
-        context['players'] = Player.objects.all()
+        context['players'] = Player.objects.all().order_by('name')
         return context
 
-'''
-def player_list(request):
-    players = Player.objects.all()
-    return render(request, 'stormstats/index.html', {'players': players})
-'''
+class ScheduleView(generic.TemplateView):
+    template_name = 'stormstats/schedule.html'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = "StormStats - Schedule"
+        context['activate'] = 'schedule'
+        context['games'] = Game.objects.all().order_by('date')
+        return context
+
+class SkaterStatsView(generic.TemplateView):
+    template_name = 'stormstats/skaterstats.html'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = "StormStats - Skater Stats"
+        context['activate'] = 'skaterstats'
+        context['skaterstats'] = SkaterOverallStats.objects.all().order_by('player__name')
+        return context

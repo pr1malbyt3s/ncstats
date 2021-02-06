@@ -14,6 +14,8 @@
             <a {% if activate == 'home' %} class="active" {% endif %} href="{% url 'stormstats:home' %}">Home</a>
             <a {% if activate == 'about' %} class="active" {% endif %} href="{% url 'stormstats:about' %}">About</a>
             <a {% if activate == 'roster' %} class="active" {% endif %} href="{% url 'stormstats:roster' %}">Roster</a>
+            <a {% if activate == 'schedule' %} class="active" {% endif %} href="{% url 'stormstats:schedule' %}">Schedule</a>
+            <a {% if activate == 'skaterstats' %} class="active" {% endif %} href="{% url 'stormstats:skaterstats' %}">Skater Stats</a>
             {% endblock %}
         </div>
         <div class="content">

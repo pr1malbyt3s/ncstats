@@ -5,28 +5,28 @@
 {% block content %}
     <h2>Roster</h2>
     <body>
-        Stormstats Roster Page
+        Stormstats Roster Page<br><br>
         <table>
             <tr>
-                <th>Name</th>
-                <th>Jersey</th>
-                <th>Age</th>
-                <th>Height</th>
-                <th>Weight</th>
-                <th>Birth Place</th>
-                <th>Birthday</th>
+                <th id="N">Name</th>
+                <th id="J">Jersey</th>
+                <th id="P">Position</th>
+                <th id="A">Age</th>
+                <th id="H">Height</th>
+                <th id="W">Weight</th>
+                <th id="BP">Birth Place</th>
+                <th id="BD">Birthday</th>
             </tr>
             {% for player in players %}
             <tr>
-                <th>
-                    <td>{{ player.name }}</td>
-                    <td>{{ player.jersey }}</td>
-                    <td>{{ player.age }}</td>
-                    <td>{{ player.height }}</td>
-                    <td>{{ player.weight }}</td>
-                    <td>{{ player.birthplace }}</td>
-                    <td>{{ player.birthdate }}</td>
-                </th>
+                <td headers="N">{{ player.name }}</td>
+                <td headers="J">{{ player.jersey }}</td>
+                <td headers="P">{{ player.position }}</td>
+                <td headers="A">{{ player.age }}</td>
+                <td headers="H">{{ player.height }}</td>
+                <td headers="W">{{ player.weight }}</td>
+                <td headers="BP">{{ player.birthplace }}</td>
+                <td headers="BD">{{ player.birthdate }}</td>
             </tr>
             {% endfor %}
         </table>

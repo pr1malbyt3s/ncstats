@@ -59,3 +59,12 @@ body {
       float: none;
     }
   }
+
+  table {
+    width: fit-content;
+    border-collapse: collapse;
+  }
+
+  td {
+    border: 1px solid black;
+  }

@@ -1,0 +1,26 @@
+{% extends 'stormstats/base.html' %}
+
+{% block title %}{{ title }}{% endblock title %}
+
+{% block content %}
+    <h2>Schedule</h2>
+    <body>
+        Stormstats Schedule Page<br><br>
+        <table>
+            <tr>
+                <th id="D">Date</th>
+                <th id="T">Time</th>
+                <th id="O">Opponent</th>
+                <th id="L">Location</th>
+            </tr>
+            {% for game in games %}
+            <tr>
+                <td headers="D">{{ game.date }}</td>
+                <td headers="T">{{ game.time }}</td>
+                <td headers="O">{{ game.opponent }}</td>
+                <td headers="L">{{ game.location }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </body>
+{% endblock content %}

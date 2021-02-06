@@ -71,7 +71,7 @@ def skater_overall_stats_construct(player_stats:dict) -> SkaterOverallStats:
         # Parse the skater's points:
         "points": player_stats.get("points", 0),
         # Parse the skater's penalty minutes:
-        "pim": player_stats.get("pim", "00:00"),
+        "pim": player_stats.get("pim", 0),
         # Parse the skater's +/- rating:
         "plusmin": player_stats.get("plusMinus", 0),
         # Parse the skater's time on ice per game:
@@ -219,41 +219,41 @@ def goalie_game_stats_construct(game_id:int, goalie_stats: dict) -> GoalieGameSt
     player=Player.objects.get(player_id=goalie_stats["playerId"]),
     defaults={
         # Parse the goalie's decision:
-        "wl": goalie_stats["decision"],
+        "wl": goalie_stats.get("decision", "N/A"),
         # Parse the goalie's goals against:
-        "goalsa": goalie_stats["shots"] - goalie_stats["saves"],
+        "goalsa": goalie_stats.get("shots", 0) - goalie_stats.get("saves", 0),
         # Parse the goalie's shots against:
-        "shotsa": goalie_stats["shots"],
+        "shotsa": goalie_stats.get("shots", 0),
         # Parse the goalie's saves:
-        "saves": goalie_stats["saves"],
+        "saves": goalie_stats.get("saves", 0),
         # Parse the goalie's save percentage:
-        "svpct": goalie_stats["savePercentage"],
+        "svpct": goalie_stats.get("savePercentage", 0),
         # Parse the goalie's time on ice:
-        "toi": goalie_stats["timeOnIce"],
+        "toi": goalie_stats.get("timeOnIce", "00:00"),
         # Parse the goalie's penalty minutes:
-        "pim": goalie_stats["pim"],
+        "pim": goalie_stats.get("pim", 0),
         # Parse the goalie's goals:
-        "goals": goalie_stats["goals"],
+        "goals": goalie_stats.get("goals", 0),
         # Parse the goalie's assists:
-        "assists": goalie_stats["assists"],
+        "assists": goalie_stats.get("assists", 0),
         # Parse the goalie's even strength saves:
-        "essaves": goalie_stats["evenSaves"],
+        "essaves": goalie_stats.get("evenSaves", 0),
         # Parse the goalie's powerplay saves:
-        "ppsaves": goalie_stats["powerPlaySaves"],
+        "ppsaves": goalie_stats.get("powerPlaySaves", 0),
         # Parse the goalie's shorthanded saves:
-        "shsaves": goalie_stats["shortHandedSaves"],
+        "shsaves": goalie_stats.get("shortHandedSaves", 0),
         # Parse the goalie's even strength shots against:
-        "esshots": goalie_stats["evenShotsAgainst"],
+        "esshots": goalie_stats.get("evenShotsAgainst", 0),
         # Parse the goalie's powerplay shots against:
-        "ppshots": goalie_stats["powerPlayShotsAgainst"],
+        "ppshots": goalie_stats.get("powerPlayShotsAgainst", 0),
         # Parse the goalie's shorthanded shots against:
-        "shshots": goalie_stats["shortHandedShotsAgainst"],
+        "shshots": goalie_stats.get("shortHandedShotsAgainst", 0),
         # Parse the goalie's even strength save percentage:
-        "essvpct": goalie_stats["evenStrengthSavePercentage"],
+        "essvpct": goalie_stats.get("evenStrengthSavePercentage", 0),
         # Parse the goalie's powerplay save percentage:
-        "ppsvpct": goalie_stats["powerPlaySavePercentage"],
+        "ppsvpct": goalie_stats.get("powerPlaySavePercentage", 0),
         # Parse the goalie's shorthanded save percentage:
-        "shsvpct": 100.00
+        "shsvpct": goalie_stats.get("shortHandedSavePercentage", 0)
     })
     #shsvpct=goalie_stats["shortHandedSaves"]/(goalie_stats["shortHandedSaves"] + goalie_stats["shortHandedShots"]))
     return goalie_game_stats
