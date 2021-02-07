@@ -1,0 +1,78 @@
+{% extends 'stormstats/base.html' %}
+
+{% block title %}{{ title }}{% endblock title %}
+
+{% block content %}
+    <h2>Goalie Game Stats</h2>
+    <body>
+        StormStats Goalie Game Stats Page<br><br>
+        <form class="form" method="POST" action="">
+            {% csrf_token %}
+            <select name="gameId">
+                <option value="%">----------</option>
+                {% for game in games %}
+                <option value="{{ game.game_id }}">{{ game.date }} - {{ game.opponent }}</option>
+                {% endfor %} 
+            </select>
+            <input type="submit" value="Data Me">
+        </form><br>
+        <b>Showing data for {{ current_game }}</b><br><br>
+        <table id="basic-goalie-stats"><caption>Basic Stats</caption>
+            <tr>
+                <th id="P">Player</th>
+                <th id="D">Decision</th>
+                <th id="GA">GoalsA</th>
+                <th id="SA">ShotsA</th>
+                <th id="S">Saves</th>
+                <th id="SP">SV%</th>
+                <th id="TOI">TOI</th>
+                <th id="PIM">PIM</th>
+                <th id="G">Goals</th>
+                <th id="A">Assists</th>
+            </tr>
+            {% for goaliestat in goaliegamestats %}
+            <tr>
+                <td headers="P">{{ goaliestat.player.name }}</td>
+                <td headers="D">{{ goaliestat.wl }}</td>
+                <td headers="GA">{{ goaliestat.goalsa }}</td>
+                <td headers="SA">{{ goaliestat.shotsa }}</td>
+                <td headers="S">{{ goaliestat.saves }}</td>
+                <td headers="SP">{{ goaliestat.svpct }}</td>
+                <td headers="TOI">{{ goaliestat.toi }}</td>
+                <td headers="PIM">{{ goaliestat.pim }}</td>
+                <td headers="G">{{ goaliestat.goals }}</td>
+                <td headers="A">{{ goaliestat.assists }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        <br>
+        <table id="expanded-goalie-stats"><caption>Expanded Stats</caption>
+            <tr>
+                <th id="P">Player</th>
+                <th id="ESSV">ES Saves</th>
+                <th id="PPSV">PP Saves</th>
+                <th id="SHSV">SH Saves</th>
+                <th id="ESS">ES Shots</th>
+                <th id="PPS">PP Shots</th>
+                <th id="SHS">SH Shots</th>
+                <th id="ESP">ES SV%</th>
+                <th id="PPP">PP SV%</th>
+                <th id="SHP">SH SV%</th>
+            </tr>
+            {% for goaliestat in goaliegamestats %}
+            <tr>
+                <td headers="P">{{ goaliestat.player.name }}</td>
+                <td headers="ESSV">{{ goaliestat.essaves }}</td>
+                <td headers="PPSV">{{ goaliestat.ppsaves }}</td>
+                <td headers="SHSV">{{ goaliestat.shsaves }}</td>
+                <td headers="ESS">{{ goaliestat.esshots }}</td>
+                <td headers="PPS">{{ goaliestat.ppshots }}</td>
+                <td headers="SHS">{{ goaliestat.shshots }}</td>
+                <td headers="ESP">{{ goaliestat.essvpct }}</td>
+                <td headers="PPP">{{ goaliestat.ppsvpct }}</td>
+                <td headers="SHP">{{ goaliestat.shsvpct }}</td>
+            </tr>
+            {% endfor %}
+        </table><br>
+    </body>
+{% endblock content %}

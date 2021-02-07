@@ -9,7 +9,7 @@ body {
     left: 10px;
     width: 200px;
     background-color: #000000;
-    position: fixed;
+    position: absolute;
     overflow: auto;
   }
   
@@ -61,10 +61,26 @@ body {
   }
 
   table {
+    position: relative;
     width: fit-content;
     border-collapse: collapse;
   }
 
   td {
     border: 1px solid black;
+    background-color: white;
+    text-align: center;
+  }
+
+  select {
+    border: 1px solid black;
+    padding: 16px 20px;
+    font-family: 'Courier New', Courier, monospace;
+  }
+
+  input[type=submit] {
+    background-color: black;
+    color: white;
+    font-family: 'Courier New', Courier, monospace;
+    padding: 16px 20px;
   }

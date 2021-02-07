@@ -3,34 +3,43 @@
 {% block title %}{{ title }}{% endblock title %}
 
 {% block content %}
-    <h2>Skater Overall Stats</h2>
+    <h2>Skater Game Stats</h2>
     <body>
-        StormStats Skater Stats Page<br><br>
+        StormStats Skater Game Stats Page<br><br>
+        <form class="form" method="POST" action="">
+            {% csrf_token %}
+            <select name="gameId">
+                <option value="%">----------</option>
+                {% for game in games %}
+                <option value="{{ game.game_id }}">{{ game.date }} - {{ game.opponent }}</option>
+                {% endfor %} 
+            </select>
+            <input type="submit" value="Data Me">
+        </form><br>
+        <b>Showing data for {{ current_game }}</b><br><br>
         <table id="basic-skater-stats"><caption>Basic Stats</caption>
             <tr>
                 <th id="P">Player</th>
-                <th id="GP">Games</th>
                 <th id="G">Goals</th>
                 <th id="A">Assists</th>
                 <th id="P">Points</th>
                 <th id="PIM">PIM</th>
                 <th id="PM">+/-</th>
-                <th id="T">TOIPG</th>
+                <th id="T">TOI</th>
                 <th id="PPG">PPG</th>
                 <th id="PPA">PPA</th>
                 <th id="SHG">SHG</th>
                 <th id="SHA">SHA</th>
             </tr>
-            {% for skaterstat in skaterstats %}
+            {% for skaterstat in skatergamestats %}
             <tr>
                 <td headers="P">{{ skaterstat.player.name }}</td>
-                <td headers="GP">{{ skaterstat.games }}</td>
                 <td headers="G">{{ skaterstat.goals }}</td>
                 <td headers="A">{{ skaterstat.assists }}</td>
                 <td headers="P">{{ skaterstat.points }}</td>
                 <td headers="PIM">{{ skaterstat.pim }}</td>
                 <td headers="PM">{{ skaterstat.plusmin }}</td>
-                <td headers="T">{{ skaterstat.toipg }}</td>
+                <td headers="T">{{ skaterstat.toi }}</td>
                 <td headers="PPG">{{ skaterstat.ppg }}</td>
                 <td headers="PPA">{{ skaterstat.ppa }}</td>
                 <td headers="SHG">{{ skaterstat.shg }}</td>
@@ -42,30 +51,30 @@
         <table id="expanded-skater-stats"><caption>Expanded Stats</caption>
             <tr>
                 <th id="P">Player</th>
-                <th id="ETOIPG">ETOIPG</th>
-                <th id="SHTOIPG">SHTOIPG</th>
-                <th id="PPTOIPG">PPTOIPG</th>
+                <th id="ETOI">ETOI</th>
+                <th id="SHTOI">SHTOIPG</th>
+                <th id="PPTOI">PPTOIPG</th>
                 <th id="S">Shots</th>
-                <th id="SP">S%</th>
-                <th id="FP">FO%</th>
                 <th id="B">Blocks</th>
                 <th id="H">Hits</th>
-                <th id="SH">Shifts</th>
-                <th id="GWG">GWG</th>
+                <th id="FOW">FOW</th>
+                <th id="FOT">FOT</th>
+                <th id="TA">Takeaways</th>
+                <th id="GA">Giveaways</th>
             </tr>
-            {% for skaterstat in skaterstats %}
+            {% for skaterstat in skatergamestats %}
             <tr>
                 <td headers="P">{{ skaterstat.player.name }}</td>
-                <td headers="ETOIPG">{{ skaterstat.etoipg }}</td>
-                <td headers="SHTOIPG">{{ skaterstat.shtoipg }}</td>
-                <td headers="PPTOIPG">{{ skaterstat.pptoipg }}</td>
+                <td headers="ETOI">{{ skaterstat.etoi }}</td>
+                <td headers="SHTOI">{{ skaterstat.shtoi }}</td>
+                <td headers="PPTOI">{{ skaterstat.pptoi }}</td>
                 <td headers="S">{{ skaterstat.shots }}</td>
-                <td headers="SP">{{ skaterstat.shotpct }}</td>
-                <td headers="FP">{{ skaterstat.fopct }}</td>
                 <td headers="B">{{ skaterstat.blocks }}</td>
                 <td headers="H">{{ skaterstat.hits }}</td>
-                <td headers="SH">{{ skaterstat.shifts }}</td>
-                <td headers="GWG">{{ skaterstat.gwg }}</td>
+                <td headers="FOW">{{ skaterstat.fow }}</td>
+                <td headers="FOT">{{ skaterstat.fot }}</td>
+                <td headers="TA">{{ skaterstat.ta }}</td>
+                <td headers="GA">{{ skaterstat.ga }}</td>
             </tr>
             {% endfor %}
         </table><br>

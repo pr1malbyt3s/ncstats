@@ -1,0 +1,75 @@
+{% extends 'stormstats/base.html' %}
+
+{% block title %}{{ title }}{% endblock title %}
+
+{% block content %}
+    <h2>Goalie Overall Stats</h2>
+    <body>
+        StormStats Goalie Stats Page<br><br>
+        <table id="basic-goalie-stats"><caption>Basic Stats</caption>
+            <tr>
+                <th id="P">Player</th>
+                <th id="GP">Games</th>
+                <th id="W">Wins</th>
+                <th id="L">Losses</th>
+                <th id="T">Ties</th>
+                <th id="ST">Starts</th>
+                <th id="S">Saves</th>
+                <th id="SA">ShotsA</th>
+                <th id="GA">GoalsA</th>
+                <th id="TOIPG">TOIPG</th>
+                <th id="SP">SV%</th>
+                <th id="GAA">GAA</th>
+            </tr>
+            {% for goaliestat in goaliestats %}
+            <tr>
+                <td headers="P">{{ goaliestat.player.name }}</td>
+                <td headers="GP">{{ goaliestat.games }}</td>
+                <td headers="W">{{ goaliestat.wins }}</td>
+                <td headers="L">{{ goaliestat.losses }}</td>
+                <td headers="T">{{ goaliestat.ties }}</td>
+                <td headers="ST">{{ goaliestat.started }}</td>
+                <td headers="S">{{ goaliestat.saves }}</td>
+                <td headers="SA">{{ goaliestat.shotsa }}</td>
+                <td headers="GA">{{ goaliestat.goalsa }}</td>
+                <td headers="TOIPG">{{ goaliestat.toipg }}</td>
+                <td headers="SP">{{ goaliestat.svpct }}</td>
+                <td headers="GAA">{{ goaliestat.gaa }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        <br>
+        <table id="expanded-goalie-stats"><caption>Expanded Stats</caption>
+            <tr>
+                <th id="P">Player</th>
+                <th id="OT">OT</th>
+                <th id="SO">Shutouts</th>
+                <th id="ESSV">ES Saves</th>
+                <th id="PPSV">PP Saves</th>
+                <th id="SHSV">SH Saves</th>
+                <th id="ESS">ES Shots</th>
+                <th id="PPS">PP Shots</th>
+                <th id="SHS">SH Shots</th>
+                <th id="ESP">ES SV%</th>
+                <th id="PPP">PP SV%</th>
+                <th id="SHP">SH SV%</th>
+            </tr>
+            {% for goaliestat in goaliestats %}
+            <tr>
+                <td headers="P">{{ goaliestat.player.name }}</td>
+                <td headers="OT">{{ goaliestat.ot }}</td>
+                <td headers="SO">{{ goaliestat.shutouts }}</td>
+                <td headers="ESSV">{{ goaliestat.essaves }}</td>
+                <td headers="PPSV">{{ goaliestat.ppsaves }}</td>
+                <td headers="SHSV">{{ goaliestat.shsaves }}</td>
+                <td headers="ESS">{{ goaliestat.esshots }}</td>
+                <td headers="PPS">{{ goaliestat.ppshots }}</td>
+                <td headers="SHS">{{ goaliestat.shshots }}</td>
+                <td headers="ESP">{{ goaliestat.essvpct }}</td>
+                <td headers="PPP">{{ goaliestat.ppsvpct }}</td>
+                <td headers="SHP">{{ goaliestat.shsvpct }}</td>
+            </tr>
+            {% endfor %}
+        </table><br>
+    </body>
+{% endblock content %}

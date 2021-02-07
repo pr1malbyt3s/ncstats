@@ -16,6 +16,9 @@
             <a {% if activate == 'roster' %} class="active" {% endif %} href="{% url 'stormstats:roster' %}">Roster</a>
             <a {% if activate == 'schedule' %} class="active" {% endif %} href="{% url 'stormstats:schedule' %}">Schedule</a>
             <a {% if activate == 'skaterstats' %} class="active" {% endif %} href="{% url 'stormstats:skaterstats' %}">Skater Stats</a>
+            <a {% if activate == 'goaliestats' %} class="active" {% endif %} href="{% url 'stormstats:goaliestats' %}">Goalie Stats</a>
+            <a {% if activate == 'skatergamestats' %} class="active" {% endif %} href="{% url 'stormstats:skatergamestats' %}">Skater Game Stats</a>
+            <a {% if activate == 'goaliegamestats' %} class="active" {% endif %} href="{% url 'stormstats:goaliegamestats' %}">Goalie Game Stats</a>
             {% endblock %}
         </div>
         <div class="content">

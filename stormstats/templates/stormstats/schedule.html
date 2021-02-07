@@ -6,7 +6,7 @@
     <h2>Schedule</h2>
     <body>
         Stormstats Schedule Page<br><br>
-        <table>
+        <table id="schedule"><caption>Schedule</caption>
             <tr>
                 <th id="D">Date</th>
                 <th id="T">Time</th>
@@ -21,6 +21,6 @@
                 <td headers="L">{{ game.location }}</td>
             </tr>
             {% endfor %}
-        </table>
+        </table><br>
     </body>
 {% endblock content %}
