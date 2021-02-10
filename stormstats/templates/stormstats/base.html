@@ -1,6 +1,14 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
     <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
         {% load static %}
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.18/css/bootstrap-select.min.css">
         <link rel="stylesheet" type="text/css" href="{% static 'stormstats/style.css' %}">
         <title>
             {% block title %}
@@ -9,21 +17,27 @@
         </title>
     </head>
     <body>
-        <div class="sidebar">
-            {% block sidebar %}
-            <a {% if activate == 'home' %} class="active" {% endif %} href="{% url 'stormstats:home' %}">Home</a>
-            <a {% if activate == 'about' %} class="active" {% endif %} href="{% url 'stormstats:about' %}">About</a>
-            <a {% if activate == 'roster' %} class="active" {% endif %} href="{% url 'stormstats:roster' %}">Roster</a>
-            <a {% if activate == 'schedule' %} class="active" {% endif %} href="{% url 'stormstats:schedule' %}">Schedule</a>
-            <a {% if activate == 'skaterstats' %} class="active" {% endif %} href="{% url 'stormstats:skaterstats' %}">Skater Stats</a>
-            <a {% if activate == 'goaliestats' %} class="active" {% endif %} href="{% url 'stormstats:goaliestats' %}">Goalie Stats</a>
-            <a {% if activate == 'skatergamestats' %} class="active" {% endif %} href="{% url 'stormstats:skatergamestats' %}">Skater Game Stats</a>
-            <a {% if activate == 'goaliegamestats' %} class="active" {% endif %} href="{% url 'stormstats:goaliegamestats' %}">Goalie Game Stats</a>
-            {% endblock %}
-        </div>
+        <nav class="nav nav-pills red">
+            <a class="nav-item nav-link {{ home_activate }}" href="{% url 'stormstats:home' %}">Home</a>
+            <a class="nav-item nav-link {{ about_activate }}" href="{% url 'stormstats:about' %}">About</a>
+            <a class="nav-item nav-link {{ roster_activate }}" href="{% url 'stormstats:roster' %}">Roster</a>
+            <a class="nav-item nav-link {{ schedule_activate }}" href="{% url 'stormstats:schedule' %}">Schedule</a>
+            <a class="nav-item nav-link {{ skaterstats_activate }}" href="{% url 'stormstats:skaterstats' %}">Skater Stats</a>
+            <a class="nav-item nav-link {{ goaliestats_activate }}" href="{% url 'stormstats:goaliestats' %}">Goalie Stats</a>
+            <a class="nav-item nav-link {{ skatergamestats_activate }}" href="{% url 'stormstats:skatergamestats' %}">Skater Game Stats</a>
+            <a class="nav-item nav-link {{ goaliegamestats_activate }}" href="{% url 'stormstats:goaliegamestats' %}">Goalie Game Stats</a>
+        </nav>
         <div class="content">
             {% block content %}
             {% endblock %}
         </div>
+        <!-- JavaScript -->
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.18/js/bootstrap-select.min.js"></script>
+        <script src="https://code.highcharts.com/highcharts.src.js"></script>
+        <script src="https://code.highcharts.com/modules/exporting.js"></script>
+        <script src="https://code.highcharts.com/modules/export-data.js"></script>
     </body>
 </html>

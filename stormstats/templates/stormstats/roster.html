@@ -5,30 +5,36 @@
 {% block content %}
     <h2>Roster</h2>
     <body>
-        Stormstats Roster Page<br><br>
-        <table id="roster"><caption>Roster</caption>
-            <tr>
-                <th id="N">Name</th>
-                <th id="J">Jersey</th>
-                <th id="P">Position</th>
-                <th id="A">Age</th>
-                <th id="H">Height</th>
-                <th id="W">Weight</th>
-                <th id="BP">Birth Place</th>
-                <th id="BD">Birthday</th>
-            </tr>
-            {% for player in players %}
-            <tr>
-                <td headers="N">{{ player.name }}</td>
-                <td headers="J">{{ player.jersey }}</td>
-                <td headers="P">{{ player.position }}</td>
-                <td headers="A">{{ player.age }}</td>
-                <td headers="H">{{ player.height }}</td>
-                <td headers="W">{{ player.weight }}</td>
-                <td headers="BP">{{ player.birthplace }}</td>
-                <td headers="BD">{{ player.birthdate }}</td>
-            </tr>
-            {% endfor %}
-        </table>
+        Stormstats Roster Page<br>
+        <div class="table-responsive">
+            <table class="table table-dark table-hover" id="roster"><caption>Roster</caption>
+                <thead>
+                    <tr>
+                        <th id="N">Name</th>
+                        <th id="J">Jersey</th>
+                        <th id="P">Position</th>
+                        <th id="A">Age</th>
+                        <th id="H">Height</th>
+                        <th id="W">Weight</th>
+                        <th id="BP">Birth Place</th>
+                        <th id="BD">Birthday</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for player in players %}
+                <tr>
+                    <td headers="N">{{ player.name }}</td>
+                    <td headers="J">{{ player.jersey }}</td>
+                    <td headers="P">{{ player.position }}</td>
+                    <td headers="A">{{ player.age }}</td>
+                    <td headers="H">{{ player.height }}</td>
+                    <td headers="W">{{ player.weight }}</td>
+                    <td headers="BP">{{ player.birthplace }}</td>
+                    <td headers="BD">{{ player.birthdate }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </body>
 {% endblock content %}

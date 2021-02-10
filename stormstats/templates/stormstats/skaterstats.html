@@ -5,69 +5,81 @@
 {% block content %}
     <h2>Skater Overall Stats</h2>
     <body>
-        StormStats Skater Stats Page<br><br>
-        <table id="basic-skater-stats"><caption>Basic Stats</caption>
-            <tr>
-                <th id="P">Player</th>
-                <th id="GP">Games</th>
-                <th id="G">Goals</th>
-                <th id="A">Assists</th>
-                <th id="P">Points</th>
-                <th id="PIM">PIM</th>
-                <th id="PM">+/-</th>
-                <th id="T">TOIPG</th>
-                <th id="PPG">PPG</th>
-                <th id="PPA">PPA</th>
-                <th id="SHG">SHG</th>
-                <th id="SHA">SHA</th>
-            </tr>
-            {% for skaterstat in skaterstats %}
-            <tr>
-                <td headers="P">{{ skaterstat.player.name }}</td>
-                <td headers="GP">{{ skaterstat.games }}</td>
-                <td headers="G">{{ skaterstat.goals }}</td>
-                <td headers="A">{{ skaterstat.assists }}</td>
-                <td headers="P">{{ skaterstat.points }}</td>
-                <td headers="PIM">{{ skaterstat.pim }}</td>
-                <td headers="PM">{{ skaterstat.plusmin }}</td>
-                <td headers="T">{{ skaterstat.toipg }}</td>
-                <td headers="PPG">{{ skaterstat.ppg }}</td>
-                <td headers="PPA">{{ skaterstat.ppa }}</td>
-                <td headers="SHG">{{ skaterstat.shg }}</td>
-                <td headers="SHA">{{ skaterstat.sha }}</td>
-            </tr>
-            {% endfor %}
-        </table>
+        StormStats Skater Stats Page<br>
+        <div class="table-responsive">
+            <table class="table table-dark table-hover" id="basic-skater-stats"><caption>Basic Stats</caption>
+                <thead>
+                    <tr>
+                        <th id="P">Player</th>
+                        <th id="GP">Games</th>
+                        <th id="G">Goals</th>
+                        <th id="A">Assists</th>
+                        <th id="P">Points</th>
+                        <th id="PIM">PIM</th>
+                        <th id="PM">+/-</th>
+                        <th id="T">TOIPG</th>
+                        <th id="PPG">PPG</th>
+                        <th id="PPA">PPA</th>
+                        <th id="SHG">SHG</th>
+                        <th id="SHA">SHA</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for skaterstat in skaterstats %}
+                    <tr>
+                        <td headers="P">{{ skaterstat.player.name }}</td>
+                        <td headers="GP">{{ skaterstat.games }}</td>
+                        <td headers="G">{{ skaterstat.goals }}</td>
+                        <td headers="A">{{ skaterstat.assists }}</td>
+                        <td headers="P">{{ skaterstat.points }}</td>
+                        <td headers="PIM">{{ skaterstat.pim }}</td>
+                        <td headers="PM">{{ skaterstat.plusmin }}</td>
+                        <td headers="T">{{ skaterstat.toipg }}</td>
+                        <td headers="PPG">{{ skaterstat.ppg }}</td>
+                        <td headers="PPA">{{ skaterstat.ppa }}</td>
+                        <td headers="SHG">{{ skaterstat.shg }}</td>
+                        <td headers="SHA">{{ skaterstat.sha }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>  
+            </table>
+        </div>
         <br>
-        <table id="expanded-skater-stats"><caption>Expanded Stats</caption>
-            <tr>
-                <th id="P">Player</th>
-                <th id="ETOIPG">ETOIPG</th>
-                <th id="SHTOIPG">SHTOIPG</th>
-                <th id="PPTOIPG">PPTOIPG</th>
-                <th id="S">Shots</th>
-                <th id="SP">S%</th>
-                <th id="FP">FO%</th>
-                <th id="B">Blocks</th>
-                <th id="H">Hits</th>
-                <th id="SH">Shifts</th>
-                <th id="GWG">GWG</th>
-            </tr>
-            {% for skaterstat in skaterstats %}
-            <tr>
-                <td headers="P">{{ skaterstat.player.name }}</td>
-                <td headers="ETOIPG">{{ skaterstat.etoipg }}</td>
-                <td headers="SHTOIPG">{{ skaterstat.shtoipg }}</td>
-                <td headers="PPTOIPG">{{ skaterstat.pptoipg }}</td>
-                <td headers="S">{{ skaterstat.shots }}</td>
-                <td headers="SP">{{ skaterstat.shotpct }}</td>
-                <td headers="FP">{{ skaterstat.fopct }}</td>
-                <td headers="B">{{ skaterstat.blocks }}</td>
-                <td headers="H">{{ skaterstat.hits }}</td>
-                <td headers="SH">{{ skaterstat.shifts }}</td>
-                <td headers="GWG">{{ skaterstat.gwg }}</td>
-            </tr>
-            {% endfor %}
-        </table><br>
+        <div class="table-responsive">
+            <table class="table table-dark table-hover" id="expanded-skater-stats"><caption>Expanded Stats</caption>
+                <thead>
+                    <tr>
+                        <th id="P">Player</th>
+                        <th id="ETOIPG">ETOIPG</th>
+                        <th id="SHTOIPG">SHTOIPG</th>
+                        <th id="PPTOIPG">PPTOIPG</th>
+                        <th id="S">Shots</th>
+                        <th id="SP">S%</th>
+                        <th id="FP">FO%</th>
+                        <th id="B">Blocks</th>
+                        <th id="H">Hits</th>
+                        <th id="SH">Shifts</th>
+                        <th id="GWG">GWG</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for skaterstat in skaterstats %}
+                    <tr>
+                        <td headers="P">{{ skaterstat.player.name }}</td>
+                        <td headers="ETOIPG">{{ skaterstat.etoipg }}</td>
+                        <td headers="SHTOIPG">{{ skaterstat.shtoipg }}</td>
+                        <td headers="PPTOIPG">{{ skaterstat.pptoipg }}</td>
+                        <td headers="S">{{ skaterstat.shots }}</td>
+                        <td headers="SP">{{ skaterstat.shotpct }}</td>
+                        <td headers="FP">{{ skaterstat.fopct }}</td>
+                        <td headers="B">{{ skaterstat.blocks }}</td>
+                        <td headers="H">{{ skaterstat.hits }}</td>
+                        <td headers="SH">{{ skaterstat.shifts }}</td>
+                        <td headers="GWG">{{ skaterstat.gwg }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </body>
 {% endblock content %}

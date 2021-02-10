@@ -6,5 +6,36 @@
     <h2>Home</h2>
     <body>
         Stormstats Home Page
+       <div id="container"></div>
+       <script src="https://code.highcharts.com/highcharts.src.js"></script>
+       <script>
+            Highcharts.chart('container', {
+                chart: {
+                    type: 'column'
+                },
+                credits: {
+                    enabled: false
+                },
+                title: {
+                    text: 'Roster Ages'
+                },
+                yAxis: {
+                    title: {
+                        text: "Age"
+                    }
+                },
+                xAxis: {
+                    title: {
+                        text: "Player"
+                    },
+                    categories: {{ names|safe }}
+                },
+                series: [{
+                    name: 'Ages',
+                    data: {{ ages }},
+                    color: 'red'
+                }]
+            });
+        </script>
     </body>
 {% endblock content %}

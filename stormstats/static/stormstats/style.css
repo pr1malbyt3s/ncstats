@@ -1,86 +1,47 @@
 body {
     background-color: rgb(202, 202, 202);
     font-family: 'Courier New', Courier, monospace;
+    margin: 20px;
 }
 
-.sidebar {
-    z-index: 1;
-    top: 20px;
-    left: 10px;
-    width: 200px;
-    background-color: #000000;
-    position: absolute;
-    overflow: auto;
-  }
-  
-  /* Sidebar links */
-  .sidebar a {
-    display: block;
-    color: rgb(255, 255, 255);
-    padding: 16px;
-    text-decoration: none;
-    height: 50%;
-  }
-  
-  /* Active/current link */
-  .sidebar a.active {
-    background-color: #cf0a0a;
-    color: white;
-  }
-  
-  /* Links on mouse-over */
-  .sidebar a:hover:not(.active) {
-    background-color: rgb(48, 48, 48);
-    color: white;
-  }
-  
-  /* Page content. The value of the margin-left property should match the value of the sidebar's width property */
-  div.content {
-    margin-left: 200px;
-    padding: 1px 16px;
-    height: 1000px;
-  }
-  
-  /* On screens that are less than 700px wide, make the sidebar into a topbar */
-  @media screen and (max-width: 700px) {
-    .sidebar {
-      width: 100%;
-      height: auto;
-      position: relative;
-    }
-    .sidebar a {float: left;}
-    div.content {margin-left: 0;}
-  }
-  
-  /* On screens that are less than 400px, display the bar vertically, instead of horizontally */
-  @media screen and (max-width: 400px) {
-    .sidebar a {
-      text-align: center;
-      float: none;
-    }
-  }
+.nav-item {
+  background-color: black;
+  margin: 5px;
+}
 
-  table {
-    position: relative;
-    width: fit-content;
-    border-collapse: collapse;
-  }
+.nav-link {
+  color: white;
+}
 
-  td {
-    border: 1px solid black;
-    background-color: white;
-    text-align: center;
-  }
+.nav-link:hover {
+  color: gray;
+}
 
-  select {
-    border: 1px solid black;
-    padding: 16px 20px;
-    font-family: 'Courier New', Courier, monospace;
-  }
+.nav-pills .nav-link.active {
+  background-color: red;
+  color: black;
+}
 
-  input[type=submit] {
-    background-color: black;
-    color: white;
-    font-family: 'Courier New', Courier, monospace;
-    padding: 16px 20px;
-  }
+.btn-danger {
+  background-color: red;
+  border-color: black;
+}
+
+.btn-dark {
+  border-color: black;
+}
+
+caption {
+  caption-side: top;
+}
+
+.table-responsive {
+  height: 400px;
+  overflow: scroll;
+}
+
+thead tr:nth-child(1) th {
+  background: black;
+  position: sticky;
+  top: 0;
+}

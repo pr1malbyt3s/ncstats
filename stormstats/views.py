@@ -2,13 +2,23 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.views import generic
 from .models import Game, GoalieGameStats, GoalieOverallStats, Player, SkaterGameStats, SkaterOverallStats
+from plotly.offline import plot
+import plotly.graph_objects as go
 
 class HomeView(generic.TemplateView):
     template_name = 'stormstats/home.html'
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = "StormStats - Home"
-        context['activate'] = 'home'
+        context['home_activate'] = 'active'
+        dataset = Player.objects.values('name', 'age').order_by('name')
+        names = list()
+        ages = list()
+        for entry in dataset:
+            names.append(entry['name'])
+            ages.append(entry['age'])
+        context['names'] = names
+        context['ages'] = ages
         return context
 
 class AboutView(generic.TemplateView):
@@ -16,7 +26,7 @@ class AboutView(generic.TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = "StormStats - About"
-        context['activate'] = 'about'
+        context['about_activate'] = 'active'
         return context
 
 class RosterView(generic.ListView):
@@ -26,7 +36,7 @@ class RosterView(generic.ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = "StormStats - Roster"
-        context['activate'] = 'roster'
+        context['roster_activate'] = 'active'
         return context   
 
 class ScheduleView(generic.ListView):
@@ -36,7 +46,7 @@ class ScheduleView(generic.ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = "StormStats - Schedule"
-        context['activate'] = 'schedule'
+        context['schedule_activate'] = 'active'
         return context
 
 class SkaterStatsView(generic.ListView):
@@ -46,7 +56,7 @@ class SkaterStatsView(generic.ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = "StormStats - Skater Stats"
-        context['activate'] = 'skaterstats'
+        context['skaterstats_activate'] = 'active'
         return context
 
 class GoalieStatsView(generic.ListView):
@@ -56,7 +66,7 @@ class GoalieStatsView(generic.ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = "StormStats - Goalie Stats"
-        context['activate'] = 'goaliestats'
+        context['goaliestats_activate'] = 'active'
         return context
 
 class SkaterGameStatsView(generic.ListView):
@@ -66,7 +76,7 @@ class SkaterGameStatsView(generic.ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = "StormStats - Skater Game Stats"
-        context['activate'] = 'skatergamestats'
+        context['skatergamestats_activate'] = 'active'
         context['games'] = Game.objects.filter(played=True)
         return context
     def get(self, request, *args, **kwargs):
@@ -90,7 +100,7 @@ class GoalieGameStatsView(generic.ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = "StormStats - Goalie Game Stats"
-        context['activate'] = 'goaliegamestats'
+        context['goaliegamestats_activate'] = 'active'
         context['games'] = Game.objects.filter(played=True)
         return context
     def get(self, request, *args, **kwargs):

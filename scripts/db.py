@@ -219,7 +219,7 @@ def goalie_game_stats_construct(game_id:int, goalie_stats: dict) -> GoalieGameSt
     player=Player.objects.get(player_id=goalie_stats["playerId"]),
     defaults={
         # Parse the goalie's decision:
-        "wl": goalie_stats.get("decision", "N/A"),
+        "wl": goalie_stats.get("decision", "NA") if goalie_stats['decision'] == "W" or goalie_stats['decision'] == "L" else "NA",
         # Parse the goalie's goals against:
         "goalsa": goalie_stats.get("shots", 0) - goalie_stats.get("saves", 0),
         # Parse the goalie's shots against:
