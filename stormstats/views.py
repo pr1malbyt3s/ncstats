@@ -2,8 +2,6 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.views import generic
 from .models import Game, GoalieGameStats, GoalieOverallStats, Player, SkaterGameStats, SkaterOverallStats
-from plotly.offline import plot
-import plotly.graph_objects as go
 
 class HomeView(generic.TemplateView):
     template_name = 'stormstats/home.html'

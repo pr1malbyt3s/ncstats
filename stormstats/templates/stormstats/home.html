@@ -6,12 +6,14 @@
     <h2>Home</h2>
     <body>
         Stormstats Home Page
-       <div id="container"></div>
+       <div id="container" style="border-color: black;"></div>
        <script src="https://code.highcharts.com/highcharts.src.js"></script>
        <script>
             Highcharts.chart('container', {
                 chart: {
-                    type: 'column'
+                    type: 'column',
+                    borderColor: 'black',
+                    borderWidth: 2
                 },
                 credits: {
                     enabled: false

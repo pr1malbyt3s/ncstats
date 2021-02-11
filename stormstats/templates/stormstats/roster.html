@@ -4,7 +4,6 @@
 
 {% block content %}
     <h2>Roster</h2>
-    <body>
         Stormstats Roster Page<br>
         <div class="table-responsive">
             <table class="table table-dark table-hover" id="roster"><caption>Roster</caption>
@@ -36,5 +35,45 @@
                 </tbody>
             </table>
         </div>
-    </body>
+        <div id="container"></div>
+        <script src="https://code.highcharts.com/highcharts.src.js"></script>
+        <script src="https://code.highcharts.com/modules/exporting.js"></script>
+        <script src="https://code.highcharts.com/modules/export-data.js"></script>
+        <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+        <script>
+            Highcharts.chart('container', {
+                chart: {
+                    type: 'scatter',
+                    borderColor: 'black',
+                    borderWidth: 2
+                },
+                credits: {
+                    enabled: false
+                },
+                title: {
+                    text: 'Roster Weight vs. Age'
+                },
+                yAxis: {
+                    title: {
+                        text: "Weight"
+                    }
+                },
+                xAxis: {
+                    title: {
+                        text: "Height"
+                    },
+                    startOnTick: true,
+                    endOnTick: true,
+                    showLastLabel: true
+                },
+                series: [{% for player in players %}{% if forloop.last %}{   
+                        name: '{{ player.name }}',
+                        data: [[{{ player.age }},{{ player.weight }}]]
+                }{% else %}   
+                {   
+                        name: '{{ player.name }}',
+                        data: [[{{ player.age }},{{ player.weight }}]]
+                },{% endif %}{% endfor %}]
+            });
+        </script>
 {% endblock content %}
