@@ -24,7 +24,13 @@
             <a class="nav-item nav-link {{ schedule_activate }}" href="{% url 'stormstats:schedule' %}">Schedule</a>
             <a class="nav-item nav-link {{ skaterstats_activate }}" href="{% url 'stormstats:skaterstats' %}">Skater Stats</a>
             <a class="nav-item nav-link {{ goaliestats_activate }}" href="{% url 'stormstats:goaliestats' %}">Goalie Stats</a>
-            <a class="nav-item nav-link {{ skatergamestats_activate }}" href="{% url 'stormstats:skatergamestats' %}">Skater Game Stats</a>
+            <div class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle {{ skatergamestats_activate }}" data-toggle="dropdown" href="">Skater Game Stats</a>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="{% url 'stormstats:skatergamestatsbygame' %}">By Game</a>
+                    <a class="dropdown-item" href="{% url 'stormstats:skatergamestatsbyplayer' %}">By Player</a>
+                </div>
+            </div>    
             <a class="nav-item nav-link {{ goaliegamestats_activate }}" href="{% url 'stormstats:goaliegamestats' %}">Goalie Game Stats</a>
         </nav>
         <div class="content">

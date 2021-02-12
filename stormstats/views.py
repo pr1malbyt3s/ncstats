@@ -67,13 +67,13 @@ class GoalieStatsView(generic.ListView):
         context['goaliestats_activate'] = 'active'
         return context
 
-class SkaterGameStatsView(generic.ListView):
+class SkaterGameStatsByGameView(generic.ListView):
     model = SkaterGameStats
-    template_name = 'stormstats/skatergamestats.html'
+    template_name = 'stormstats/skatergamestats/bygame.html'
     context_object_name = 'skatergamestats'
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = "StormStats - Skater Game Stats"
+        context['title'] = "StormStats - Skater Game Stats - By Game"
         context['skatergamestats_activate'] = 'active'
         context['games'] = Game.objects.filter(played=True)
         return context
@@ -89,6 +89,30 @@ class SkaterGameStatsView(generic.ListView):
         context = self.get_context_data(**kwargs)
         recent = Game.objects.get(game_id=g)
         context['current_game'] = str(recent.date) + " - " + recent.opponent
+        return render(request, self.template_name, context=context)
+
+class SkaterGameStatsByPlayerView(generic.ListView):
+    model = SkaterGameStats
+    template_name = 'stormstats/skatergamestats/byplayer.html'
+    context_object_name = 'skatergamestats'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = "StormStats - Skater Game Stats - By Player"
+        context['skatergamestats_activate'] = 'active'
+        context['players'] = SkaterGameStats.objects.all().distinct('player')
+        return context
+    def get(self, request, *args, **kwargs):
+        first = SkaterGameStats.objects.order_by('player').first()
+        self.object_list = SkaterGameStats.objects.filter(player=first.player)
+        context = self.get_context_data(**kwargs)
+        context['current_skater'] = first.player.name
+        return render(request, self.template_name, context=context)
+    def post(self, request, *args, **kwargs):
+        p = request.POST.get('playerId')
+        self.object_list = SkaterGameStats.objects.filter(player=p)
+        context = self.get_context_data(**kwargs)
+        current = Player.objects.get(player_id=p)
+        context['current_skater'] = current.name
         return render(request, self.template_name, context=context)
 
 class GoalieGameStatsView(generic.ListView):

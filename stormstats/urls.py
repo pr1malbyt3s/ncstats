@@ -9,6 +9,7 @@ urlpatterns = [
     path('schedule/', views.ScheduleView.as_view(), name='schedule'),
     path('skaterstats/', views.SkaterStatsView.as_view(), name='skaterstats'),
     path('goaliestats/', views.GoalieStatsView.as_view(), name='goaliestats'),
-    path('skatergamestats/', views.SkaterGameStatsView.as_view(), name='skatergamestats'),
+    path('skatergamestats/bygame/', views.SkaterGameStatsByGameView.as_view(), name='skatergamestatsbygame'),
+    path('skatergamestats/byplayer/', views.SkaterGameStatsByPlayerView.as_view(), name='skatergamestatsbyplayer'),
     path('goaliegamestats/', views.GoalieGameStatsView.as_view(), name='goaliegamestats'),
 ]
