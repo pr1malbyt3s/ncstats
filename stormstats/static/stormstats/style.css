@@ -45,3 +45,9 @@ thead tr:nth-child(1) th {
   position: sticky;
   top: 0;
 }
+
+.error {
+  display: inline;
+  background-color: black;
+  color: red;
+}

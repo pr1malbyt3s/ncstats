@@ -1,0 +1,93 @@
+{% extends 'stormstats/base.html' %}
+
+{% block title %}{{ title }}{% endblock title %}
+
+{% block content %}
+    <h2>Goalie Game Stats</h2>
+    <body>
+        StormStats Goalie Game Stats Page<br><br>
+        {% if error_message %}
+        <h3><span class="error">{{ error_message }}</span></h3><br>
+        {% endif %}
+        <form method="POST" action="">
+            {% csrf_token %}
+            <select class="selectpicker" data-live-search="true" data-style="btn-danger" data-width="fit" name="playerId">
+                {% for player in players %}
+                <option value="{{ player.player.player_id }}">{{ player.player.name }}</option>
+                {% endfor %} 
+            </select>
+            <input class="btn btn-dark" type="submit" value="Data Me">
+        </form><br>
+        <b>Showing data for {{ current_goalie }}</b><br>
+        <div class="table-responsive">
+            <table class="table table-dark table-hover" id="basic-goalie-stats"><caption>Basic Stats</caption>
+                <thead>
+                    <tr>
+                        <th id="P">Game</th>
+                        <th id="D">Decision</th>
+                        <th id="GA">GoalsA</th>
+                        <th id="SA">ShotsA</th>
+                        <th id="S">Saves</th>
+                        <th id="SP">SV%</th>
+                        <th id="TOI">TOI</th>
+                        <th id="PIM">PIM</th>
+                        <th id="G">Goals</th>
+                        <th id="A">Assists</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for goaliestat in goaliegamestats %}
+                <tr>
+                    <td headers="P">{{ goaliestat.game.date }} vs. {{ goaliestat.game.opponent }}</td>
+                    <td headers="D">{{ goaliestat.wl }}</td>
+                    <td headers="GA">{{ goaliestat.goalsa }}</td>
+                    <td headers="SA">{{ goaliestat.shotsa }}</td>
+                    <td headers="S">{{ goaliestat.saves }}</td>
+                    <td headers="SP">{{ goaliestat.svpct }}</td>
+                    <td headers="TOI">{{ goaliestat.toi }}</td>
+                    <td headers="PIM">{{ goaliestat.pim }}</td>
+                    <td headers="G">{{ goaliestat.goals }}</td>
+                    <td headers="A">{{ goaliestat.assists }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <br>
+        <div class="table-responsive">
+            <table class="table table-dark table-hover" id="expanded-goalie-stats"><caption>Expanded Stats</caption>
+                <thead>
+                    <tr>
+                        <th id="P">Game</th>
+                        <th id="ESSV">ES Saves</th>
+                        <th id="PPSV">PP Saves</th>
+                        <th id="SHSV">SH Saves</th>
+                        <th id="ESS">ES Shots</th>
+                        <th id="PPS">PP Shots</th>
+                        <th id="SHS">SH Shots</th>
+                        <th id="ESP">ES SV%</th>
+                        <th id="PPP">PP SV%</th>
+                        <th id="SHP">SH SV%</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for goaliestat in goaliegamestats %}
+                    <tr>
+                        <td headers="P">{{ goaliestat.game.date }} vs. {{ goaliestat.game.opponent }}</td>
+                        <td headers="ESSV">{{ goaliestat.essaves }}</td>
+                        <td headers="PPSV">{{ goaliestat.ppsaves }}</td>
+                        <td headers="SHSV">{{ goaliestat.shsaves }}</td>
+                        <td headers="ESS">{{ goaliestat.esshots }}</td>
+                        <td headers="PPS">{{ goaliestat.ppshots }}</td>
+                        <td headers="SHS">{{ goaliestat.shshots }}</td>
+                        <td headers="ESP">{{ goaliestat.essvpct }}</td>
+                        <td headers="PPP">{{ goaliestat.ppsvpct }}</td>
+                        <td headers="SHP">{{ goaliestat.shsvpct }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <br>
+    </body>
+{% endblock content %}

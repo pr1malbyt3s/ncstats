@@ -1,3 +1,4 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.views import generic
@@ -35,7 +36,7 @@ class RosterView(generic.ListView):
         context = super().get_context_data(**kwargs)
         context['title'] = "StormStats - Roster"
         context['roster_activate'] = 'active'
-        return context   
+        return context
 
 class ScheduleView(generic.ListView):
     template_name = 'stormstats/schedule.html'
@@ -69,7 +70,7 @@ class GoalieStatsView(generic.ListView):
 
 class SkaterGameStatsByGameView(generic.ListView):
     model = SkaterGameStats
-    template_name = 'stormstats/skatergamestats/bygame.html'
+    template_name = 'stormstats/skatergamestats/skaterbygame.html'
     context_object_name = 'skatergamestats'
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -84,16 +85,24 @@ class SkaterGameStatsByGameView(generic.ListView):
         context['current_game'] = str(recent.date) + " - " + recent.opponent
         return render(request, self.template_name, context=context)
     def post(self, request, *args, **kwargs):
-        g = request.POST.get('gameId')
-        self.object_list = SkaterGameStats.objects.filter(game=g)
-        context = self.get_context_data(**kwargs)
-        recent = Game.objects.get(game_id=g)
-        context['current_game'] = str(recent.date) + " - " + recent.opponent
-        return render(request, self.template_name, context=context)
-
+        try:
+            g = request.POST.get('gameId')
+            self.object_list = SkaterGameStats.objects.filter(game=g)
+            context = self.get_context_data(**kwargs)
+            recent = Game.objects.get(game_id=g)
+            context['current_game'] = str(recent.date) + " - " + recent.opponent
+            return render(request, self.template_name, context=context)
+        except (Game.DoesNotExist, ValueError):
+            recent = Game.objects.filter(played=True).latest('date')
+            self.object_list = SkaterGameStats.objects.filter(game=recent.game_id)
+            context = self.get_context_data(**kwargs)
+            context['current_game'] = str(recent.date) + " - " + recent.opponent
+            context['error_message'] = "Please select a valid game."
+            return render(request, self.template_name, context=context)
+        
 class SkaterGameStatsByPlayerView(generic.ListView):
     model = SkaterGameStats
-    template_name = 'stormstats/skatergamestats/byplayer.html'
+    template_name = 'stormstats/skatergamestats/skaterbyplayer.html'
     context_object_name = 'skatergamestats'
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -108,20 +117,28 @@ class SkaterGameStatsByPlayerView(generic.ListView):
         context['current_skater'] = first.player.name
         return render(request, self.template_name, context=context)
     def post(self, request, *args, **kwargs):
-        p = request.POST.get('playerId')
-        self.object_list = SkaterGameStats.objects.filter(player=p)
-        context = self.get_context_data(**kwargs)
-        current = Player.objects.get(player_id=p)
-        context['current_skater'] = current.name
-        return render(request, self.template_name, context=context)
+        try:
+            p = request.POST.get('playerId')
+            self.object_list = SkaterGameStats.objects.filter(player=p)
+            context = self.get_context_data(**kwargs)
+            current = Player.objects.get(player_id=p)
+            context['current_skater'] = current.name
+            return render(request, self.template_name, context=context)
+        except (Player.DoesNotExist, ValueError):
+            first = GoalieGameStats.objects.order_by('player').first()
+            self.object_list = SkaterGameStats.objects.filter(player=first.player)
+            context = self.get_context_data(**kwargs)
+            context['current_skater'] = first.player.name
+            context['error_message'] = "Please select a valid player."
+            return render(request, self.template_name, context=context)
 
-class GoalieGameStatsView(generic.ListView):
+class GoalieGameStatsByGameView(generic.ListView):
     model = GoalieGameStats
-    template_name = 'stormstats/goaliegamestats.html'
+    template_name = 'stormstats/goaliegamestats/goaliebygame.html'
     context_object_name = 'goaliegamestats'
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = "StormStats - Goalie Game Stats"
+        context['title'] = "StormStats - Goalie Game Stats - By Game"
         context['goaliegamestats_activate'] = 'active'
         context['games'] = Game.objects.filter(played=True)
         return context
@@ -132,9 +149,49 @@ class GoalieGameStatsView(generic.ListView):
         context['current_game'] = str(recent.date) + " - " + recent.opponent
         return render(request, self.template_name, context=context)
     def post(self, request, *args, **kwargs):
-        g = request.POST.get('gameId')
-        self.object_list = GoalieGameStats.objects.filter(game=g)
+        try:
+            g = request.POST.get('gameId')
+            self.object_list = GoalieGameStats.objects.filter(game=g)
+            context = self.get_context_data(**kwargs)
+            recent = Game.objects.get(game_id=g)
+            context['current_game'] = str(recent.date) + " - " + recent.opponent
+            return render(request, self.template_name, context=context)
+        except (Game.DoesNotExist, ValueError):
+            recent = Game.objects.filter(played=True).latest('date')
+            self.object_list = GoalieGameStats.objects.filter(game=recent.game_id)
+            context = self.get_context_data(**kwargs)
+            context['current_game'] = str(recent.date) + " - " + recent.opponent
+            context['error_message'] = "Please select a valid game."
+            return render(request, self.template_name, context=context)
+
+class GoalieGameStatsByPlayerView(generic.ListView):
+    model = GoalieGameStats
+    template_name = 'stormstats/goaliegamestats/goaliebyplayer.html'
+    context_object_name = 'goaliegamestats'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = "StormStats - Goalie Game Stats - By Player"
+        context['goaliegamestats_activate'] = 'active'
+        context['players'] = GoalieGameStats.objects.all().distinct('player')
+        return context
+    def get(self, request, *args, **kwargs):
+        first = GoalieGameStats.objects.order_by('player').first()
+        self.object_list = GoalieGameStats.objects.filter(player=first.player)
         context = self.get_context_data(**kwargs)
-        recent = Game.objects.get(game_id=g)
-        context['current_game'] = str(recent.date) + " - " + recent.opponent
+        context['current_goalie'] = first.player.name
         return render(request, self.template_name, context=context)
+    def post(self, request, *args, **kwargs):
+        try:
+            p = request.POST.get('playerId')
+            self.object_list = GoalieGameStats.objects.filter(player=p)
+            context = self.get_context_data(**kwargs)
+            current = Player.objects.get(player_id=p)
+            context['current_goalie'] = current.name
+            return render(request, self.template_name, context=context)
+        except (Player.DoesNotExist, ValueError):
+            first = GoalieGameStats.objects.order_by('player').first()
+            self.object_list = GoalieGameStats.objects.filter(player=first.player)
+            context = self.get_context_data(**kwargs)
+            context['current_goalie'] = first.player.name
+            context['error_message'] = "Please select a valid player."
+            return render(request, self.template_name, context=context)

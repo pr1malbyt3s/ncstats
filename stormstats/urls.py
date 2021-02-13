@@ -11,5 +11,6 @@ urlpatterns = [
     path('goaliestats/', views.GoalieStatsView.as_view(), name='goaliestats'),
     path('skatergamestats/bygame/', views.SkaterGameStatsByGameView.as_view(), name='skatergamestatsbygame'),
     path('skatergamestats/byplayer/', views.SkaterGameStatsByPlayerView.as_view(), name='skatergamestatsbyplayer'),
-    path('goaliegamestats/', views.GoalieGameStatsView.as_view(), name='goaliegamestats'),
+    path('goaliegamestats/bygame/', views.GoalieGameStatsByGameView.as_view(), name='goaliegamestatsbygame'),
+    path('goaliegamestats/byplayer/', views.GoalieGameStatsByPlayerView.as_view(), name='goaliegamestatsbyplayer')
 ]

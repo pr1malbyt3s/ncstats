@@ -26,7 +26,7 @@
                     <td headers="J">{{ player.jersey }}</td>
                     <td headers="P">{{ player.position }}</td>
                     <td headers="A">{{ player.age }}</td>
-                    <td headers="H">{{ player.height }}</td>
+                    <td headers="H">{{ player.height_str }}</td>
                     <td headers="W">{{ player.weight }}</td>
                     <td headers="BP">{{ player.birthplace }}</td>
                     <td headers="BD">{{ player.birthdate }}</td>
@@ -51,7 +51,7 @@
                     enabled: false
                 },
                 title: {
-                    text: 'Roster Weight vs. Age'
+                    text: 'Roster Weight vs. Height'
                 },
                 yAxis: {
                     title: {
@@ -68,11 +68,11 @@
                 },
                 series: [{% for player in players %}{% if forloop.last %}{   
                         name: '{{ player.name }}',
-                        data: [[{{ player.age }},{{ player.weight }}]]
+                        data: [[{{ player.height }},{{ player.weight }}]]
                 }{% else %}   
                 {   
                         name: '{{ player.name }}',
-                        data: [[{{ player.age }},{{ player.weight }}]]
+                        data: [[{{ player.height }},{{ player.weight }}]]
                 },{% endif %}{% endfor %}]
             });
         </script>

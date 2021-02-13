@@ -30,8 +30,14 @@
                     <a class="dropdown-item" href="{% url 'stormstats:skatergamestatsbygame' %}">By Game</a>
                     <a class="dropdown-item" href="{% url 'stormstats:skatergamestatsbyplayer' %}">By Player</a>
                 </div>
+            </div>
+            <div class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle {{ goaliegamestats_activate }}" data-toggle="dropdown" href="">Goalie Game Stats</a>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="{% url 'stormstats:goaliegamestatsbygame' %}">By Game</a>
+                    <a class="dropdown-item" href="{% url 'stormstats:goaliegamestatsbyplayer' %}">By Player</a>
+                </div>
             </div>    
-            <a class="nav-item nav-link {{ goaliegamestats_activate }}" href="{% url 'stormstats:goaliegamestats' %}">Goalie Game Stats</a>
         </nav>
         <div class="content">
             {% block content %}

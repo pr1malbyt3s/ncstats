@@ -6,6 +6,9 @@
     <h2>Goalie Game Stats</h2>
     <body>
         StormStats Goalie Game Stats Page<br><br>
+        {% if error_message %}
+        <h3><span class="error">{{ error_message }}</span></h3><br>
+        {% endif %}
         <form method="POST" action="">
             {% csrf_token %}
             <select class="selectpicker" data-live-search="true" data-style="btn-danger" data-width="fit" name="gameId">

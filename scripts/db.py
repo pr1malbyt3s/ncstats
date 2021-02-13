@@ -30,6 +30,11 @@ def game_construct(game_dict:dict) -> Game:
 
 # Player construct function used to build player objects. It accepts the player dictionary built by the roster_build nhl function and parses needed values from the JSON, returning a Player object:
 def player_construct(player_dict:dict) -> Player:
+    def height_in_inches(h:str) -> int:
+        x = h.split("'")
+        feet = int(x[0])
+        inches = int(x[1])
+        return feet*12 + inches
     # Initialize the Player object with player_id:
     player, _ = Player.objects.update_or_create(player_id=player_dict["id"],
     defaults={
@@ -40,7 +45,9 @@ def player_construct(player_dict:dict) -> Player:
         # Parse the player's age:
         "age": player_dict["currentAge"],
         # Parse the player's height:
-        "height": player_dict["height"].replace('"', ''),
+        "height_str": player_dict["height"].replace('"', ''),
+        # Convert height:
+        "height": height_in_inches(player_dict["height"].replace('"', '')),
         # Parse the player's weight:
         "weight": player_dict["weight"],
         # Parse the player's position type:
