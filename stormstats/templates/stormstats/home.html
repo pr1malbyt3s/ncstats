@@ -6,38 +6,13 @@
     <h2>Home</h2>
     <body>
         Stormstats Home Page
-       <div id="container" style="border-color: black;"></div>
-       <script src="https://code.highcharts.com/highcharts.src.js"></script>
-       <script>
-            Highcharts.chart('container', {
-                chart: {
-                    type: 'column',
-                    borderColor: 'black',
-                    borderWidth: 2
-                },
-                credits: {
-                    enabled: false
-                },
-                title: {
-                    text: 'Roster Ages'
-                },
-                yAxis: {
-                    title: {
-                        text: "Age"
-                    }
-                },
-                xAxis: {
-                    title: {
-                        text: "Player"
-                    },
-                    categories: {{ names|safe }}
-                },
-                series: [{
-                    name: 'Ages',
-                    data: {{ ages }},
-                    color: 'red'
-                }]
-            });
+        <div id="container"></div>
+        <script src="https://code.highcharts.com/highcharts.js"></script>
+        <script src="https://code.highcharts.com/highcharts-more.js"></script>
+        <script src="https://code.highcharts.com/modules/dumbbell.js"></script>
+        <script src="https://code.highcharts.com/modules/lollipop.js"></script>
+        <script>
+            Highcharts.chart('container', {{ chart|safe }});
         </script>
     </body>
 {% endblock content %}

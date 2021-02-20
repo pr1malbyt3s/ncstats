@@ -3,6 +3,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.views import generic
 from .models import Game, GoalieGameStats, GoalieOverallStats, Player, SkaterGameStats, SkaterOverallStats
+import json
 
 class HomeView(generic.TemplateView):
     template_name = 'stormstats/home.html'
@@ -10,14 +11,27 @@ class HomeView(generic.TemplateView):
         context = super().get_context_data(**kwargs)
         context['title'] = "StormStats - Home"
         context['home_activate'] = 'active'
-        dataset = Player.objects.values('name', 'age').order_by('name')
+        dataset = Player.objects.values('name', 'age').order_by('age')
         names = list()
         ages = list()
         for entry in dataset:
             names.append(entry['name'])
             ages.append(entry['age'])
-        context['names'] = names
-        context['ages'] = ages
+        ages_series = {
+            'name': 'Ages',
+            'data': ages,
+            'color': 'red'
+        }
+        chart = {
+            'chart': {'type':'lollipop', 'borderColor':'black', 'borderWidth':2},
+            'plotOptions': {'lollipop': {'connectorColor':'black'}},
+            'credits': {'enabled':False},
+            'title': {'text':'Roster Ages'},
+            'xAxis': {'title': {'text':'Player'}, 'categories':names},
+            'yAxis': {'title': {'text':'Age'}},
+            'series': [ages_series]
+        }
+        context['chart'] = json.dumps(chart)
         return context
 
 class AboutView(generic.TemplateView):
@@ -36,6 +50,19 @@ class RosterView(generic.ListView):
         context = super().get_context_data(**kwargs)
         context['title'] = "StormStats - Roster"
         context['roster_activate'] = 'active'
+        dataset = Player.objects.values('name', 'weight', 'height').order_by('name')
+        data_list = list()
+        for entry in dataset:
+            data_list.append({'name':entry['name'], 'data':[[entry['weight'], entry['height']]]})
+        chart = {
+            'chart': {'type':'scatter', 'borderColor':'black', 'borderWidth':2},
+            'credits': {'enabled':False},
+            'title': {'text':'Roster Weight vs. Height'},
+            'xAxis': {'title': {'text':'Height'}},
+            'yAxis': {'title': {'text':'Weight'}},
+            'series': data_list
+        }
+        context['chart'] = json.dumps(chart)
         return context
 
 class ScheduleView(generic.ListView):
