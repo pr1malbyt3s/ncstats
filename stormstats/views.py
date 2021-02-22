@@ -2,6 +2,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.views import generic
+from geopy.geocoders import Nominatim
 from .models import Game, GoalieGameStats, GoalieOverallStats, Player, SkaterGameStats, SkaterOverallStats
 import json
 
@@ -50,19 +51,31 @@ class RosterView(generic.ListView):
         context = super().get_context_data(**kwargs)
         context['title'] = "StormStats - Roster"
         context['roster_activate'] = 'active'
-        dataset = Player.objects.values('name', 'weight', 'height').order_by('name')
-        data_list = list()
+        dataset = Player.objects.values().order_by('name')
+        hw_data = list()
+        map_data = list()
         for entry in dataset:
-            data_list.append({'name':entry['name'], 'data':[[entry['weight'], entry['height']]]})
-        chart = {
+            hw_data.append({'name':entry['name'], 'data':[[entry['weight'], entry['height']]]})
+        map_data.append({'name':'Birtplace Map', 'borderColor':'#A0A0A0', 'nullColor':'#ffffff', 'showInLegend':False})
+        map_data.append({'type':'mappoint', 'name':'Agra Test', 'data':[{'name':'Agra', 'lat':27.1752, 'lon':78.0098}]})
+        map_data.append({'type':'mappoint', 'name':'London Test', 'data':[{'name':'London', 'lat':51.5072, 'lon':-0.1275}]})
+        map_static = [{}]
+        hw_chart = {
             'chart': {'type':'scatter', 'borderColor':'black', 'borderWidth':2},
             'credits': {'enabled':False},
             'title': {'text':'Roster Weight vs. Height'},
             'xAxis': {'title': {'text':'Height'}},
             'yAxis': {'title': {'text':'Weight'}},
-            'series': data_list
+            'series': hw_data
         }
-        context['chart'] = json.dumps(chart)
+        map_chart = {
+            'chart': {'map':'custom/world', 'borderColor':'black', 'borderWidth':2},
+            'mapNavigation': {'enabled':True},
+            'tooltip': {'headerFormat': '', 'pointFormat':'<b>{point.name}</b><br>Lat: {point.lat}, Lon: {point.lon}'},
+            'series': map_data
+        }
+        context['hw_chart'] = json.dumps(hw_chart)
+        context['map_chart'] = json.dumps(map_chart)
         return context
 
 class ScheduleView(generic.ListView):
