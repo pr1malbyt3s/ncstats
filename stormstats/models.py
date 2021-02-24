@@ -22,6 +22,8 @@ class Player(models.Model):
     group = models.CharField(max_length=12)
     position = models.CharField(max_length=14)
     birthplace = models.CharField(max_length=50)
+    bp_lat = models.DecimalField(max_digits=7, decimal_places=4)
+    bp_long = models.DecimalField(max_digits=7, decimal_places=4)
     birthdate = models.DateField()
 
 # SkaterOverallStats model:

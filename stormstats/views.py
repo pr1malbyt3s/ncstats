@@ -2,9 +2,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.views import generic
-from geopy.geocoders import Nominatim
 from .models import Game, GoalieGameStats, GoalieOverallStats, Player, SkaterGameStats, SkaterOverallStats
-import json
+import simplejson as json
 
 class HomeView(generic.TemplateView):
     template_name = 'stormstats/home.html'
@@ -54,12 +53,10 @@ class RosterView(generic.ListView):
         dataset = Player.objects.values().order_by('name')
         hw_data = list()
         map_data = list()
+        map_data.append({'name':'Birtplace Map', 'borderColor':'#A0A0A0', 'nullColor':'#ffffff', 'showInLegend':False})
         for entry in dataset:
             hw_data.append({'name':entry['name'], 'data':[[entry['weight'], entry['height']]]})
-        map_data.append({'name':'Birtplace Map', 'borderColor':'#A0A0A0', 'nullColor':'#ffffff', 'showInLegend':False})
-        map_data.append({'type':'mappoint', 'name':'Agra Test', 'data':[{'name':'Agra', 'lat':27.1752, 'lon':78.0098}]})
-        map_data.append({'type':'mappoint', 'name':'London Test', 'data':[{'name':'London', 'lat':51.5072, 'lon':-0.1275}]})
-        map_static = [{}]
+            map_data.append({'type':'mappoint', 'name':entry['name'], 'data':[{'name':entry['birthplace'], 'lat':entry['bp_lat'], 'lon':entry['bp_long']}]})
         hw_chart = {
             'chart': {'type':'scatter', 'borderColor':'black', 'borderWidth':2},
             'credits': {'enabled':False},
@@ -70,8 +67,10 @@ class RosterView(generic.ListView):
         }
         map_chart = {
             'chart': {'map':'custom/world', 'borderColor':'black', 'borderWidth':2},
+            'credits': {'enabled':False},
+            'title': {'text':'Player Birthplaces'},
             'mapNavigation': {'enabled':True},
-            'tooltip': {'headerFormat': '', 'pointFormat':'<b>{point.name}</b><br>Lat: {point.lat}, Lon: {point.lon}'},
+            'tooltip': {'headerFormat': '', 'pointFormat':'<b>{series.name}</b><br>Lat: {point.lat}, Lon: {point.lon}'},
             'series': map_data
         }
         context['hw_chart'] = json.dumps(hw_chart)

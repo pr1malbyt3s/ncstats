@@ -1,4 +1,5 @@
 from . import nhl
+from geopy.geocoders import Nominatim
 from stormstats.models import *
 import json
 
@@ -35,6 +36,32 @@ def player_construct(player_dict:dict) -> Player:
         feet = int(x[0])
         inches = int(x[1])
         return feet*12 + inches
+    def geolocate(p:str) -> list:
+        geolocator = Nominatim(user_agent="StormStats")
+        x = p.split(', ')
+        if (len(x) == 3):
+            if (x[2] == 'USA'):
+                try:
+                    loc = geolocator.geocode(p)
+                    return [loc.latitude, loc.longitude]
+                except:
+                    loc = geolocator.geocode(x[0] + ', ' + x[1])
+                    return [loc.latitude, loc.longitude]
+            else:
+                try:
+                    loc = geolocator.geocode(x[0] + ', ' + x[1])
+                    return [loc.latitude, loc.longitude]
+                except:
+                    loc = geolocator.geocode(x[0])
+                    return [loc.latitude, loc.longitude]
+        else:
+            try:
+                loc = geolocator.geocode(p)
+                return [loc.latitude, loc.longitude]
+            except:
+                loc = geolocator.geocode(x[0])
+                return [loc.latitude, loc.longitude]
+            
     # Initialize the Player object with player_id:
     player, _ = Player.objects.update_or_create(player_id=player_dict["id"],
     defaults={
@@ -56,6 +83,10 @@ def player_construct(player_dict:dict) -> Player:
         "position": player_dict["primaryPosition"]["name"],
         # Parse the player's birth place. If it has a province/state include it. If not, birthplace is city and country:
         "birthplace": player_dict["birthCity"] + ', ' + player_dict["birthStateProvince"] + ', ' + player_dict["birthCountry"] if "birthStateProvince" in player_dict else player_dict["birthCity"] + ', ' + player_dict["birthCountry"],
+        # Parse the player's birthplace latitude:
+        "bp_lat": geolocate(player_dict["birthCity"] + ', ' + player_dict["birthStateProvince"] + ', ' + player_dict["birthCountry"])[0] if "birthStateProvince" in player_dict else geolocate(player_dict["birthCity"] + ', ' + player_dict["birthCountry"])[0],
+        # Parse the player's birthplace longitude:
+        "bp_long": geolocate(player_dict["birthCity"] + ', ' + player_dict["birthStateProvince"] + ', ' + player_dict["birthCountry"])[1] if "birthStateProvince" in player_dict else geolocate(player_dict["birthCity"] + ', ' + player_dict["birthCountry"])[1],
         # Parse the player's birthday:
         "birthdate": player_dict["birthDate"]
     })

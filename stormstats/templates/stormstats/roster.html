@@ -34,7 +34,7 @@
                 {% endfor %}
                 </tbody>
             </table>
-        </div>
+        </div><br>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.3.6/proj4.js"></script>
         <script src="https://code.highcharts.com/maps/highmaps.js"></script>
         <script src="https://code.highcharts.com/mapdata/custom/world.js"></script>
@@ -42,12 +42,27 @@
         <script src="https://code.highcharts.com/modules/exporting.js"></script>
         <script src="https://code.highcharts.com/modules/export-data.js"></script>
         <script src="https://code.highcharts.com/modules/accessibility.js"></script>
-        <div id="container1"></div>
+        <ul class="nav nav-tabs">
+            <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#hwtab">Roster Height vs. Weight</a></li>
+            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#bptab">Player Birthplace Map</a></li>
+        </ul>
+        <div class="tab-content">
+            <div id="hwtab" class="tab-pane active">
+                <div id="container1"></div>
+                <script>
+                Highcharts.chart('container1', {{ hw_chart|safe }});
+                </script>
+            </div>
+            <div id="bptab" class="tab-pane">
+                <div id="container2"></div>
+                <script>
+                Highcharts.mapChart('container2', {{ map_chart|safe }});
+                </script>
+            </div>
+        </div>
         <script>
-            Highcharts.chart('container1', {{ hw_chart|safe }});
-        </script>
-        <div id="container2"></div>
-        <script>
-            Highcharts.mapChart('container2', {{ map_chart|safe }});
+            $(function () {
+                $('.tabs').tabs()
+            })
         </script>
 {% endblock content %}

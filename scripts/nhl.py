@@ -240,6 +240,26 @@ def roster_build(players:dict, url:str) -> dict:
             "abbreviation" : "C"
         }
     }
+    roster[8476288] = {
+        "id" : 8476288,
+        "fullName" : "Ryan Dzingel",
+        "firstName" : "Ryan",
+        "lastName" : "Dzingel",
+        "primaryNumber" : "10",
+        "birthDate" : "1992-03-09",
+        "currentAge" : 28,
+        "birthCity" : "Wheaton",
+        "birthStateProvince" : "IL",
+        "birthCountry" : "USA",
+        "height" : "6' 0\"",
+        "weight" : 190,
+        "primaryPosition" : {
+            "code" : "L",
+            "name" : "Left Wing",
+            "type" : "Forward",
+            "abbreviation" : "LW"
+        }
+    }
     # Return the final roster dictionary:
     return roster
 
