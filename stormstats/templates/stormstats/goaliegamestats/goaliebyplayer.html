@@ -19,6 +19,15 @@
             <input class="btn btn-dark" type="submit" value="Data Me">
         </form><br>
         <b>Showing data for {{ current_goalie }}</b><br>
+        
+        <script>
+            $(document).ready(function() {
+                $('#basic-goalie-stats').dataTable({
+                    "pageLength": 20
+                });
+            });
+        </script>
+        
         <div class="table-responsive">
             <table class="table table-dark table-hover" id="basic-goalie-stats"><caption>Basic Stats</caption>
                 <thead>
@@ -52,8 +61,16 @@
                 {% endfor %}
                 </tbody>
             </table>
-        </div>
-        <br>
+        </div><br>
+
+        <script>
+            $(document).ready(function() {
+                $('#expanded-goalie-stats').dataTable({
+                    "pageLength": 20
+                });
+            });
+        </script>
+
         <div class="table-responsive">
             <table class="table table-dark table-hover" id="expanded-goalie-stats"><caption>Expanded Stats</caption>
                 <thead>

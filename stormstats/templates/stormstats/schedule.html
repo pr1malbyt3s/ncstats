@@ -3,6 +3,14 @@
 {% block title %}{{ title }}{% endblock title %}
 
 {% block content %}
+
+<script>
+    $(document).ready(function() {
+        $('#schedule').dataTable({
+        });
+    });
+</script>
+
     <h2>Schedule</h2>
     <body>
         Stormstats Schedule Page<br>

@@ -3,6 +3,14 @@
 {% block title %}{{ title }}{% endblock title %}
 
 {% block content %}
+
+<script>
+    $(document).ready(function() {
+        $('#basic-goalie-stats').dataTable({
+        });
+    });
+</script>
+
     <h2>Goalie Overall Stats</h2>
     <body>
         StormStats Goalie Stats Page<br>
@@ -44,6 +52,14 @@
                 </tbody>
             </table>
         </div>
+
+        <script>
+            $(document).ready(function() {
+                $('#expanded-goalie-stats').dataTable({
+                });
+            });
+        </script>
+
         <div class="table-responsive">
             <table class="table table-dark" id="expanded-goalie-stats"><caption>Expanded Stats</caption>
                 <thead>
