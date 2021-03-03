@@ -10,21 +10,36 @@ roster = nhl.roster_build(players, nhl.player_url)
 
 # Game construct function used to build Game objects. It accepts the game dictionary built by the schedule_build nhl function and parses needed values from the JSON, returning a Game object:
 def game_construct(game_dict:dict) -> Game:
+    def game_result(car_score:int, opp_score:int, p:str) -> str:
+        s = str(car_score) + " - " + str(opp_score)
+        r = ""
+        if (car_score > opp_score):
+            ss = "W {}".format(s)
+        else:
+            ss = "L {}".format(s)
+        if (p == "OT" or p == "SO"):
+            r = ss + " ({})".format(p)
+        else:
+            r = ss
+        return r
+    
     # Initialize the Game object:
     game, _ = Game.objects.update_or_create(game_id=game_dict["gameId"],
     defaults={
         # Parse the game's season:
-        "season": game_dict["season"],
+        "season": game_dict.get("season", 20202021),
         # Parse the game's date:
-        "date": game_dict["date"],
+        "date": game_dict.get("date", "01-01-00"),
         # Parse the game's opponent:
-        "opponent": game_dict["opponent"],
+        "opponent": game_dict.get("opponent", "Chicago Blackhawks"),
         # Parse the game's location:
-        "location": game_dict["location"],
+        "location": game_dict.get("location", "Raleigh, NC"),
         # Parse the game's time:
-        "time": game_dict["time"],
+        "time": game_dict.get("time", "7:00"),
         # Parse the game's status:
-        "played": game_dict["played"]
+        "played": game_dict.get("played", False),
+        # Parse the game's result:
+        "result": game_result(game_dict.get("carScore", 0), game_dict.get("oppScore", 0), game_dict.get("period", "N/A"))
     })
     # Return the game object:
     return game
@@ -299,7 +314,7 @@ def goalie_game_stats_construct(game_id:int, goalie_stats: dict) -> GoalieGameSt
 # Games update function used to build the schedule, iterate through the games, create/update each Game object, and make changes the database:
 def games_update(season:int):
     # Build the schedule using the nhl.schedule_build function:
-    schedule = nhl.schedule_build(nhl.schedule_url, season)
+    schedule = nhl.schedule_build(nhl.schedule_url, nhl.game_score_url, season)
     # Iterate through the schedule dictionary by game:
     for _, val in schedule.items():
         # Construct the Game object from the game's attributes:

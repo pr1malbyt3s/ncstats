@@ -23,7 +23,9 @@
         <script>
             $(document).ready(function() {
                 $('#basic-goalie-stats').dataTable({
-                    "pageLength": 20
+                    "pageLength": 20,
+                    "columnDefs" : [{"type":"date", "targets":0}],
+                    "order": [[0, "desc"]]
                 });
             });
         </script>
@@ -32,7 +34,8 @@
             <table class="table table-dark table-hover" id="basic-goalie-stats"><caption>Basic Stats</caption>
                 <thead>
                     <tr>
-                        <th id="P">Game</th>
+                        <th id="P">Game Date</th>
+                        <th id="O">Opponent</th>
                         <th id="D">Decision</th>
                         <th id="GA">GoalsA</th>
                         <th id="SA">ShotsA</th>
@@ -47,7 +50,8 @@
                 <tbody>
                     {% for goaliestat in goaliegamestats %}
                 <tr>
-                    <td headers="P">{{ goaliestat.game.date }} vs. {{ goaliestat.game.opponent }}</td>
+                    <td headers="P">{{ goaliestat.game.date }}</td>
+                    <td headers="O">{{ goaliestat.game.opponent }}</td>
                     <td headers="D">{{ goaliestat.wl }}</td>
                     <td headers="GA">{{ goaliestat.goalsa }}</td>
                     <td headers="SA">{{ goaliestat.shotsa }}</td>
@@ -66,7 +70,9 @@
         <script>
             $(document).ready(function() {
                 $('#expanded-goalie-stats').dataTable({
-                    "pageLength": 20
+                    "pageLength": 20,
+                    "columnDefs" : [{"type":"date", "targets":0}],
+                    "order": [[0, "desc"]]
                 });
             });
         </script>
@@ -75,7 +81,8 @@
             <table class="table table-dark table-hover" id="expanded-goalie-stats"><caption>Expanded Stats</caption>
                 <thead>
                     <tr>
-                        <th id="P">Game</th>
+                        <th id="P">Game Date</th>
+                        <th id="O">Opponent</th>
                         <th id="ESSV">ES Saves</th>
                         <th id="PPSV">PP Saves</th>
                         <th id="SHSV">SH Saves</th>
@@ -90,7 +97,8 @@
                 <tbody>
                     {% for goaliestat in goaliegamestats %}
                     <tr>
-                        <td headers="P">{{ goaliestat.game.date }} vs. {{ goaliestat.game.opponent }}</td>
+                        <td headers="P">{{ goaliestat.game.date }}</td>
+                        <td headers="O">{{ goaliestat.game.opponent }}</td>
                         <td headers="ESSV">{{ goaliestat.essaves }}</td>
                         <td headers="PPSV">{{ goaliestat.ppsaves }}</td>
                         <td headers="SHSV">{{ goaliestat.shsaves }}</td>

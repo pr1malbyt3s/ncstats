@@ -8,6 +8,7 @@ class Game(models.Model):
     opponent = models.CharField(max_length=30)
     location = models.CharField(max_length=30)
     time = models.TimeField()
+    result = models.CharField(max_length=12, null=True)
     played = models.BooleanField()
 
 # Player model:

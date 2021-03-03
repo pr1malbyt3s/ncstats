@@ -6,7 +6,9 @@
 
 <script>
     $(document).ready(function() {
-        $('#schedule').dataTable({
+        $('#played-games').dataTable({
+            "columnDefs" : [{"type":"date", "targets":0}],
+            "order": [[0, "desc"]]
         });
     });
 </script>
@@ -15,7 +17,41 @@
     <body>
         Stormstats Schedule Page<br>
         <div class="table-responsive">
-            <table class="table table-dark table-hover" id="schedule"><caption>Schedule</caption>
+            <table class="table table-dark table-hover" id="played-games"><caption>Played Games</caption>
+                <thead>
+                    <tr>
+                        <th id="D">Date</th>
+                        <th id="T">Time</th>
+                        <th id="O">Opponent</th>
+                        <th id="L">Location</th>
+                        <th id="R">Result</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for game in games.played_games %}
+                <tr>
+                    <td headers="D">{{ game.date }}</td>
+                    <td headers="T">{{ game.time }}</td>
+                    <td headers="O">{{ game.opponent }}</td>
+                    <td headers="L">{{ game.location }}</td>
+                    <td headers="R">{{ game.result }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div><br>
+
+        <script>
+            $(document).ready(function() {
+                $('#remaining-games').dataTable({
+                    "columnDefs" : [{"type":"date", "targets":0}],
+                    "order": [[0, "asc"]]
+                });
+            });
+        </script>
+
+        <div class="table-responsive">
+            <table class="table table-dark table-hover" id="remaining-games"><caption>Remaining Games</caption>
                 <thead>
                     <tr>
                         <th id="D">Date</th>
@@ -25,7 +61,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for game in games %}
+                    {% for game in games.remaining_games %}
                 <tr>
                     <td headers="D">{{ game.date }}</td>
                     <td headers="T">{{ game.time }}</td>

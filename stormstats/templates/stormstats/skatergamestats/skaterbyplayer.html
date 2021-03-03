@@ -23,7 +23,9 @@
         <script>
             $(document).ready(function() {
                 $('#basic-skater-stats').dataTable({
-                    "pageLength": 20
+                    "pageLength": 20,
+                    "columnDefs" : [{"type":"date", "targets":0}],
+                    "order": [[0, "desc"]]
                 });
             });
         </script>
@@ -32,7 +34,8 @@
             <table class="table table-dark table-hover" id="basic-skater-stats"><caption>Basic Stats</caption>
                 <thead>
                     <tr>
-                        <th id="P">Game</th>
+                        <th id="P">Game Date</th>
+                        <th id="O">Opponent</th>
                         <th id="G">Goals</th>
                         <th id="A">Assists</th>
                         <th id="P">Points</th>
@@ -48,7 +51,8 @@
                 <tbody>
                     {% for skaterstat in skatergamestats %}
                     <tr>
-                        <td headers="P">{{ skaterstat.game.date }} vs. {{ skaterstat.game.opponent }}</td>
+                        <td headers="P">{{ skaterstat.game.date }}</td>
+                        <td headers="O">{{ skaterstat.game.opponent }}</td>
                         <td headers="G">{{ skaterstat.goals }}</td>
                         <td headers="A">{{ skaterstat.assists }}</td>
                         <td headers="P">{{ skaterstat.points }}</td>
@@ -68,7 +72,9 @@
         <script>
             $(document).ready(function() {
                 $('#expanded-skater-stats').dataTable({
-                    "pageLength": 20
+                    "pageLength": 20,
+                    "columnDefs" : [{"type":"date", "targets":0}],
+                    "order": [[0, "desc"]]
                 });
             });
         </script>
@@ -77,7 +83,8 @@
             <table class="table table-dark table-hover" id="expanded-skater-stats"><caption>Expanded Stats</caption>
                 <thead>
                     <tr>
-                        <th id="P">Game</th>
+                        <th id="P">Game Date</th>
+                        <th id="O">Opponent</th>
                         <th id="ETOI">ETOI</th>
                         <th id="SHTOI">SHTOI</th>
                         <th id="PPTOI">PPTOI</th>
@@ -93,7 +100,8 @@
                 <tbody>
                     {% for skaterstat in skatergamestats %}
                     <tr>
-                        <td headers="P">{{ skaterstat.game.date }} vs. {{ skaterstat.game.opponent }}</td>
+                        <td headers="P">{{ skaterstat.game.date }}</td>
+                        <td headers="O">{{ skaterstat.game.opponent }}</td>
                         <td headers="ETOI">{{ skaterstat.etoi }}</td>
                         <td headers="SHTOI">{{ skaterstat.shtoi }}</td>
                         <td headers="PPTOI">{{ skaterstat.pptoi }}</td>
@@ -108,7 +116,11 @@
                     {% endfor %}
                 </tbody>
             </table>
-        </div> 
-        <br>
+        </div><br>
+        <script src="https://code.highcharts.com/highcharts.js"></script>
+        <div id="container1"></div>
+                <script>
+                Highcharts.chart('container1', {{ stats_chart|safe }});
+                </script>
     </body>
 {% endblock content %}

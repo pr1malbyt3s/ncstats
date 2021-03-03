@@ -10,6 +10,7 @@ roster_url = "https://statsapi.web.nhl.com/api/v1/teams/12?expand=team.roster"
 player_url = "https://statsapi.web.nhl.com/api/v1/people/PLAYER_ID"
 player_overall_stats_url = "https://statsapi.web.nhl.com/api/v1/people/PLAYER_ID/stats?stats=statsSingleSeason&season=SEASON"
 game_stats_url = "https://statsapi.web.nhl.com/api/v1/game/GAME_ID/boxscore"
+game_score_url = "https://statsapi.web.nhl.com/api/v1/game/GAME_ID/linescore"
 
 # Locations dictionary used to specify game location based on home/away and/or opponent:
 locations = {
@@ -24,14 +25,14 @@ locations = {
 }
 
 # Function used to build the game schedule. It accepts the API URL as the parameter and returns a dictionary of games:
-def schedule_build(url:str, season:int) -> dict:
+def schedule_build(schedule_url:str, score_url:str, season:int) -> dict:
     # Initialize the schedule dictionary:
     schedule = {}
-    url2 = url.replace("SEASON", str(season))
+    url1 = schedule_url.replace("SEASON", str(season))
     # Get the API response as JSON:
-    response = requests.get(url2).json()
+    response1 = requests.get(url1).json()
     # Iterate through each game:
-    for x in response["dates"]:
+    for x in response1["dates"]:
         # Initialize the individual game dictionary:
         game = {}
         # Parse the game ID:
@@ -56,6 +57,15 @@ def schedule_build(url:str, season:int) -> dict:
         status = x["games"][0]["status"]["detailedState"]
         if (status == "Final"):
             game["played"] = True
+            url2 = score_url.replace("GAME_ID", str(game["gameId"]))
+            response2 = requests.get(url2).json()
+            if (away == "Carolina Hurricanes"):
+                game["carScore"] = response2["teams"]["away"]["goals"]
+                game["oppScore"] = response2["teams"]["home"]["goals"]
+            else:
+                game["carScore"] = response2["teams"]["home"]["goals"]
+                game["oppScore"] = response2["teams"]["away"]["goals"]
+            game["period"] = response2["currentPeriodOrdinal"]
         else:
             game["played"] = False
         # Add the game to the schedule dictionary:
@@ -354,8 +364,8 @@ def game_stats_total_build(game_id:int, url:str) -> dict:
 
 def run():
     # Generate the schedule:
-    #schedule = schedule_build(schedule_url, 20202021)
-    #print(json.dumps(schedule, indent=4))
+    schedule = schedule_build(schedule_url, game_score_url, 20202021)
+    print(json.dumps(schedule, indent=4))
     # Generate the player list:
     #players = players_build(roster_url)
     #print(json.dumps(players, indent=4))
@@ -366,5 +376,5 @@ def run():
     #overall_stats = overall_stats_total_build(roster, player_overall_stats_url, 20202021)
     #print(json.dumps(overall_stats, indent=4))
     # Generate game stats for a sample game:
-    game_stats = game_stats_total_build(2020020025, game_stats_url)
-    print(json.dumps(game_stats, indent=4))
+    #game_stats = game_stats_total_build(2020020025, game_stats_url)
+    #print(json.dumps(game_stats, indent=4))
