@@ -26,14 +26,11 @@ class RosterView(generic.ListView):
     template_name = 'stormstats/roster.html'
     context_object_name = 'players'
     queryset = Player.objects.all()
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['title'] = "StormStats - Roster"
-        context['roster_activate'] = 'active'
-        dataset1 = self.queryset.values('name', 'age').order_by('age')
+    dataset = queryset.values().order_by('name')
+    def age_chart_gen(self):
         names = list()
         ages = list()
-        for entry in dataset1:
+        for entry in self.dataset:
             names.append(entry['name'])
             ages.append(entry['age'])
         ages_series = {
@@ -50,14 +47,11 @@ class RosterView(generic.ListView):
             'yAxis': {'title': {'text':'Age'}},
             'series': [ages_series]
         }
-        context['age_chart'] = json.dumps(age_chart)
-        dataset2 = self.queryset.values().order_by('name')
+        return age_chart
+    def hw_chart_gen(self):
         hw_data = list()
-        map_data = list()
-        map_data.append({'name':'Birtplace Map', 'borderColor':'#A0A0A0', 'nullColor':'#ffffff', 'showInLegend':False})
-        for entry in dataset2:
+        for entry in self.dataset:
             hw_data.append({'name':entry['name'], 'data':[[entry['weight'], entry['height']]]})
-            map_data.append({'type':'mappoint', 'name':entry['name'], 'data':[{'name':entry['birthplace'], 'lat':entry['bp_lat'], 'lon':entry['bp_long']}]})
         hw_chart = {
             'chart': {'type':'scatter', 'borderColor':'black', 'borderWidth':2},
             'credits': {'enabled':False},
@@ -66,6 +60,12 @@ class RosterView(generic.ListView):
             'yAxis': {'title': {'text':'Weight'}},
             'series': hw_data
         }
+        return hw_chart
+    def map_chart_gen(self):
+        map_data = list()
+        map_data.append({'name':'Birtplace Map', 'borderColor':'#A0A0A0', 'nullColor':'#ffffff', 'showInLegend':False})
+        for entry in self.dataset:
+            map_data.append({'type':'mappoint', 'name':entry['name'], 'data':[{'name':entry['birthplace'], 'lat':entry['bp_lat'], 'lon':entry['bp_long']}]})
         map_chart = {
             'chart': {'map':'custom/world', 'borderColor':'black', 'borderWidth':2},
             'credits': {'enabled':False},
@@ -74,7 +74,16 @@ class RosterView(generic.ListView):
             'tooltip': {'headerFormat': '', 'pointFormat':'<b>{series.name}</b><br>Lat: {point.lat}, Lon: {point.lon}'},
             'series': map_data
         }
+        return map_chart
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = "StormStats - Roster"
+        context['roster_activate'] = 'active'
+        age_chart = self.age_chart_gen()
+        context['age_chart'] = json.dumps(age_chart)
+        hw_chart = self.hw_chart_gen()
         context['hw_chart'] = json.dumps(hw_chart)
+        map_chart = self.map_chart_gen()
         context['map_chart'] = json.dumps(map_chart)
         return context
 
@@ -146,20 +155,17 @@ class SkaterGameStatsByGameView(generic.ListView):
             return render(request, self.template_name, context=context)
         
 class SkaterGameStatsByPlayerView(generic.ListView):
-    model = SkaterGameStats
     template_name = 'stormstats/skatergamestats/skaterbyplayer.html'
     context_object_name = 'skatergamestats'
+    object_list = SkaterGameStats.objects.all()
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = "StormStats - Skater Game Stats - By Player"
         context['skatergamestats_activate'] = 'active'
         context['players'] = SkaterGameStats.objects.all().distinct('player')
         return context
-    def get(self, request, *args, **kwargs):
-        first = SkaterGameStats.objects.order_by('player').first()
-        self.object_list = SkaterGameStats.objects.filter(player=first.player)
-        context = self.get_context_data(**kwargs)
-        dataset = self.object_list.values().order_by('game__date')
+    def points_chart_gen(self, p):
+        dataset = self.object_list.filter(player=p).order_by('game__date')
         dates = list()
         goal_data = list()
         assist_data = list()
@@ -168,23 +174,26 @@ class SkaterGameStatsByPlayerView(generic.ListView):
         assists = 0
         points = 0
         for entry in dataset:
-            dates.append((Game.objects.values_list('date', flat=True).get(game_id=entry['game_id'])).strftime("%m-%d-%Y"))
-            goals += entry['goals']
-            assists += entry['assists']
-            points += entry['points']
+            dates.append((Game.objects.values_list('date', flat=True).get(game_id=entry.game_id)).strftime("%m-%d-%Y"))
+            goals += entry.goals
+            assists += entry.assists
+            points += entry.points
             goal_data.append(goals)
             assist_data.append(assists)
             point_data.append(points)
         goals_series = {
             'name': 'Goals',
+            'color': 'red',
             'data': goal_data
         }
         assists_series = {
             'name': 'Assists',
+            'color': 'blue',
             'data': assist_data
         }
         points_series = {
             'name': 'Points',
+            'color': 'purple',
             'data': point_data
         }
         stats_chart = {
@@ -194,58 +203,69 @@ class SkaterGameStatsByPlayerView(generic.ListView):
             'xAxis': {'title': {'text':'Game Date'}, 'categories':dates},
             'series': [goals_series, assists_series, points_series]
         }
+        return stats_chart
+    def time_chart_gen(self, p):
+        dataset = self.object_list.filter(player=p).order_by('game__date')
+        dates = list()
+        even_data = list()
+        power_data = list()
+        short_data = list()
+        for entry in dataset:
+            dates.append((Game.objects.values_list('date', flat=True).get(game_id=entry.game_id)).strftime("%m-%d-%Y"))
+            even_data.append(entry.etoi)
+            power_data.append(entry.pptoi)
+            short_data.append(entry.shtoi)
+        even_series = {
+            'name': 'ETOI',
+            'color': 'green',
+            'data': even_data
+        }
+        power_series = {
+            'name': 'PPTOI',
+            'color': 'red',
+            'data': power_data
+        }
+        short_series = {
+            'name': 'SHTOI',
+            'color': 'blue',
+            'data': short_data
+        }
+        time_chart = {
+            'chart': {'borderColor':'black', 'borderWidth':2},
+            'credits': {'enabled':False},
+            'title': {'text':'Player Time on Ice'},
+            'xAxis': {'title': {'text':'Game Date'}, 'categories':dates},
+            'series': [even_series, power_series, short_series]
+        }
+        return time_chart
+    def get(self, request, *args, **kwargs):
+        first = self.object_list.order_by('player').first().player
+        context = self.get_context_data(**kwargs)
+        stats_chart = self.points_chart_gen(first)
+        time_chart = self.time_chart_gen(first)
         context['stats_chart'] = json.dumps(stats_chart)
-        context['current_skater'] = first.player.name
+        context['time_chart'] = json.dumps(time_chart)
+        context['current_skater'] = first.name
         return render(request, self.template_name, context=context)
     def post(self, request, *args, **kwargs):
         try:
             p = request.POST.get('playerId')
-            self.object_list = SkaterGameStats.objects.filter(player=p)
+            stats_chart = self.points_chart_gen(p)
+            time_chart = self.time_chart_gen(p)
             context = self.get_context_data(**kwargs)
-            dataset = self.object_list.values().order_by('game__date')
-            dates = list()
-            goal_data = list()
-            assist_data = list()
-            point_data = list()
-            goals = 0
-            assists = 0
-            points = 0
-            for entry in dataset:
-                dates.append((Game.objects.values_list('date', flat=True).get(game_id=entry['game_id'])).strftime("%m-%d-%Y"))
-                goals += entry['goals']
-                assists += entry['assists']
-                points += entry['points']
-                goal_data.append(goals)
-                assist_data.append(assists)
-                point_data.append(points)
-            goals_series = {
-                'name': 'Goals',
-                'data': goal_data
-            }
-            assists_series = {
-                'name': 'Assists',
-                'data': assist_data
-            }
-            points_series = {
-                'name': 'Points',
-                'data': point_data
-            }
-            stats_chart = {
-                'chart': {'borderColor':'black', 'borderWidth':2},
-                'credits': {'enabled':False},
-                'title': {'text':'Player Points Progression'},
-                'xAxis': {'title': {'text':'Game Date'}, 'categories':dates},
-                'series': [goals_series, assists_series, points_series]
-            }
             context['stats_chart'] = json.dumps(stats_chart)
+            context['time_chart'] = json.dumps(time_chart)
             current = Player.objects.get(player_id=p)
             context['current_skater'] = current.name
             return render(request, self.template_name, context=context)
         except (Player.DoesNotExist, ValueError):
-            first = GoalieGameStats.objects.order_by('player').first()
-            self.object_list = SkaterGameStats.objects.filter(player=first.player)
+            first = self.object_list.order_by('player').first().player
             context = self.get_context_data(**kwargs)
-            context['current_skater'] = first.player.name
+            stats_chart = self.points_chart_gen(first)
+            time_chart = self.time_chart_gen(first)
+            context['stats_chart'] = json.dumps(stats_chart)
+            context['time_chart'] = json.dumps(time_chart)
+            context['current_skater'] = first.name
             context['error_message'] = "Please select a valid player."
             return render(request, self.template_name, context=context)
 

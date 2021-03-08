@@ -118,9 +118,23 @@
             </table>
         </div><br>
         <script src="https://code.highcharts.com/highcharts.js"></script>
-        <div id="container1"></div>
+        <ul class="nav nav-tabs">
+            <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#pointstab">Player Point Progression</a></li>
+            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#timetab">Player Time on Ice</a></li>
+        </ul>
+        <div class="tab-content">
+            <div id="pointstab" class="tab-pane active">
+                <div id="container1"></div>
                 <script>
                 Highcharts.chart('container1', {{ stats_chart|safe }});
                 </script>
+            </div>
+            <div id="timetab" class="tab-pane">
+                <div id="container2"></div>
+                <script>
+                Highcharts.chart('container2', {{ time_chart|safe }});
+                </script>
+            </div>
+        </div>
     </body>
 {% endblock content %}
