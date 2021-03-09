@@ -106,8 +106,113 @@ class SkaterStatsView(generic.ListView):
     template_name = 'stormstats/skaterstats.html'
     context_object_name = 'skaterstats'
     queryset = SkaterOverallStats.objects.order_by('player__name')
+    def goals_chart_gen(self):
+        dataset = self.queryset.order_by('goals')
+        goals_data = list()
+        for entry in dataset:
+            goals_data.append({'name':entry.player.name, 'data':[entry.goals]})
+        goals_chart = {
+            'chart': {'type':'column', 'borderColor':'black', 'borderWidth':2},
+            'credits': {'enabled':False},
+            'title': {'text': 'Goals Distribution'},
+            'xAxis': {'categories':['Goals']},
+            'yAxis': {'title': {'text':'Goals Percentage'}, 'stackLabels': {'enabled':True}},
+            'tooltip': {'headerFormat':'<b>{point.x}</b><br/>', 'pointFormat':'{series.name}: {point.y} ({point.percentage:.0f}%)'},
+            'plotOptions' : {'column': {'stacking':'percent'}},
+            'series' : goals_data
+        }
+        return goals_chart
+    def assists_chart_gen(self):
+        dataset = self.queryset.order_by('assists')
+        assists_data = list()
+        for entry in dataset:
+            assists_data.append({'name':entry.player.name, 'data':[entry.assists]})
+        assists_chart = {
+            'chart': {'type':'column', 'borderColor':'black', 'borderWidth':2},
+            'credits': {'enabled':False},
+            'title': {'text': 'Assists Distribution'},
+            'xAxis': {'categories':['Assists']},
+            'yAxis': {'title': {'text':'Assist Percentage'}, 'stackLabels': {'enabled':True}},
+            'tooltip': {'headerFormat':'<b>{point.x}</b><br/>', 'pointFormat':'{series.name}: {point.y} ({point.percentage:.0f}%)'},
+            'plotOptions' : {'column': {'stacking':'percent'}},
+            'series' : assists_data
+        }
+        return assists_chart
+    def points_chart_gen(self):
+        dataset = self.queryset.order_by('points')
+        points_data = list()
+        for entry in dataset:
+            points_data.append({'name':entry.player.name, 'data':[entry.points]})
+        points_chart = {
+            'chart': {'type':'column', 'borderColor':'black', 'borderWidth':2},
+            'credits': {'enabled':False},
+            'title': {'text': 'Points Distribution'},
+            'xAxis': {'categories':['Points']},
+            'yAxis': {'title': {'text':'Points Percentage'}, 'stackLabels': {'enabled':True}},
+            'tooltip': {'headerFormat':'<b>{point.x}</b><br/>', 'pointFormat':'{series.name}: {point.y} ({point.percentage:.0f}%)'},
+            'plotOptions' : {'column': {'stacking':'percent'}},
+            'series' : points_data
+        }
+        return points_chart
+    def pim_chart_gen(self):
+        dataset = self.queryset.order_by('pim')
+        pim_data = list()
+        for entry in dataset:
+            pim_data.append({'name':entry.player.name, 'data':[entry.pim]})
+        pim_chart = {
+            'chart': {'type':'column', 'borderColor':'black', 'borderWidth':2},
+            'credits': {'enabled':False},
+            'title': {'text': 'PIM Distribution'},
+            'xAxis': {'categories':['Penalty Minutes']},
+            'yAxis': {'title': {'text':'PIM Percentage'}, 'stackLabels': {'enabled':True}},
+            'tooltip': {'headerFormat':'<b>{point.x}</b><br/>', 'pointFormat':'{series.name}: {point.y} ({point.percentage:.0f}%)'},
+            'plotOptions' : {'column': {'stacking':'percent'}},
+            'series' : pim_data
+        }
+        return pim_chart
+    def plus_chart_gen(self):
+        dataset = self.queryset.order_by('plusmin')
+        plus_data = list()
+        for entry in dataset:
+            plus_data.append({'name':entry.player.name, 'data':[entry.plusmin]})
+        plus_chart = {
+            'chart': {'type':'column', 'borderColor':'black', 'borderWidth':2},
+            'credits': {'enabled':False},
+            'title': {'text': '+/- Distribution'},
+            'xAxis': {'categories':['Plus Minus']},
+            'yAxis': {'title': {'text':'Count'}, 'stackLabels': {'enabled':True}},
+            'tooltip': {'headerFormat':'<b>{point.x}</b><br/>', 'pointFormat':'{series.name}: {point.y}'},
+            'series' : plus_data
+        }
+        return plus_chart
+    def shot_chart_gen(self):
+        dataset = self.queryset
+        shot_data = list()
+        for entry in dataset:
+            shot_data.append({'name':entry.player.name, 'data':[[entry.shotpct, entry.shots]]})
+        shot_chart = {
+            'chart': {'type':'scatter', 'borderColor':'black', 'borderWidth':2},
+            'credits': {'enabled':False},
+            'title': {'text':'Shots vs. Shot Percentage'},
+            'xAxis': {'title': {'text':'Shot Percentage'}},
+            'yAxis': {'title': {'text':'Shots'}},
+            'series': shot_data
+        }
+        return shot_chart
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        goals_chart = self.goals_chart_gen()
+        context['goals_chart'] = json.dumps(goals_chart)
+        assists_chart = self.assists_chart_gen()
+        context['assists_chart'] = json.dumps(assists_chart)
+        points_chart = self.points_chart_gen()
+        context['points_chart'] = json.dumps(points_chart)
+        pim_chart = self.pim_chart_gen()
+        context['pim_chart'] = json.dumps(pim_chart)
+        plus_chart = self.plus_chart_gen()
+        context['plus_chart'] = json.dumps(plus_chart)
+        shot_chart = self.shot_chart_gen()
+        context['shot_chart'] = json.dumps(shot_chart)
         context['title'] = "StormStats - Skater Stats"
         context['skaterstats_activate'] = 'active'
         return context
@@ -206,15 +311,20 @@ class SkaterGameStatsByPlayerView(generic.ListView):
         return stats_chart
     def time_chart_gen(self, p):
         dataset = self.object_list.filter(player=p).order_by('game__date')
+        def time_to_seconds(time_string:str)-> int:
+            x = time_string.split(':')
+            minutes = int(x[0])
+            seconds = int(x[1])
+            return (60*minutes) + seconds
         dates = list()
         even_data = list()
         power_data = list()
         short_data = list()
         for entry in dataset:
             dates.append((Game.objects.values_list('date', flat=True).get(game_id=entry.game_id)).strftime("%m-%d-%Y"))
-            even_data.append(entry.etoi)
-            power_data.append(entry.pptoi)
-            short_data.append(entry.shtoi)
+            even_data.append(time_to_seconds(entry.etoi))
+            power_data.append(time_to_seconds(entry.pptoi))
+            short_data.append(time_to_seconds(entry.shtoi))
         even_series = {
             'name': 'ETOI',
             'color': 'green',
