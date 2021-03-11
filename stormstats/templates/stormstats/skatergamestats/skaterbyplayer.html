@@ -13,7 +13,7 @@
             {% csrf_token %}
             <select class="selectpicker" data-live-search="true" data-style="btn-danger" data-width="fit" name="playerId">
                 {% for player in players %}
-                <option value="{{ player.player.player_id }}">{{ player.player.name }}</option>
+                <option value="{{ player.player_id }}">{{ player.name }}</option>
                 {% endfor %} 
             </select>
             <input class="btn btn-dark" type="submit" value="Data Me">

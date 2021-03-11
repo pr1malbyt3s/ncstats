@@ -110,5 +110,10 @@
             </table>
         </div> 
         <br>
+        <script src="https://code.highcharts.com/highcharts.js"></script>
+        <div id="container1"></div>
+                <script>
+                Highcharts.chart('container1', {{ stack_chart|safe }});
+                </script>
     </body>
 {% endblock content %}

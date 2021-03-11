@@ -23,16 +23,16 @@ class AboutView(generic.TemplateView):
         return context
 
 class RosterView(generic.ListView):
+    model = Player
     template_name = 'stormstats/roster.html'
     context_object_name = 'players'
-    queryset = Player.objects.all()
-    dataset = queryset.values().order_by('name')
     def age_chart_gen(self):
+        dataset = self.model.objects.all().order_by('name')
         names = list()
         ages = list()
-        for entry in self.dataset:
-            names.append(entry['name'])
-            ages.append(entry['age'])
+        for entry in dataset:
+            names.append(entry.name)
+            ages.append(entry.age)
         ages_series = {
             'name': 'Ages',
             'data': ages,
@@ -49,29 +49,32 @@ class RosterView(generic.ListView):
         }
         return age_chart
     def hw_chart_gen(self):
+        dataset = self.model.objects.all().order_by('name')
         hw_data = list()
-        for entry in self.dataset:
-            hw_data.append({'name':entry['name'], 'data':[[entry['weight'], entry['height']]]})
+        for entry in dataset:
+            hw_data.append({'name':entry.name, 'data':[[entry.weight, entry.height]]})
         hw_chart = {
             'chart': {'type':'scatter', 'borderColor':'black', 'borderWidth':2},
             'credits': {'enabled':False},
             'title': {'text':'Roster Weight vs. Height'},
             'xAxis': {'title': {'text':'Height'}},
             'yAxis': {'title': {'text':'Weight'}},
+            'tooltip': {'pointFormat':'<b>{series.name}</b><br>Height: {point.x}, Weight: {point.y}'},
             'series': hw_data
         }
         return hw_chart
     def map_chart_gen(self):
+        dataset = self.model.objects.all().order_by('name')
         map_data = list()
         map_data.append({'name':'Birtplace Map', 'borderColor':'#A0A0A0', 'nullColor':'#ffffff', 'showInLegend':False})
-        for entry in self.dataset:
-            map_data.append({'type':'mappoint', 'name':entry['name'], 'data':[{'name':entry['birthplace'], 'lat':entry['bp_lat'], 'lon':entry['bp_long']}]})
+        for entry in dataset:
+            map_data.append({'type':'mappoint', 'name':entry.name, 'data':[{'name':entry.birthplace, 'lat':entry.bp_lat, 'lon':entry.bp_long}]})
         map_chart = {
             'chart': {'map':'custom/world', 'borderColor':'black', 'borderWidth':2},
             'credits': {'enabled':False},
             'title': {'text':'Player Birthplaces'},
             'mapNavigation': {'enabled':True},
-            'tooltip': {'headerFormat': '', 'pointFormat':'<b>{series.name}</b><br>Lat: {point.lat}, Lon: {point.lon}'},
+            'tooltip': {'pointFormat':'<b>{series.name}</b><br>Lat: {point.lat}, Lon: {point.lon}'},
             'series': map_data
         }
         return map_chart
@@ -79,33 +82,29 @@ class RosterView(generic.ListView):
         context = super().get_context_data(**kwargs)
         context['title'] = "StormStats - Roster"
         context['roster_activate'] = 'active'
-        age_chart = self.age_chart_gen()
-        context['age_chart'] = json.dumps(age_chart)
-        hw_chart = self.hw_chart_gen()
-        context['hw_chart'] = json.dumps(hw_chart)
-        map_chart = self.map_chart_gen()
-        context['map_chart'] = json.dumps(map_chart)
+        context['age_chart'] = json.dumps(self.age_chart_gen())
+        context['hw_chart'] = json.dumps(self.hw_chart_gen())
+        context['map_chart'] = json.dumps(self.map_chart_gen())
         return context
 
 class ScheduleView(generic.ListView):
+    model = Game
     template_name = 'stormstats/schedule.html'
     context_object_name = 'games'
-    def get_queryset(self):
-        queryset = {
-            'played_games': Game.objects.all().filter(played=True).order_by('date'),
-            'remaining_games': Game.objects.all().filter(played=False).order_by('date')
-        }
-        return queryset
+    played_games = model.objects.all().filter(played=True).order_by('date')
+    remaining_games = model.objects.all().filter(played=False).order_by('date')
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = "StormStats - Schedule"
         context['schedule_activate'] = 'active'
+        context['played_games'] = self.played_games
+        context['remaining_games'] = self.remaining_games
         return context
 
 class SkaterStatsView(generic.ListView):
     template_name = 'stormstats/skaterstats.html'
     context_object_name = 'skaterstats'
-    queryset = SkaterOverallStats.objects.order_by('player__name')
+    queryset = SkaterOverallStats.objects.all().order_by('player__name')
     def goals_chart_gen(self):
         dataset = self.queryset.order_by('goals')
         goals_data = list()
@@ -116,9 +115,9 @@ class SkaterStatsView(generic.ListView):
             'credits': {'enabled':False},
             'title': {'text': 'Goals Distribution'},
             'xAxis': {'categories':['Goals']},
-            'yAxis': {'title': {'text':'Goals Percentage'}, 'stackLabels': {'enabled':True}},
-            'tooltip': {'headerFormat':'<b>{point.x}</b><br/>', 'pointFormat':'{series.name}: {point.y} ({point.percentage:.0f}%)'},
-            'plotOptions' : {'column': {'stacking':'percent'}},
+            'yAxis': {'title': {'text':'Goals Percentage'}, 'stackLabels': {'enabled':True, 'overflow':'allow', 'crop':False}},
+            'tooltip': {'headerFormat':'', 'pointFormat':'{series.name}: {point.y} ({point.percentage:.0f}%)'},
+            'plotOptions' : {'series':{'dataLabels':{'enabled':True, 'format':'{series.name}: {point.y}'}}, 'column': {'stacking':'percent'}},
             'series' : goals_data
         }
         return goals_chart
@@ -132,9 +131,9 @@ class SkaterStatsView(generic.ListView):
             'credits': {'enabled':False},
             'title': {'text': 'Assists Distribution'},
             'xAxis': {'categories':['Assists']},
-            'yAxis': {'title': {'text':'Assist Percentage'}, 'stackLabels': {'enabled':True}},
-            'tooltip': {'headerFormat':'<b>{point.x}</b><br/>', 'pointFormat':'{series.name}: {point.y} ({point.percentage:.0f}%)'},
-            'plotOptions' : {'column': {'stacking':'percent'}},
+            'yAxis': {'title': {'text':'Assist Percentage'}, 'stackLabels': {'enabled':True, 'overflow':'allow', 'crop':False}},
+            'tooltip': {'headerFormat':'', 'pointFormat':'{series.name}: {point.y} ({point.percentage:.0f}%)'},
+            'plotOptions' : {'series':{'dataLabels':{'enabled':True, 'format':'{series.name}: {point.y}'}}, 'column': {'stacking':'percent'}},
             'series' : assists_data
         }
         return assists_chart
@@ -148,9 +147,9 @@ class SkaterStatsView(generic.ListView):
             'credits': {'enabled':False},
             'title': {'text': 'Points Distribution'},
             'xAxis': {'categories':['Points']},
-            'yAxis': {'title': {'text':'Points Percentage'}, 'stackLabels': {'enabled':True}},
-            'tooltip': {'headerFormat':'<b>{point.x}</b><br/>', 'pointFormat':'{series.name}: {point.y} ({point.percentage:.0f}%)'},
-            'plotOptions' : {'column': {'stacking':'percent'}},
+            'yAxis': {'title': {'text':'Point Percentage'}, 'stackLabels': {'enabled':True, 'overflow':'allow', 'crop':False}},
+            'tooltip': {'headerFormat':'', 'pointFormat':'{series.name}: {point.y} ({point.percentage:.0f}%)'},
+            'plotOptions' : {'series':{'dataLabels':{'enabled':True, 'format':'{series.name}: {point.y}'}}, 'column': {'stacking':'percent'}},
             'series' : points_data
         }
         return points_chart
@@ -164,9 +163,9 @@ class SkaterStatsView(generic.ListView):
             'credits': {'enabled':False},
             'title': {'text': 'PIM Distribution'},
             'xAxis': {'categories':['Penalty Minutes']},
-            'yAxis': {'title': {'text':'PIM Percentage'}, 'stackLabels': {'enabled':True}},
-            'tooltip': {'headerFormat':'<b>{point.x}</b><br/>', 'pointFormat':'{series.name}: {point.y} ({point.percentage:.0f}%)'},
-            'plotOptions' : {'column': {'stacking':'percent'}},
+            'yAxis': {'title': {'text':'PIM Percentage'}, 'stackLabels': {'enabled':True, 'overflow':'allow', 'crop':False}},
+            'tooltip': {'headerFormat':'', 'pointFormat':'{series.name}: {point.y} ({point.percentage:.0f}%)'},
+            'plotOptions' : {'series':{'dataLabels':{'enabled':True, 'format':'{series.name}: {point.y}'}}, 'column': {'stacking':'percent'}},
             'series' : pim_data
         }
         return pim_chart
@@ -180,8 +179,9 @@ class SkaterStatsView(generic.ListView):
             'credits': {'enabled':False},
             'title': {'text': '+/- Distribution'},
             'xAxis': {'categories':['Plus Minus']},
-            'yAxis': {'title': {'text':'Count'}, 'stackLabels': {'enabled':True}},
-            'tooltip': {'headerFormat':'<b>{point.x}</b><br/>', 'pointFormat':'{series.name}: {point.y}'},
+            'yAxis': {'title': {'text':'Rating'}},
+            'tooltip': {'headerFormat':'', 'pointFormat':'{series.name}: {point.y}'},
+            'plotOptions' : {'series':{'dataLabels':{'enabled':True, 'allowOverlap':True, 'backgroundColor':'black', 'color':'white', 'format':'{series.name}: {point.y}'}}},
             'series' : plus_data
         }
         return plus_chart
@@ -196,6 +196,8 @@ class SkaterStatsView(generic.ListView):
             'title': {'text':'Shots vs. Shot Percentage'},
             'xAxis': {'title': {'text':'Shot Percentage'}},
             'yAxis': {'title': {'text':'Shots'}},
+            'tooltip' : {'pointFormat':'Shots Taken: {point.y}</br>Shot%: {point.x}'},
+            'plotOptions' : {'series':{'dataLabels':{'enabled':True, 'allowOverlap':True, 'backgroundColor':'black', 'color':'white', 'format':'{series.name}: {point.x}%'}}},
             'series': shot_data
         }
         return shot_chart
@@ -231,43 +233,64 @@ class SkaterGameStatsByGameView(generic.ListView):
     model = SkaterGameStats
     template_name = 'stormstats/skatergamestats/skaterbygame.html'
     context_object_name = 'skatergamestats'
+    games = Game.objects.all().filter(played=True).order_by('-date')
+    def stack_chart_gen(self, g):
+        dataset = self.model.objects.all().filter(game=g).order_by('goals')
+        goals_data = list()
+        for entry in dataset:
+            goals_data.append({'name':entry.player.name, 'data':[entry.goals, entry.assists, entry.points]})
+        goals_chart = {
+            'chart': {'type':'column', 'borderColor':'black', 'borderWidth':2},
+            'credits': {'enabled':False},
+            'title': {'text': 'Game Points Distribution'},
+            'xAxis': {'categories':['Goals', 'Assists', 'Points']},
+            'yAxis': {'title': {'text':'Value Count'}, 'stackLabels': {'enabled':True}},
+            'plotOptions' : {'column': {'stacking':'normal'}},
+            #'tooltip': {'headerFormat':'<b>{point.x}</b><br/>', 'pointFormat':'{series.name}: {point.y}'},
+            'series' : goals_data
+        }
+        return goals_chart
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = "StormStats - Skater Game Stats - By Game"
         context['skatergamestats_activate'] = 'active'
-        context['games'] = Game.objects.filter(played=True)
+        context['games'] = self.games
         return context
     def get(self, request, *args, **kwargs):
-        recent = Game.objects.filter(played=True).latest('date')
-        self.object_list = SkaterGameStats.objects.filter(game=recent.game_id)
+        recent = self.games.latest('date')
+        self.object_list = self.model.objects.filter(game=recent.game_id)
         context = self.get_context_data(**kwargs)
         context['current_game'] = str(recent.date) + " - " + recent.opponent
+        context['stack_chart'] = json.dumps(self.stack_chart_gen(recent.game_id))
         return render(request, self.template_name, context=context)
     def post(self, request, *args, **kwargs):
         try:
             g = request.POST.get('gameId')
-            self.object_list = SkaterGameStats.objects.filter(game=g)
+            self.object_list = self.model.objects.filter(game=g)
+            recent = self.games.get(game_id=g)
             context = self.get_context_data(**kwargs)
-            recent = Game.objects.get(game_id=g)
             context['current_game'] = str(recent.date) + " - " + recent.opponent
+            context['stack_chart'] = json.dumps(self.stack_chart_gen(g))
             return render(request, self.template_name, context=context)
         except (Game.DoesNotExist, ValueError):
-            recent = Game.objects.filter(played=True).latest('date')
-            self.object_list = SkaterGameStats.objects.filter(game=recent.game_id)
+            recent = self.games.latest('date')
+            self.object_list = self.model.objects.filter(game=recent.game_id)
             context = self.get_context_data(**kwargs)
             context['current_game'] = str(recent.date) + " - " + recent.opponent
+            context['stack_chart'] = json.dumps(self.stack_chart_gen(recent.game_id))
             context['error_message'] = "Please select a valid game."
             return render(request, self.template_name, context=context)
         
 class SkaterGameStatsByPlayerView(generic.ListView):
+    model = SkaterGameStats
     template_name = 'stormstats/skatergamestats/skaterbyplayer.html'
     context_object_name = 'skatergamestats'
-    object_list = SkaterGameStats.objects.all()
+    players = Player.objects.all().filter(group__in=['Forward', 'Defenseman']).order_by('name')
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = "StormStats - Skater Game Stats - By Player"
         context['skatergamestats_activate'] = 'active'
-        context['players'] = SkaterGameStats.objects.all().distinct('player')
+        context['players'] = self.players
         return context
     def points_chart_gen(self, p):
         dataset = self.object_list.filter(player=p).order_by('game__date')
@@ -349,32 +372,29 @@ class SkaterGameStatsByPlayerView(generic.ListView):
         }
         return time_chart
     def get(self, request, *args, **kwargs):
-        first = self.object_list.order_by('player').first().player
+        first = self.players.first()
+        self.object_list = self.model.objects.filter(player=first.player_id)
         context = self.get_context_data(**kwargs)
-        stats_chart = self.points_chart_gen(first)
-        time_chart = self.time_chart_gen(first)
-        context['stats_chart'] = json.dumps(stats_chart)
-        context['time_chart'] = json.dumps(time_chart)
+        context['stats_chart'] = json.dumps(self.points_chart_gen(first))
+        context['time_chart'] = json.dumps(self.time_chart_gen(first))
         context['current_skater'] = first.name
         return render(request, self.template_name, context=context)
     def post(self, request, *args, **kwargs):
         try:
             p = request.POST.get('playerId')
-            stats_chart = self.points_chart_gen(p)
-            time_chart = self.time_chart_gen(p)
+            current = self.players.get(player_id=p)
+            self.object_list = self.model.objects.filter(player=p)
             context = self.get_context_data(**kwargs)
-            context['stats_chart'] = json.dumps(stats_chart)
-            context['time_chart'] = json.dumps(time_chart)
-            current = Player.objects.get(player_id=p)
+            context['stats_chart'] = json.dumps(self.points_chart_gen(p))
+            context['time_chart'] = json.dumps(self.time_chart_gen(p))
             context['current_skater'] = current.name
             return render(request, self.template_name, context=context)
         except (Player.DoesNotExist, ValueError):
-            first = self.object_list.order_by('player').first().player
+            first = self.players.first()
+            self.object_list = self.model.objects.filter(player=first.player_id)
             context = self.get_context_data(**kwargs)
-            stats_chart = self.points_chart_gen(first)
-            time_chart = self.time_chart_gen(first)
-            context['stats_chart'] = json.dumps(stats_chart)
-            context['time_chart'] = json.dumps(time_chart)
+            context['stats_chart'] = json.dumps(self.points_chart_gen(first))
+            context['time_chart'] = json.dumps(self.time_chart_gen(first))
             context['current_skater'] = first.name
             context['error_message'] = "Please select a valid player."
             return render(request, self.template_name, context=context)
@@ -383,29 +403,30 @@ class GoalieGameStatsByGameView(generic.ListView):
     model = GoalieGameStats
     template_name = 'stormstats/goaliegamestats/goaliebygame.html'
     context_object_name = 'goaliegamestats'
+    games = Game.objects.all().filter(played=True).order_by('-date')
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = "StormStats - Goalie Game Stats - By Game"
         context['goaliegamestats_activate'] = 'active'
-        context['games'] = Game.objects.filter(played=True)
+        context['games'] = self.games
         return context
     def get(self, request, *args, **kwargs):
-        recent = Game.objects.filter(played=True).latest('date')
-        self.object_list = GoalieGameStats.objects.filter(game=recent.game_id)
+        recent = self.games.latest('date')
+        self.object_list = self.model.objects.filter(game=recent.game_id)
         context = self.get_context_data(**kwargs)
         context['current_game'] = str(recent.date) + " - " + recent.opponent
         return render(request, self.template_name, context=context)
     def post(self, request, *args, **kwargs):
         try:
             g = request.POST.get('gameId')
-            self.object_list = GoalieGameStats.objects.filter(game=g)
+            self.object_list = self.model.objects.filter(game=g)
+            recent = self.games.get(game_id=g)
             context = self.get_context_data(**kwargs)
-            recent = Game.objects.get(game_id=g)
             context['current_game'] = str(recent.date) + " - " + recent.opponent
             return render(request, self.template_name, context=context)
         except (Game.DoesNotExist, ValueError):
-            recent = Game.objects.filter(played=True).latest('date')
-            self.object_list = GoalieGameStats.objects.filter(game=recent.game_id)
+            recent = self.games.latest('date')
+            self.object_list = self.model.objects.filter(game=recent.game_id)
             context = self.get_context_data(**kwargs)
             context['current_game'] = str(recent.date) + " - " + recent.opponent
             context['error_message'] = "Please select a valid game."
@@ -415,30 +436,31 @@ class GoalieGameStatsByPlayerView(generic.ListView):
     model = GoalieGameStats
     template_name = 'stormstats/goaliegamestats/goaliebyplayer.html'
     context_object_name = 'goaliegamestats'
+    players = Player.objects.all().filter(group='Goalie').order_by('name')
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = "StormStats - Goalie Game Stats - By Player"
         context['goaliegamestats_activate'] = 'active'
-        context['players'] = GoalieGameStats.objects.all().distinct('player')
+        context['players'] = self.players
         return context
     def get(self, request, *args, **kwargs):
-        first = GoalieGameStats.objects.order_by('player').first()
-        self.object_list = GoalieGameStats.objects.filter(player=first.player)
+        first = self.players.first()
+        self.object_list = self.model.objects.filter(player=first.player_id)
         context = self.get_context_data(**kwargs)
-        context['current_goalie'] = first.player.name
+        context['current_goalie'] = first.name
         return render(request, self.template_name, context=context)
     def post(self, request, *args, **kwargs):
         try:
             p = request.POST.get('playerId')
-            self.object_list = GoalieGameStats.objects.filter(player=p)
+            current = self.players.get(player_id=p)
+            self.object_list = self.model.objects.filter(player=p)
             context = self.get_context_data(**kwargs)
-            current = Player.objects.get(player_id=p)
             context['current_goalie'] = current.name
             return render(request, self.template_name, context=context)
         except (Player.DoesNotExist, ValueError):
-            first = GoalieGameStats.objects.order_by('player').first()
-            self.object_list = GoalieGameStats.objects.filter(player=first.player)
+            first = self.players.first()
+            self.object_list = self.model.objects.filter(player=first.player_id)
             context = self.get_context_data(**kwargs)
-            context['current_goalie'] = first.player.name
+            context['current_goalie'] = first.name
             context['error_message'] = "Please select a valid player."
             return render(request, self.template_name, context=context)

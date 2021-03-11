@@ -28,7 +28,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for game in games.played_games %}
+                    {% for game in played_games %}
                 <tr>
                     <td headers="D">{{ game.date }}</td>
                     <td headers="T">{{ game.time }}</td>
@@ -61,7 +61,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for game in games.remaining_games %}
+                    {% for game in remaining_games %}
                 <tr>
                     <td headers="D">{{ game.date }}</td>
                     <td headers="T">{{ game.time }}</td>
