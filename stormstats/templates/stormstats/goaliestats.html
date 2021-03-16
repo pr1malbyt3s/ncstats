@@ -22,7 +22,6 @@
                         <th id="GP">Games</th>
                         <th id="W">Wins</th>
                         <th id="L">Losses</th>
-                        <th id="T">Ties</th>
                         <th id="ST">Starts</th>
                         <th id="S">Saves</th>
                         <th id="SA">ShotsA</th>
@@ -39,7 +38,6 @@
                         <td headers="GP">{{ goaliestat.games }}</td>
                         <td headers="W">{{ goaliestat.wins }}</td>
                         <td headers="L">{{ goaliestat.losses }}</td>
-                        <td headers="T">{{ goaliestat.ties }}</td>
                         <td headers="ST">{{ goaliestat.started }}</td>
                         <td headers="S">{{ goaliestat.saves }}</td>
                         <td headers="SA">{{ goaliestat.shotsa }}</td>
@@ -98,5 +96,48 @@
                 </tbody>
             </table>
         </div>
+        <script src="https://code.highcharts.com/highcharts.js"></script>
+        <script src="https://code.highcharts.com/modules/exporting.js"></script>
+        <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+        <ul class="nav nav-tabs">
+            <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#wlttab">Results Breakdown</a></li>
+            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#gaatab">GAA vs. Save %</a></li>
+            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#savetab">Save Type Breakdown</a></li>
+            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#shottab">Shots Faced Type Breakdown</a></li>
+            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#svpcttab">Save Percentage Distribution</a></li>
+        </ul>
+        <div class="tab-content">
+            <div id="wlttab" class="tab-pane active">
+                <div id="container1"></div>
+                <script>
+                Highcharts.chart('container1', {{ wlt_chart|safe }});
+                </script>
+            </div>
+            <div id="gaatab" class="tab-pane">
+                <div id="container2"></div>
+                <script>
+                Highcharts.chart('container2', {{ gaa_chart|safe }});
+                </script>
+            </div>
+            <div id="savetab" class="tab-pane">
+                <div id="container3"></div>
+                <script>
+                Highcharts.chart('container3', {{ save_chart|safe }});
+                </script>
+            </div>
+            <div id="shottab" class="tab-pane">
+                <div id="container4"></div>
+                <script>
+                Highcharts.chart('container4', {{ shot_chart|safe }});
+                </script>
+            </div>
+            <div id="svpcttab" class="tab-pane">
+                <div id="container5"></div>
+                <script>
+                Highcharts.chart('container5', {{ svpct_chart|safe }});
+                </script>
+            </div>
+        </div>
+        
     </body>
 {% endblock content %}

@@ -93,6 +93,8 @@ class ScheduleView(generic.ListView):
     context_object_name = 'games'
     played_games = model.objects.all().filter(played=True).order_by('date')
     remaining_games = model.objects.all().filter(played=False).order_by('date')
+    def opp_month_chart_gen(self):
+        dataset = self.model.objects.all() 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = "StormStats - Schedule"
@@ -220,13 +222,118 @@ class SkaterStatsView(generic.ListView):
         return context
 
 class GoalieStatsView(generic.ListView):
+    model = GoalieOverallStats
     template_name = 'stormstats/goaliestats.html'
     context_object_name = 'goaliestats'
-    queryset = GoalieOverallStats.objects.order_by('player__name')
+    def wlt_chart_gen(self):
+        dataset = self.model.objects.all().order_by('player__name')
+        wlt_data = list()
+        for entry in dataset:
+            wlt_data.append([entry.player.name + ' Wins', entry.wins])
+            wlt_data.append([entry.player.name + ' Losses', entry.losses])
+        wlt_chart = {
+            'chart': {'borderColor':'black', 'borderWidth':2},
+            'credits': {'enabled':False},
+            'title': {'text': 'Goalie Results Breakdown'},
+            'plotOptions': {'pie': {'dataLabels':{'enabled':True, 'distance':-30}, 'startAngle':-90, 'endAngle':90, 'center':['50%', '75%'], 'size':'150%'}},
+            'tooltip' : {'headerFormat':'<b>{point.key}</b>', 'pointFormat':'</br>{point.y}'},
+            'series': [{'type':'pie', 'data':wlt_data}]
+        }
+        return wlt_chart
+    def gaa_chart_gen(self):
+        dataset = self.model.objects.all().order_by('player__name')
+        gaa_data = list()
+        for entry in dataset:
+            gaa_data.append({'name':entry.player.name, 'data':[[entry.svpct, entry.gaa]]})
+        gaa_chart = {
+            'chart': {'type':'scatter', 'borderColor':'black', 'borderWidth':2},
+            'credits': {'enabled':False},
+            'title': {'text':'GAA vs. Save Percentage'},
+            'xAxis': {'title': {'text':'Save Percentage'}},
+            'yAxis': {'title': {'text':'Goals Against Average'}},
+            'tooltip' : {'pointFormat':'GAA: {point.y}</br>Save%: {point.x}'},
+            'plotOptions' : {'series':{'dataLabels':{'enabled':True, 'allowOverlap':True, 'backgroundColor':'black', 'color':'white', 'format':'{series.name}: {point.x}%'}}},
+            'series': gaa_data
+        }
+        return gaa_chart
+    def save_chart_gen(self):
+        dataset = self.model.objects.all().order_by('player__name')
+        name_data = list()
+        save_data = list()
+        essave_data = list()
+        ppsave_data = list()
+        shsave_data = list()
+        for entry in dataset:
+            name_data.append(entry.player.name)
+            save_data.append(entry.saves)
+            essave_data.append(entry.essaves)
+            ppsave_data.append(entry.ppsaves)
+            shsave_data.append(entry.shsaves)
+        save_chart = {
+            'chart': {'type':'column', 'borderColor':'black', 'borderWidth':2},
+            'credits': {'enabled':False},
+            'title': {'text': 'Save Type Breakdown'},
+            'xAxis': {'categories':name_data},
+            'yAxis': {'title': {'text':'Save Count'}, 'stackLabels': {'enabled':True}},
+            #'tooltip': {'headerFormat':'<b>{point.x}</b><br/>', 'pointFormat':'{series.name}: {point.y}'},
+            'series' : [{'name':'Total Saves', 'data':save_data}, {'name':'Even Saves', 'data':essave_data}, {'name':'Power Play Saves', 'data': ppsave_data}, {'name':'Shorthanded Saves', 'data':shsave_data}]
+        }
+        return save_chart
+    def shot_chart_gen(self):
+        dataset = self.model.objects.all().order_by('player__name')
+        name_data = list()
+        shot_data = list()
+        esshot_data = list()
+        ppshot_data = list()
+        shshot_data = list()
+        for entry in dataset:
+            name_data.append(entry.player.name)
+            shot_data.append(entry.shotsa)
+            esshot_data.append(entry.esshots)
+            ppshot_data.append(entry.ppshots)
+            shshot_data.append(entry.shshots)
+        shot_chart = {
+            'chart': {'type':'column', 'borderColor':'black', 'borderWidth':2},
+            'credits': {'enabled':False},
+            'title': {'text': 'Shots Faced Type Breakdown'},
+            'xAxis': {'categories':name_data},
+            'yAxis': {'title': {'text':'Shot Count'}, 'stackLabels': {'enabled':True}},
+            #'tooltip': {'headerFormat':'<b>{point.x}</b><br/>', 'pointFormat':'{series.name}: {point.y}'},
+            'series' : [{'name':'Total Shots', 'data':shot_data}, {'name':'Even Shots', 'data':esshot_data}, {'name':'Power Play Shots', 'data': ppshot_data}, {'name':'Shorthanded Shots', 'data':shshot_data}]
+        }
+        return shot_chart
+    def svpct_chart_gen(self):
+        dataset = self.model.objects.all().order_by('player__name')
+        name_data = list()
+        svpct_data = list()
+        essvpct_data = list()
+        ppsvpct_data = list()
+        shsvpct_data = list()
+        for entry in dataset:
+            name_data.append(entry.player.name)
+            svpct_data.append(entry.svpct*100)
+            essvpct_data.append(entry.essvpct)
+            ppsvpct_data.append(entry.ppsvpct)
+            shsvpct_data.append(entry.shsvpct)
+        svpct_chart = {
+            'chart': {'type':'column', 'borderColor':'black', 'borderWidth':2},
+            'credits': {'enabled':False},
+            'title': {'text': 'Save Percentage Distribution'},
+            'xAxis': {'categories':name_data},
+            'yAxis': {'title': {'text':'Save Percentage'}, 'stackLabels': {'enabled':True}},
+            #'tooltip': {'headerFormat':'<b>{point.x}</b><br/>', 'pointFormat':'{series.name}: {point.y}'},
+            'series' : [{'name':'Overall Save Percentage', 'data':svpct_data}, {'name':'Even Save Percentage', 'data':essvpct_data}, {'name':'Power Play Save Percentage', 'data': ppsvpct_data}, {'name':'Shorthanded Save Percentage', 'data':shsvpct_data}]
+        }
+        return svpct_chart    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = "StormStats - Goalie Stats"
         context['goaliestats_activate'] = 'active'
+        context['wlt_chart'] = json.dumps(self.wlt_chart_gen())
+        context['gaa_chart'] = json.dumps(self.gaa_chart_gen())
+        context['save_chart'] = json.dumps(self.save_chart_gen())
+        context['shot_chart'] = json.dumps(self.shot_chart_gen())
+        context['svpct_chart'] = json.dumps(self.svpct_chart_gen())
         return context
 
 class SkaterGameStatsByGameView(generic.ListView):
