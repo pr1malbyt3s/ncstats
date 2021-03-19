@@ -4,73 +4,104 @@
 
 {% block content %}
 
-<script>
-    $(document).ready(function() {
-        $('#played-games').dataTable({
-            "columnDefs" : [{"type":"date", "targets":0}],
-            "order": [[0, "desc"]]
-        });
-    });
-</script>
+
 
     <h2>Schedule</h2>
     <body>
         Stormstats Schedule Page<br>
-        <div class="table-responsive">
-            <table class="table table-dark table-hover" id="played-games"><caption>Played Games</caption>
-                <thead>
-                    <tr>
-                        <th id="D">Date</th>
-                        <th id="T">Time</th>
-                        <th id="O">Opponent</th>
-                        <th id="L">Location</th>
-                        <th id="R">Result</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for game in played_games %}
-                <tr>
-                    <td headers="D">{{ game.date }}</td>
-                    <td headers="T">{{ game.time }}</td>
-                    <td headers="O">{{ game.opponent }}</td>
-                    <td headers="L">{{ game.location }}</td>
-                    <td headers="R">{{ game.result }}</td>
-                </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div><br>
 
         <script>
             $(document).ready(function() {
-                $('#remaining-games').dataTable({
-                    "columnDefs" : [{"type":"date", "targets":0}],
-                    "order": [[0, "asc"]]
+                $('#played-games').DataTable({
+                    responsive: true,
+                    scrollY: 400,
+                    scrollX: true,
+                    scrollCollapse: true,
+                    paging: false,
+                    fixedColumns: true,
+                    fixedHeader: true,
+                    info: false,
+                    oLanguage: {
+                        sSearch: "Search the Table: "
+                    },
+                    columnDefs: [{"type":"date", "targets":0}],
+                    order: [[0, "desc"]]
+                });
+
+                $('#remaining-games').DataTable({
+                    responsive: true,
+                    scrollY: 400,
+                    scrollX: true,
+                    scrollCollapse: true,
+                    paging: false,
+                    fixedColumns: true,
+                    fixedHeader: true,
+                    info: false,
+                    oLanguage: {
+                        sSearch: "Search the Table: "
+                    },
+                    columnDefs: [{"type":"date", "targets":0}],
+                    order: [[0, "asc"]]
+                });
+
+                $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                    $($.fn.dataTable.tables(true)).DataTable()
+                        .columns.adjust()
+                        .responsive.recalc();
                 });
             });
         </script>
-
-        <div class="table-responsive">
-            <table class="table table-dark table-hover" id="remaining-games"><caption>Remaining Games</caption>
-                <thead>
+        <ul class="nav nav-tabs">
+            <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#playedtab">Played Games</a></li>
+            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#remtab">Remaining Games</a></li>
+        </ul>
+        <div class="tab-content">
+            <div id="playedtab" class="tab-pane active">
+                <table id="played-games" class="table table-dark table-hover" cellspacing="0" width="100%"><caption>Played Games</caption>
+                    <thead>
+                        <tr>
+                            <th id="D">Date</th>
+                            <th id="T">Time</th>
+                            <th id="O">Opponent</th>
+                            <th id="L">Location</th>
+                            <th id="R">Result</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for game in played_games %}
                     <tr>
-                        <th id="D">Date</th>
-                        <th id="T">Time</th>
-                        <th id="O">Opponent</th>
-                        <th id="L">Location</th>
+                        <td headers="D">{{ game.date }}</td>
+                        <td headers="T">{{ game.time }}</td>
+                        <td headers="O">{{ game.opponent }}</td>
+                        <td headers="L">{{ game.location }}</td>
+                        <td headers="R">{{ game.result }}</td>
                     </tr>
-                </thead>
-                <tbody>
-                    {% for game in remaining_games %}
-                <tr>
-                    <td headers="D">{{ game.date }}</td>
-                    <td headers="T">{{ game.time }}</td>
-                    <td headers="O">{{ game.opponent }}</td>
-                    <td headers="L">{{ game.location }}</td>
-                </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div id="remtab" class="tab-pane">
+                <table id="remaining-games" class="table table-dark table-hover" cellspacing="0" width="100%"><caption>Remaining Games</caption>
+                    <thead>
+                        <tr>
+                            <th id="D">Date</th>
+                            <th id="T">Time</th>
+                            <th id="O">Opponent</th>
+                            <th id="L">Location</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for game in remaining_games %}
+                    <tr>
+                        <td headers="D">{{ game.date }}</td>
+                        <td headers="T">{{ game.time }}</td>
+                        <td headers="O">{{ game.opponent }}</td>
+                        <td headers="L">{{ game.location }}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </body>
 {% endblock content %}

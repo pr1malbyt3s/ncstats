@@ -18,101 +18,112 @@
             </select>
             <input class="btn btn-dark" type="submit" value="Data Me">
         </form><br>
-        <b>Showing data for {{ current_goalie }}</b><br>
-        
-        <script>
-            $(document).ready(function() {
-                $('#basic-goalie-stats').dataTable({
-                    "pageLength": 20,
-                    "columnDefs" : [{"type":"date", "targets":0}],
-                    "order": [[0, "desc"]]
-                });
-            });
-        </script>
-        
-        <div class="table-responsive">
-            <table class="table table-dark table-hover" id="basic-goalie-stats"><caption>Basic Stats</caption>
-                <thead>
-                    <tr>
-                        <th id="P">Game Date</th>
-                        <th id="O">Opponent</th>
-                        <th id="D">Decision</th>
-                        <th id="GA">GoalsA</th>
-                        <th id="SA">ShotsA</th>
-                        <th id="S">Saves</th>
-                        <th id="SP">SV%</th>
-                        <th id="TOI">TOI</th>
-                        <th id="PIM">PIM</th>
-                        <th id="G">Goals</th>
-                        <th id="A">Assists</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for goaliestat in goaliegamestats %}
-                <tr>
-                    <td headers="P">{{ goaliestat.game.date }}</td>
-                    <td headers="O">{{ goaliestat.game.opponent }}</td>
-                    <td headers="D">{{ goaliestat.wl }}</td>
-                    <td headers="GA">{{ goaliestat.goalsa }}</td>
-                    <td headers="SA">{{ goaliestat.shotsa }}</td>
-                    <td headers="S">{{ goaliestat.saves }}</td>
-                    <td headers="SP">{{ goaliestat.svpct }}</td>
-                    <td headers="TOI">{{ goaliestat.toi }}</td>
-                    <td headers="PIM">{{ goaliestat.pim }}</td>
-                    <td headers="G">{{ goaliestat.goals }}</td>
-                    <td headers="A">{{ goaliestat.assists }}</td>
-                </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div><br>
+        <b>Showing data for {{ current_goalie }}</b></br>
+
+        <ul class="nav nav-tabs">
+            <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#basictab">Basic Goalie Stats</a></li>
+            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#exptab">Expanded Goalie Stats</a></li>
+        </ul>
 
         <script>
             $(document).ready(function() {
-                $('#expanded-goalie-stats').dataTable({
-                    "pageLength": 20,
-                    "columnDefs" : [{"type":"date", "targets":0}],
-                    "order": [[0, "desc"]]
+                $('table.table').DataTable({
+                    responsive: true,
+                    scrollY: 400,
+                    scrollX: true,
+                    scrollCollapse: true,
+                    paging: false,
+                    fixedColumns: true,
+                    fixedHeader: true,
+                    info: false,
+                    oLanguage: {
+                        sSearch: "Search the Table: "
+                    },
+                    columnDefs: [{"type":"date", "targets":0}],
+                    order: [[0, "desc"]]
+                });
+
+                $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                    $($.fn.dataTable.tables(true)).DataTable()
+                        .columns.adjust()
+                        .responsive.recalc();
                 });
             });
         </script>
 
-        <div class="table-responsive">
-            <table class="table table-dark table-hover" id="expanded-goalie-stats"><caption>Expanded Stats</caption>
-                <thead>
-                    <tr>
-                        <th id="P">Game Date</th>
-                        <th id="O">Opponent</th>
-                        <th id="ESSV">ES Saves</th>
-                        <th id="PPSV">PP Saves</th>
-                        <th id="SHSV">SH Saves</th>
-                        <th id="ESS">ES Shots</th>
-                        <th id="PPS">PP Shots</th>
-                        <th id="SHS">SH Shots</th>
-                        <th id="ESP">ES SV%</th>
-                        <th id="PPP">PP SV%</th>
-                        <th id="SHP">SH SV%</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for goaliestat in goaliegamestats %}
+        <div class="tab-content">
+            <div id="basictab" class="tab-pane active">
+                <table id="basic-goalie-stats" class="table table-dark table-hover" cellspacing="0" width="100%"><caption>Basic Stats</caption>
+                    <thead>
+                        <tr>
+                            <th id="P">Game Date</th>
+                            <th id="O">Opponent</th>
+                            <th id="D">Decision</th>
+                            <th id="GA">GoalsA</th>
+                            <th id="SA">ShotsA</th>
+                            <th id="S">Saves</th>
+                            <th id="SP">SV%</th>
+                            <th id="TOI">TOI</th>
+                            <th id="PIM">PIM</th>
+                            <th id="G">Goals</th>
+                            <th id="A">Assists</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for goaliestat in goaliegamestats %}
                     <tr>
                         <td headers="P">{{ goaliestat.game.date }}</td>
                         <td headers="O">{{ goaliestat.game.opponent }}</td>
-                        <td headers="ESSV">{{ goaliestat.essaves }}</td>
-                        <td headers="PPSV">{{ goaliestat.ppsaves }}</td>
-                        <td headers="SHSV">{{ goaliestat.shsaves }}</td>
-                        <td headers="ESS">{{ goaliestat.esshots }}</td>
-                        <td headers="PPS">{{ goaliestat.ppshots }}</td>
-                        <td headers="SHS">{{ goaliestat.shshots }}</td>
-                        <td headers="ESP">{{ goaliestat.essvpct }}</td>
-                        <td headers="PPP">{{ goaliestat.ppsvpct }}</td>
-                        <td headers="SHP">{{ goaliestat.shsvpct }}</td>
+                        <td headers="D">{{ goaliestat.wl }}</td>
+                        <td headers="GA">{{ goaliestat.goalsa }}</td>
+                        <td headers="SA">{{ goaliestat.shotsa }}</td>
+                        <td headers="S">{{ goaliestat.saves }}</td>
+                        <td headers="SP">{{ goaliestat.svpct }}</td>
+                        <td headers="TOI">{{ goaliestat.toi }}</td>
+                        <td headers="PIM">{{ goaliestat.pim }}</td>
+                        <td headers="G">{{ goaliestat.goals }}</td>
+                        <td headers="A">{{ goaliestat.assists }}</td>
                     </tr>
                     {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        <br>
+                    </tbody>
+                </table>
+            </div>
+            <div id="exptab" class="tab-pane">
+                <table id="expanded-goalie-stats" class="table table-dark table-hover" cellspacing="0" width="100%"><caption>Expanded Stats</caption>
+                    <thead>
+                        <tr>
+                            <th id="P">Game Date</th>
+                            <th id="O">Opponent</th>
+                            <th id="ESSV">ES Saves</th>
+                            <th id="PPSV">PP Saves</th>
+                            <th id="SHSV">SH Saves</th>
+                            <th id="ESS">ES Shots</th>
+                            <th id="PPS">PP Shots</th>
+                            <th id="SHS">SH Shots</th>
+                            <th id="ESP">ES SV%</th>
+                            <th id="PPP">PP SV%</th>
+                            <th id="SHP">SH SV%</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for goaliestat in goaliegamestats %}
+                        <tr>
+                            <td headers="P">{{ goaliestat.game.date }}</td>
+                            <td headers="O">{{ goaliestat.game.opponent }}</td>
+                            <td headers="ESSV">{{ goaliestat.essaves }}</td>
+                            <td headers="PPSV">{{ goaliestat.ppsaves }}</td>
+                            <td headers="SHSV">{{ goaliestat.shsaves }}</td>
+                            <td headers="ESS">{{ goaliestat.esshots }}</td>
+                            <td headers="PPS">{{ goaliestat.ppshots }}</td>
+                            <td headers="SHS">{{ goaliestat.shshots }}</td>
+                            <td headers="ESP">{{ goaliestat.essvpct }}</td>
+                            <td headers="PPP">{{ goaliestat.ppsvpct }}</td>
+                            <td headers="SHP">{{ goaliestat.shsvpct }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div></br>
     </body>
 {% endblock content %}
