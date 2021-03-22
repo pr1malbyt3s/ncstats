@@ -93,14 +93,59 @@ class ScheduleView(generic.ListView):
     context_object_name = 'games'
     played_games = model.objects.all().filter(played=True).order_by('date')
     remaining_games = model.objects.all().filter(played=False).order_by('date')
-    def opp_month_chart_gen(self):
-        dataset = self.model.objects.all() 
+    def month_chart_gen(self):
+        dataset = self.model.objects.all()
+        months = list(dataset.dates('date', 'month'))
+        opponents = list(dataset.order_by('opponent').values_list('opponent', flat=True).distinct())
+        months_list = list()
+        count_list =  list()
+        for opponent in opponents:
+            for month in months:
+                x = dataset.filter(date__month=month.month, opponent=opponent).count()
+                count_list.append([opponents.index(opponent), months.index(month), x])
+        for month in months:
+            months_list.append(month.strftime("%B"))
+        max_count = max(item[2] for item in count_list)
+        month_chart = {
+            'chart': {'type':'heatmap', 'borderColor':'black', 'borderWidth':2},
+            'credits': {'enabled':False},
+            'title': {'text':'Opponents Faced by Month'},
+            'xAxis': {'categories':opponents},
+            'colorAxis': {'min':0, 'max':max_count, 'minColor':'#ffffff', 'maxColor':'#ff0000'},
+            'yAxis': {'categories':months_list, 'title':None, 'reversed':True},
+            'tooltip': {'headerFormat':'', 'pointFormat':'{point.value} Games Played'},
+            'series': [{'name':'Test', 'borderColor':'black', 'borderWidth':1, 'data':count_list, 'dataLabels': {'enabled':True}}]
+        }
+        return month_chart
+    def results_chart_gen(self):
+        dataset = self.model.objects.all()
+        opponents = list(dataset.order_by('opponent').values_list('opponent', flat=True).distinct())
+        results = ['W', 'L']
+        count_list =  list()
+        for opponent in opponents:
+            for r in results:
+                x = dataset.filter(played=True, result__startswith=r, opponent=opponent).count()
+                count_list.append([opponents.index(opponent), results.index(r), x])
+        max_count = max(item[2] for item in count_list)
+        results_chart = {
+            'chart': {'type':'heatmap', 'borderColor':'black', 'borderWidth':2},
+            'credits': {'enabled':False},
+            'title': {'text':'Results by Opponent'},
+            'xAxis': {'categories':opponents},
+            'colorAxis': {'min':0, 'max':max_count, 'minColor':'#ffffff', 'maxColor':'#ff0000'},
+            'yAxis': {'categories':results, 'title':None, 'reversed':True},
+            'tooltip': {'headerFormat':'', 'pointFormat':'{point.value} Games'},
+            'series': [{'name':'Test', 'borderColor':'black', 'borderWidth':1, 'data':count_list, 'dataLabels': {'enabled':True}}]
+        }
+        return results_chart
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = "StormStats - Schedule"
         context['schedule_activate'] = 'active'
         context['played_games'] = self.played_games
         context['remaining_games'] = self.remaining_games
+        context['month_chart'] = json.dumps(self.month_chart_gen())
+        context['results_chart'] = json.dumps(self.results_chart_gen())
         return context
 
 class SkaterStatsView(generic.ListView):
@@ -115,7 +160,7 @@ class SkaterStatsView(generic.ListView):
         goals_chart = {
             'chart': {'type':'column', 'borderColor':'black', 'borderWidth':2},
             'credits': {'enabled':False},
-            'title': {'text': 'Goals Distribution'},
+            'title': {'text':'Goals Distribution'},
             'xAxis': {'categories':['Goals']},
             'yAxis': {'title': {'text':'Goals Percentage'}, 'stackLabels': {'enabled':True, 'format':'Total Goals: {total}', 'overflow':'allow', 'crop':False}},
             'tooltip': {'headerFormat':'', 'pointFormat':'{series.name}: {point.y} ({point.percentage:.0f}%)'},
@@ -488,6 +533,7 @@ class SkaterGameStatsByPlayerView(generic.ListView):
             'credits': {'enabled':False},
             'title': {'text':'Player Points Progression'},
             'xAxis': {'title': {'text':'Game Date'}, 'categories':dates},
+            'yAxis': {'title': {'text': 'Point Count'}},
             'series': [goals_series, assists_series, points_series]
         }
         return stats_chart
@@ -527,6 +573,7 @@ class SkaterGameStatsByPlayerView(generic.ListView):
             'credits': {'enabled':False},
             'title': {'text':'Player Time on Ice'},
             'xAxis': {'title': {'text':'Game Date'}, 'categories':dates},
+            'yAxis': {'title': {'text':'Time on Ice(s)'}},
             'series': [even_series, power_series, short_series]
         }
         return time_chart
@@ -549,9 +596,36 @@ class SkaterGameStatsByPlayerView(generic.ListView):
             'credits': {'enabled':False},
             'title': {'text':'Player Plus/Minus Progression'},
             'xAxis': {'title': {'text':'Game Date'}, 'categories':dates},
+            'yAxis': {'title': {'text':'Rating'}},
             'series': [pm_series]
         }
         return plus_chart
+    def pointsopp_chart_gen(self, p):
+        dataset = self.model.objects.all().filter(player=p).order_by('game__date')
+        opponents = list(dataset.order_by('game__opponent').values_list('game__opponent', flat=True).distinct())
+        points_data = list()
+        for opponent in opponents:
+            points = 0
+            for entry in dataset:
+                if (entry.game.opponent == opponent):
+                    points += entry.points
+            points_data.append(points)
+        points_series = {
+            'name':'Player Points',
+            'data':points_data
+        }
+        pointsopp_chart = {
+            'chart': {'type':'column', 'borderColor':'black', 'borderWidth':2},
+            'credits': {'enabled':False},
+            'title': {'text': 'Points Per Opponent'},
+            'colorAxis': {'minColor':'#ffff00', 'maxColor':'#ff0000'},
+            'xAxis': {'title': {'text':'Opponent'}, 'categories':opponents},
+            'yAxis': {'title': {'text':'Points Per Opponent'}, 'stackLabels': {'enabled':True}},
+            'tooltip': {'headerFormat':'', 'pointFormat':'{series.name}: {point.y}'},
+            'plotOptions' : {'series':{'dataLabels':{'enabled':True}}},
+            'series' : [points_series]
+        }
+        return pointsopp_chart
     def get(self, request, *args, **kwargs):
         first = self.players.first()
         self.object_list = self.model.objects.filter(player=first.player_id)
@@ -559,6 +633,7 @@ class SkaterGameStatsByPlayerView(generic.ListView):
         context['stats_chart'] = json.dumps(self.points_chart_gen(first))
         context['time_chart'] = json.dumps(self.time_chart_gen(first))
         context['plus_chart'] = json.dumps(self.plus_chart_gen(first))
+        context['pointsopp_chart'] = json.dumps(self.pointsopp_chart_gen(first))
         context['current_skater'] = first.name
         return render(request, self.template_name, context=context)
     def post(self, request, *args, **kwargs):
@@ -570,6 +645,7 @@ class SkaterGameStatsByPlayerView(generic.ListView):
             context['stats_chart'] = json.dumps(self.points_chart_gen(p))
             context['time_chart'] = json.dumps(self.time_chart_gen(p))
             context['plus_chart'] = json.dumps(self.plus_chart_gen(p))
+            context['pointsopp_chart'] = json.dumps(self.pointsopp_chart_gen(p))
             context['current_skater'] = current.name
             return render(request, self.template_name, context=context)
         except (Player.DoesNotExist, ValueError):
@@ -579,6 +655,7 @@ class SkaterGameStatsByPlayerView(generic.ListView):
             context['stats_chart'] = json.dumps(self.points_chart_gen(first))
             context['time_chart'] = json.dumps(self.time_chart_gen(first))
             context['plus_chart'] = json.dumps(self.plus_chart_gen(first))
+            context['pointsopp_chart'] = json.dumps(self.pointsopp_chart_gen(first))
             context['current_skater'] = first.name
             context['error_message'] = "Please select a valid player."
             return render(request, self.template_name, context=context)
@@ -608,9 +685,9 @@ class GoalieGameStatsByGameView(generic.ListView):
         save_chart = {
             'chart': {'type':'column', 'borderColor':'black', 'borderWidth':2},
             'credits': {'enabled':False},
-            'title': {'text': 'Save Type Breakdown'},
+            'title': {'text': 'Save/Shot Type Breakdown'},
             'xAxis': {'categories':name_data},
-            'yAxis': {'title': {'text':'Save Count'}, 'stackLabels': {'enabled':True, 'format':'Total {stack}: {total}', 'overflow':'allow', 'crop':False}},
+            'yAxis': {'title': {'text':'Save/Shot Count'}, 'stackLabels': {'enabled':True, 'format':'Total {stack}: {total}', 'overflow':'allow', 'crop':False}},
             'tooltip': {'headerFormat':'<b>{point.x}</b><br/>', 'pointFormat':'{series.name}: {point.y}'},
             'plotOptions' : {'series':{'dataLabels':{'enabled':True, 'format':'{series.name}: {point.y}'}}, 'column': {'stacking':'normal'}},
             'series' : [{
@@ -628,6 +705,30 @@ class GoalieGameStatsByGameView(generic.ListView):
             }]
         }
         return save_chart
+    def svpct_chart_gen(self, g):
+        dataset = self.model.objects.all().filter(game=g)
+        name_data = list()
+        svpct_data = list()
+        essvpct_data = list()
+        ppsvpct_data = list()
+        shsvpct_data = list()
+        for entry in dataset:
+            name_data.append(entry.player.name)
+            svpct_data.append(entry.svpct)
+            essvpct_data.append(entry.essvpct)
+            ppsvpct_data.append(entry.ppsvpct)
+            shsvpct_data.append(entry.shsvpct)
+        svpct_chart = {
+            'chart': {'type':'column', 'borderColor':'black', 'borderWidth':2},
+            'credits': {'enabled':False},
+            'title': {'text': 'Save Percentage Distribution'},
+            'xAxis': {'categories':name_data},
+            'yAxis': {'title': {'text':'Save Percentage'}, 'stackLabels': {'enabled':True}},
+            'tooltip': {'headerFormat':'<b>{point.x}</b><br/>', 'pointFormat':'{series.name}: {point.y}'},
+            'plotOptions' : {'series':{'dataLabels':{'enabled':True, 'allowOverlap':True, 'backgroundColor':'black', 'color':'white', 'format':'{series.name}: {point.y}'}}},
+            'series' : [{'name':'Overall Save Percentage', 'data':svpct_data}, {'name':'Even Save Percentage', 'data':essvpct_data}, {'name':'Power Play Save Percentage', 'data': ppsvpct_data}, {'name':'Shorthanded Save Percentage', 'data':shsvpct_data}]
+        }
+        return svpct_chart  
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = "StormStats - Goalie Game Stats - By Game"
@@ -640,6 +741,7 @@ class GoalieGameStatsByGameView(generic.ListView):
         context = self.get_context_data(**kwargs)
         context['current_game'] = str(recent.date) + " - " + recent.opponent
         context['save_chart'] = json.dumps(self.save_chart_gen(recent.game_id))
+        context['svpct_chart'] = json.dumps(self.svpct_chart_gen(recent.game_id))
         return render(request, self.template_name, context=context)
     def post(self, request, *args, **kwargs):
         try:
@@ -649,6 +751,7 @@ class GoalieGameStatsByGameView(generic.ListView):
             context = self.get_context_data(**kwargs)
             context['current_game'] = str(recent.date) + " - " + recent.opponent
             context['save_chart'] = json.dumps(self.save_chart_gen(g))
+            context['svpct_chart'] = json.dumps(self.svpct_chart_gen(recent.game_id))
             return render(request, self.template_name, context=context)
         except (Game.DoesNotExist, ValueError):
             recent = self.games.latest('date')
@@ -656,6 +759,7 @@ class GoalieGameStatsByGameView(generic.ListView):
             context = self.get_context_data(**kwargs)
             context['current_game'] = str(recent.date) + " - " + recent.opponent
             context['save_chart'] = json.dumps(self.save_chart_gen(recent.game_id))
+            context['svpct_chart'] = json.dumps(self.svpct_chart_gen(recent.game_id))
             context['error_message'] = "Please select a valid game."
             return render(request, self.template_name, context=context)
 
@@ -670,11 +774,261 @@ class GoalieGameStatsByPlayerView(generic.ListView):
         context['goaliegamestats_activate'] = 'active'
         context['players'] = self.players
         return context
+    def save_chart_gen(self, p):
+        dataset = self.model.objects.all().filter(player=p).order_by('game__date')
+        dates = list()
+        save_data = list()
+        essave_data = list()
+        ppsave_data = list()
+        shsave_data = list()
+        for entry in dataset:
+            dates.append((Game.objects.values_list('date', flat=True).get(game_id=entry.game_id)).strftime("%m-%d-%Y"))
+            save_data.append(entry.saves)
+            essave_data.append(entry.essaves)
+            ppsave_data.append(entry.ppsaves)
+            shsave_data.append(entry.shsaves)
+        save_series = {
+            'name': 'Total Saves',
+            'color': 'purple',
+            'data': save_data
+        }
+        essave_series = {
+            'name': 'Even Saves',
+            'color': 'blue',
+            'data': essave_data
+        }
+        ppsave_series = {
+            'name': 'PP Saves',
+            'color': 'red',
+            'data': ppsave_data
+        }
+        shsave_series = {
+            'name': 'SH Saves',
+            'color': 'green',
+            'data': shsave_data
+        }
+        save_chart = {
+            'chart': {'borderColor':'black', 'borderWidth':2},
+            'credits': {'enabled':False},
+            'title': {'text':'Saves Per Game'},
+            'xAxis': {'title': {'text':'Game Date'}, 'categories':dates},
+            'yAxis': {'title': {'text':'Save Count'}},
+            'series': [save_series, essave_series, ppsave_series, shsave_series]
+        }
+        return save_chart
+    def shot_chart_gen(self, p):
+        dataset = self.model.objects.all().filter(player=p).order_by('game__date')
+        dates = list()
+        shot_data = list()
+        esshot_data = list()
+        ppshot_data = list()
+        shshot_data = list()
+        for entry in dataset:
+            dates.append((Game.objects.values_list('date', flat=True).get(game_id=entry.game_id)).strftime("%m-%d-%Y"))
+            shot_data.append(entry.shotsa)
+            esshot_data.append(entry.esshots)
+            ppshot_data.append(entry.ppshots)
+            shshot_data.append(entry.shshots)
+        shot_series = {
+            'name': 'Total Shots Against',
+            'color': 'purple',
+            'data': shot_data
+        }
+        esshot_series = {
+            'name': 'Even Shots Against',
+            'color': 'blue',
+            'data': esshot_data
+        }
+        ppshot_series = {
+            'name': 'PP Shots Against',
+            'color': 'red',
+            'data': ppshot_data
+        }
+        shshot_series = {
+            'name': 'SH Shots Against',
+            'color': 'green',
+            'data': shshot_data
+        }
+        shot_chart = {
+            'chart': {'borderColor':'black', 'borderWidth':2},
+            'credits': {'enabled':False},
+            'title': {'text':'Shots Against Per Game'},
+            'xAxis': {'title': {'text':'Game Date'}, 'categories':dates},
+            'yAxis': {'title': {'text':'Shot Count'}},
+            'series': [shot_series, esshot_series, ppshot_series, shshot_series]
+        }
+        return shot_chart
+    def svpct_chart_gen(self, p):
+        dataset = self.model.objects.all().filter(player=p).order_by('game__date')
+        dates = list()
+        svpct_data = list()
+        essvpct_data = list()
+        ppsvpct_data = list()
+        shsvpct_data = list()
+        for entry in dataset:
+            dates.append((Game.objects.values_list('date', flat=True).get(game_id=entry.game_id)).strftime("%m-%d-%Y"))
+            svpct_data.append(entry.svpct)
+            essvpct_data.append(entry.essvpct)
+            ppsvpct_data.append(entry.ppsvpct)
+            shsvpct_data.append(entry.shsvpct)
+        svpct_series = {
+            'name': 'Total Save %',
+            'color': 'purple',
+            'data': svpct_data
+        }
+        essvpct_series = {
+            'name': 'Even Save %',
+            'color': 'blue',
+            'data': essvpct_data
+        }
+        ppsvpct_series = {
+            'name': 'PP Save %',
+            'color': 'red',
+            'data': ppsvpct_data
+        }
+        shsvpct_series = {
+            'name': 'SH Save %',
+            'color': 'green',
+            'data': shsvpct_data
+        }
+        svpct_chart = {
+            'chart': {'borderColor':'black', 'borderWidth':2},
+            'credits': {'enabled':False},
+            'title': {'text':'Save Percentage Per Game'},
+            'xAxis': {'title': {'text':'Game Date'}, 'categories':dates},
+            'yAxis': {'title': {'text':'Save Percentage'}},
+            'series': [svpct_series, essvpct_series, ppsvpct_series, shsvpct_series]
+        }
+        return svpct_chart
+    def goal_chart_gen(self, p):
+        dataset = self.model.objects.all().filter(player=p).order_by('game__date')
+        dates = list()
+        goal_data = list()
+        shot_data = list()
+        goalsA = 0
+        shotsA = 0
+        for entry in dataset:
+            dates.append((Game.objects.values_list('date', flat=True).get(game_id=entry.game_id)).strftime("%m-%d-%Y"))
+            goalsA += entry.goalsa
+            shotsA += entry.shotsa
+            goal_data.append(goalsA)
+            shot_data.append(shotsA)
+        goal_series = {
+            'name': 'Goals Against',
+            'color': '#0000ff',
+            'fillOpacity': 0.75,
+            'data': goal_data
+        }
+        shot_series = {
+            'name': 'Shots Against',
+            'color': '#ff0000',
+            'fillOpacity': 0.5,
+            'data': shot_data
+        }
+        goal_chart = {
+            'chart': {'type':'area', 'borderColor':'black', 'borderWidth':2},
+            'credits': {'enabled':False},
+            'title': {'text':'Shots vs. Goals Progression'},
+            'xAxis': {'title': {'text':'Game Date'}, 'categories':dates},
+            'yAxis': {'title': {'text':'Shot/Goal Count'}},
+            'plotOptions': {'area': {'marker': {'enabled':False, 'symbol':'circle', 'radius':2, 'states': {'hover': {'enabled':True}}}}},
+            'series': [goal_series, shot_series]
+        }
+        return goal_chart
+    def results_chart_gen(self, p):
+        dataset = self.model.objects.all().filter(player=p).order_by('game__date')
+        opponents = list(dataset.order_by('game__opponent').values_list('game__opponent', flat=True).distinct())
+        results = ['W', 'L']
+        count_list =  list()
+        for opponent in opponents:
+            for r in results:
+                x = dataset.filter(wl=r, game__opponent=opponent).count()
+                count_list.append([opponents.index(opponent), results.index(r), x])
+        max_count = max(item[2] for item in count_list)
+        results_chart = {
+            'chart': {'type':'heatmap', 'borderColor':'black', 'borderWidth':2},
+            'credits': {'enabled':False},
+            'title': {'text':'Goalie Decision by Opponent'},
+            'xAxis': {'categories':opponents},
+            'colorAxis': {'min':0, 'max':max_count, 'minColor':'#ffffff', 'maxColor':'#ff0000'},
+            'yAxis': {'categories':results, 'title':None, 'reversed':True},
+            'tooltip': {'headerFormat':'', 'pointFormat':'{point.value} Games'},
+            'series': [{'name':'Test', 'borderColor':'black', 'borderWidth':1, 'data':count_list, 'dataLabels': {'enabled':True}}]
+        }
+        return results_chart
+    def svpctopp_chart_gen(self, p):
+        dataset = self.model.objects.all().filter(player=p).order_by('game__date')
+        opponents = list(dataset.order_by('game__opponent').values_list('game__opponent', flat=True).distinct())
+        svpct_data = list()
+        for opponent in opponents:
+            shotsA = 0
+            saves = 0
+            for entry in dataset:
+                if (entry.game.opponent == opponent):
+                    shotsA += entry.shotsa
+                    saves += entry.saves
+            try:
+                svpct = (saves/shotsA)
+            except ZeroDivisionError:
+                svpct = 0
+            svpct_data.append(float('{0:.3}'.format(svpct)))
+        svpctopp_series = {
+            'name':'Goalie Save%',
+            'data':svpct_data
+        }
+        svpctopp_chart = {
+            'chart': {'type':'column', 'borderColor':'black', 'borderWidth':2},
+            'credits': {'enabled':False},
+            'title': {'text': 'Save Percentage Per Opponent'},
+            'colorAxis': {'minColor':'#ffff00', 'maxColor':'#ff0000'},
+            'xAxis' : {'title': {'text':'Opponent'}, 'categories':opponents},
+            'yAxis': {'title': {'text':'GAA'}, 'stackLabels': {'enabled':True}},
+            'tooltip': {'headerFormat':'', 'pointFormat':'{series.name}: {point.y}'},
+            'plotOptions' : {'series':{'dataLabels':{'enabled':True}}},
+            'series' : [svpctopp_series]
+        }
+        return svpctopp_chart
+    def gaaopp_chart_gen(self, p):
+        dataset = self.model.objects.all().filter(player=p).order_by('game__date')
+        opponents = list(dataset.order_by('game__opponent').values_list('game__opponent', flat=True).distinct())
+        gaa_data = list()
+        for opponent in opponents:
+            games = 0
+            goalsA = 0
+            for entry in dataset:
+                if (entry.game.opponent == opponent):
+                    goalsA += entry.goalsa
+                    games += 1
+            gaa = (goalsA/games)
+            gaa_data.append(float('{0:.3}'.format(gaa)))
+        gaaopp_series = {
+            'name':'Goalie GAA',
+            'data':gaa_data
+        }
+        gaaopp_chart = {
+            'chart': {'type':'column', 'borderColor':'black', 'borderWidth':2},
+            'credits': {'enabled':False},
+            'title': {'text': 'GAA Per Opponent'},
+            'colorAxis': {'minColor':'#ffff00', 'maxColor':'#ff0000'},
+            'xAxis' : {'title': {'text':'Opponent'}, 'categories':opponents},
+            'yAxis': {'title': {'text':'GAA'}, 'stackLabels': {'enabled':True}},
+            'tooltip': {'headerFormat':'', 'pointFormat':'{series.name}: {point.y}'},
+            'plotOptions' : {'series':{'dataLabels':{'enabled':True}}},
+            'series' : [gaaopp_series]
+        }
+        return gaaopp_chart 
     def get(self, request, *args, **kwargs):
         first = self.players.first()
         self.object_list = self.model.objects.filter(player=first.player_id)
         context = self.get_context_data(**kwargs)
         context['current_goalie'] = first.name
+        context['save_chart'] = json.dumps(self.save_chart_gen(first))
+        context['shot_chart'] = json.dumps(self.shot_chart_gen(first))
+        context['svpct_chart'] = json.dumps(self.svpct_chart_gen(first))
+        context['goal_chart'] = json.dumps(self.goal_chart_gen(first))
+        context['results_chart'] = json.dumps(self.results_chart_gen(first))
+        context['svpctopp_chart'] = json.dumps(self.svpctopp_chart_gen(first))
+        context['gaaopp_chart'] = json.dumps(self.gaaopp_chart_gen(first))
         return render(request, self.template_name, context=context)
     def post(self, request, *args, **kwargs):
         try:
@@ -683,11 +1037,25 @@ class GoalieGameStatsByPlayerView(generic.ListView):
             self.object_list = self.model.objects.filter(player=p)
             context = self.get_context_data(**kwargs)
             context['current_goalie'] = current.name
+            context['save_chart'] = json.dumps(self.save_chart_gen(p))
+            context['shot_chart'] = json.dumps(self.shot_chart_gen(p))
+            context['svpct_chart'] = json.dumps(self.svpct_chart_gen(p))
+            context['goal_chart'] = json.dumps(self.goal_chart_gen(p))
+            context['results_chart'] = json.dumps(self.results_chart_gen(p))
+            context['svpctopp_chart'] = json.dumps(self.svpctopp_chart_gen(p))
+            context['gaaopp_chart'] = json.dumps(self.gaaopp_chart_gen(p))
             return render(request, self.template_name, context=context)
         except (Player.DoesNotExist, ValueError):
             first = self.players.first()
             self.object_list = self.model.objects.filter(player=first.player_id)
             context = self.get_context_data(**kwargs)
             context['current_goalie'] = first.name
+            context['save_chart'] = json.dumps(self.save_chart_gen(first))
+            context['shot_chart'] = json.dumps(self.shot_chart_gen(first))
+            context['svpct_chart'] = json.dumps(self.svpct_chart_gen(first))
+            context['goal_chart'] = json.dumps(self.goal_chart_gen(first))
+            context['results_chart'] = json.dumps(self.results_chart_gen(first))
+            context['svpctopp_chart'] = json.dumps(self.svpctopp_chart_gen(first))
+            context['gaaopp_chart'] = json.dumps(self.gaaopp_chart_gen(first))
             context['error_message'] = "Please select a valid player."
             return render(request, self.template_name, context=context)

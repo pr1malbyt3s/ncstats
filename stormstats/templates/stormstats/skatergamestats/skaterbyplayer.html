@@ -130,10 +130,12 @@
         </div></br>
         
         <script src="https://code.highcharts.com/highcharts.js"></script>
+        <script src="https://code.highcharts.com/modules/heatmap.js"></script>
         <ul class="nav nav-tabs">
             <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#pointstab">Player Point Progression</a></li>
             <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#timetab">Player Time on Ice</a></li>
             <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#plustab">Player +/- Progression</a></li>
+            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#pointsopptab">Points Per Opponent</a></li>
         </ul>
         <div class="tab-content">
             <div id="pointstab" class="tab-pane active">
@@ -152,6 +154,12 @@
                 <div id="container3"></div>
                 <script>
                 Highcharts.chart('container3', {{ plus_chart|safe }});
+                </script>
+            </div>
+            <div id="pointsopptab" class="tab-pane">
+                <div id="container4"></div>
+                <script>
+                Highcharts.chart('container4', {{ pointsopp_chart|safe }});
                 </script>
             </div>
         </div>

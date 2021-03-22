@@ -125,5 +125,64 @@
                 </table>
             </div>
         </div></br>
+
+        <script src="https://code.highcharts.com/highcharts.js"></script>
+        <script src="https://code.highcharts.com/modules/heatmap.js"></script>
+        <script src="https://code.highcharts.com/modules/exporting.js"></script>
+        <script src="https://code.highcharts.com/modules/export-data.js"></script>
+        <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+        <ul class="nav nav-tabs">
+            <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#savetab">Save Count Per Game</a></li>
+            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#shottab">Shots Against Per Game</a></li>
+            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#svpcttab">Save% Per Game</a></li>
+            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#goaltab">GoalsA vs. ShotsA Progession</a></li>
+            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#restab">Goalie Result by Opponent</a></li>
+            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#svpctopptab">Save% by Opponent</a></li>
+            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#gaaopptab">GAA by Opponent</a></li>
+        </ul>
+        <div class="tab-content">
+            <div id="savetab" class="tab-pane active">
+                <div id="container1"></div>
+                <script>
+                Highcharts.chart('container1', {{ save_chart|safe }});
+                </script>
+            </div>
+            <div id="shottab" class="tab-pane">
+                <div id="container2"></div>
+                <script>
+                Highcharts.chart('container2', {{ shot_chart|safe }});
+                </script>
+            </div>
+            <div id="svpcttab" class="tab-pane">
+                <div id="container3"></div>
+                <script>
+                Highcharts.chart('container3', {{ svpct_chart|safe }});
+                </script>
+            </div>
+            <div id="goaltab" class="tab-pane">
+                <div id="container4"></div>
+                <script>
+                Highcharts.chart('container4', {{ goal_chart|safe }});
+                </script>
+            </div>
+            <div id="restab" class="tab-pane">
+                <div id="container5"></div>
+                <script>
+                Highcharts.chart('container5', {{ results_chart|safe }});
+                </script>
+            </div>
+            <div id="svpctopptab" class="tab-pane">
+                <div id="container6"></div>
+                <script>
+                Highcharts.chart('container6', {{ svpctopp_chart|safe }});
+                </script>
+            </div>
+            <div id="gaaopptab" class="tab-pane">
+                <div id="container7"></div>
+                <script>
+                Highcharts.chart('container7', {{ gaaopp_chart|safe }});
+                </script>
+            </div>
+        </div>
     </body>
 {% endblock content %}

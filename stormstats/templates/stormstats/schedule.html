@@ -103,5 +103,29 @@
                 </table>
             </div>
         </div>
+
+        <script src="https://code.highcharts.com/highcharts.js"></script>
+        <script src="https://code.highcharts.com/modules/heatmap.js"></script>
+        <script src="https://code.highcharts.com/modules/exporting.js"></script>
+        <script src="https://code.highcharts.com/modules/export-data.js"></script>
+        <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+        <ul class="nav nav-tabs">
+            <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#monthtab">Opponents Per Month</a></li>
+            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#restab">Results Per Opponent</a></li>
+        </ul>
+        <div class="tab-content">
+            <div id="monthtab" class="tab-pane active">
+                <div id="container1"></div>
+                <script>
+                Highcharts.chart('container1', {{ month_chart|safe }});
+                </script>
+            </div>
+            <div id="restab" class="tab-pane">
+                <div id="container2"></div>
+                <script>
+                Highcharts.chart('container2', {{ results_chart|safe }});
+                </script>
+            </div>
+        </div>
     </body>
 {% endblock content %}

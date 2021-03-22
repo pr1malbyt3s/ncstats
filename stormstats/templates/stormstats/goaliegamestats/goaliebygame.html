@@ -124,14 +124,20 @@
         <script src="https://code.highcharts.com/modules/export-data.js"></script>
         <script src="https://code.highcharts.com/modules/accessibility.js"></script>
         <ul class="nav nav-tabs">
-            <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#savetab">Save Breakdown</a></li>
-        
+            <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#savetab">Save vs. Shot Breakdown</a></li>
+            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#svpcttab">Save % Breakdown</a></li>
         </ul>
         <div class="tab-content">
             <div id="savetab" class="tab-pane active">
                 <div id="container1"></div>
                 <script>
                 Highcharts.chart('container1', {{ save_chart|safe }});
+                </script>
+            </div>
+            <div id="svpcttab" class="tab-pane">
+                <div id="container2"></div>
+                <script>
+                Highcharts.chart('container2', {{ svpct_chart|safe }});
                 </script>
             </div>
         </div>
