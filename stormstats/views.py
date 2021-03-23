@@ -26,26 +26,45 @@ class RosterView(generic.ListView):
     model = Player
     template_name = 'stormstats/roster.html'
     context_object_name = 'players'
+    def pos_chart_gen(self):
+        dataset = self.model.objects.all()
+        positions = list(dataset.order_by('position').values_list('position', flat=True).distinct())
+        pos_data = list()
+        for position in positions:
+            count = 0
+            for entry in dataset:
+                if (entry.position == position):
+                    count += 1
+            pos_data.append(count)
+        pos_series = {
+            'name':'Position Count',
+            'data':pos_data
+        }
+        pos_chart = {
+            'chart': {'type':'column', 'borderColor':'black', 'borderWidth':2},
+            'credits': {'enabled':False},
+            'title': {'text': 'Position Distribution'},
+            'colorAxis': {'minColor':'#ffff00', 'maxColor':'#ff0000'},
+            'xAxis': {'title': {'text':'Position'}, 'categories':positions},
+            'yAxis': {'title': {'text':'Number of Players'}, 'stackLabels': {'enabled':True}},
+            'tooltip': {'headerFormat':'', 'pointFormat':'{series.name}: {point.y}'},
+            'plotOptions' : {'series':{'dataLabels':{'enabled':True}}},
+            'series' : [pos_series]
+        }
+        return pos_chart
     def age_chart_gen(self):
         dataset = self.model.objects.all().order_by('name')
-        names = list()
-        ages = list()
+        age_data = list()
         for entry in dataset:
-            names.append(entry.name)
-            ages.append(entry.age)
-        ages_series = {
-            'name': 'Ages',
-            'data': ages,
-            'color': 'red'
-        }
+            age_data.append({'name':entry.name, 'data':[[entry.jersey, entry.age]]})
         age_chart = {
-            'chart': {'type':'lollipop', 'borderColor':'black', 'borderWidth':2},
-            'plotOptions': {'lollipop': {'connectorColor':'black'}},
+            'chart': {'type':'scatter', 'borderColor':'black', 'borderWidth':2},
             'credits': {'enabled':False},
-            'title': {'text':'Roster Ages'},
-            'xAxis': {'title': {'text':'Player'}, 'categories':names},
-            'yAxis': {'title': {'text':'Age'}},
-            'series': [ages_series]
+            'title': {'text':'Age vs. Jersey'},
+            'xAxis': {'title': {'text':'Age'}},
+            'yAxis': {'title': {'text':'Jersey #'}},
+            'tooltip': {'pointFormat':'<b>{series.name}</b><br>Age: {point.x}, Jersey: {point.y}'},
+            'series': age_data
         }
         return age_chart
     def hw_chart_gen(self):
@@ -82,6 +101,7 @@ class RosterView(generic.ListView):
         context = super().get_context_data(**kwargs)
         context['title'] = "StormStats - Roster"
         context['roster_activate'] = 'active'
+        context['pos_chart'] = json.dumps(self.pos_chart_gen())
         context['age_chart'] = json.dumps(self.age_chart_gen())
         context['hw_chart'] = json.dumps(self.hw_chart_gen())
         context['map_chart'] = json.dumps(self.map_chart_gen())
@@ -626,6 +646,32 @@ class SkaterGameStatsByPlayerView(generic.ListView):
             'series' : [points_series]
         }
         return pointsopp_chart
+    def plusopp_chart_gen(self, p):
+        dataset = self.model.objects.all().filter(player=p).order_by('game__date')
+        opponents = list(dataset.order_by('game__opponent').values_list('game__opponent', flat=True).distinct())
+        plus_data = list()
+        for opponent in opponents:
+            rating = 0
+            for entry in dataset:
+                if (entry.game.opponent == opponent):
+                    rating += int(entry.plusmin)
+            plus_data.append(rating)
+        plus_series = {
+            'name':'Player Rating',
+            'data':plus_data
+        }
+        plusopp_chart = {
+            'chart': {'type':'column', 'borderColor':'black', 'borderWidth':2},
+            'credits': {'enabled':False},
+            'title': {'text': 'Rating Per Opponent'},
+            'colorAxis': {'minColor':'#ffff00', 'maxColor':'#ff0000'},
+            'xAxis': {'title': {'text':'Opponent'}, 'categories':opponents},
+            'yAxis': {'title': {'text':'Rating'}, 'stackLabels': {'enabled':True}},
+            'tooltip': {'headerFormat':'', 'pointFormat':'{series.name}: {point.y}'},
+            'plotOptions' : {'series':{'dataLabels':{'enabled':True}}},
+            'series' : [plus_series]
+        }
+        return plusopp_chart
     def get(self, request, *args, **kwargs):
         first = self.players.first()
         self.object_list = self.model.objects.filter(player=first.player_id)
@@ -634,6 +680,7 @@ class SkaterGameStatsByPlayerView(generic.ListView):
         context['time_chart'] = json.dumps(self.time_chart_gen(first))
         context['plus_chart'] = json.dumps(self.plus_chart_gen(first))
         context['pointsopp_chart'] = json.dumps(self.pointsopp_chart_gen(first))
+        context['plusopp_chart'] = json.dumps(self.plusopp_chart_gen(first))
         context['current_skater'] = first.name
         return render(request, self.template_name, context=context)
     def post(self, request, *args, **kwargs):
@@ -646,6 +693,7 @@ class SkaterGameStatsByPlayerView(generic.ListView):
             context['time_chart'] = json.dumps(self.time_chart_gen(p))
             context['plus_chart'] = json.dumps(self.plus_chart_gen(p))
             context['pointsopp_chart'] = json.dumps(self.pointsopp_chart_gen(p))
+            context['plusopp_chart'] = json.dumps(self.plusopp_chart_gen(p))
             context['current_skater'] = current.name
             return render(request, self.template_name, context=context)
         except (Player.DoesNotExist, ValueError):
@@ -656,6 +704,7 @@ class SkaterGameStatsByPlayerView(generic.ListView):
             context['time_chart'] = json.dumps(self.time_chart_gen(first))
             context['plus_chart'] = json.dumps(self.plus_chart_gen(first))
             context['pointsopp_chart'] = json.dumps(self.pointsopp_chart_gen(first))
+            context['plusopp_chart'] = json.dumps(self.plusopp_chart_gen(first))
             context['current_skater'] = first.name
             context['error_message'] = "Please select a valid player."
             return render(request, self.template_name, context=context)
@@ -971,7 +1020,7 @@ class GoalieGameStatsByPlayerView(generic.ListView):
                 svpct = (saves/shotsA)
             except ZeroDivisionError:
                 svpct = 0
-            svpct_data.append(float('{0:.3}'.format(svpct)))
+            svpct_data.append(float('{0:.3}'.format(float(svpct))))
         svpctopp_series = {
             'name':'Goalie Save%',
             'data':svpct_data
@@ -1000,7 +1049,7 @@ class GoalieGameStatsByPlayerView(generic.ListView):
                     goalsA += entry.goalsa
                     games += 1
             gaa = (goalsA/games)
-            gaa_data.append(float('{0:.3}'.format(gaa)))
+            gaa_data.append(float('{0:.3}'.format(float(gaa))))
         gaaopp_series = {
             'name':'Goalie GAA',
             'data':gaa_data
@@ -1031,6 +1080,7 @@ class GoalieGameStatsByPlayerView(generic.ListView):
         context['gaaopp_chart'] = json.dumps(self.gaaopp_chart_gen(first))
         return render(request, self.template_name, context=context)
     def post(self, request, *args, **kwargs):
+        p = request.POST.get('playerId')
         try:
             p = request.POST.get('playerId')
             current = self.players.get(player_id=p)

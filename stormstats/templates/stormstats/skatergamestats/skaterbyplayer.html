@@ -136,6 +136,7 @@
             <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#timetab">Player Time on Ice</a></li>
             <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#plustab">Player +/- Progression</a></li>
             <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#pointsopptab">Points Per Opponent</a></li>
+            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#plusopptab">+/- Per Opponent</a></li>
         </ul>
         <div class="tab-content">
             <div id="pointstab" class="tab-pane active">
@@ -160,6 +161,12 @@
                 <div id="container4"></div>
                 <script>
                 Highcharts.chart('container4', {{ pointsopp_chart|safe }});
+                </script>
+            </div>
+            <div id="plusopptab" class="tab-pane">
+                <div id="container5"></div>
+                <script>
+                Highcharts.chart('container5', {{ plusopp_chart|safe }});
                 </script>
             </div>
         </div>
