@@ -41,14 +41,14 @@ class RosterView(generic.ListView):
             'data':pos_data
         }
         pos_chart = {
-            'chart': {'type':'column', 'borderColor':'black', 'borderWidth':2},
+            'chart': {'type':'column', 'height':600, 'borderColor':'black', 'borderWidth':2},
             'credits': {'enabled':False},
             'title': {'text': 'Position Distribution'},
             'colorAxis': {'minColor':'#ffff00', 'maxColor':'#ff0000'},
             'xAxis': {'title': {'text':'Position'}, 'categories':positions},
             'yAxis': {'title': {'text':'Number of Players'}, 'stackLabels': {'enabled':True}},
             'tooltip': {'headerFormat':'', 'pointFormat':'{series.name}: {point.y}'},
-            'plotOptions' : {'series':{'dataLabels':{'enabled':True}}},
+            'plotOptions' : {'series':{'borderColor':'black', 'dataLabels':{'enabled':True, 'allowOverlap':True, 'backgroundColor':'black', 'color':'white', 'format':'{point.y} Players'}}},
             'series' : [pos_series]
         }
         return pos_chart
@@ -58,12 +58,13 @@ class RosterView(generic.ListView):
         for entry in dataset:
             age_data.append({'name':entry.name, 'data':[[entry.jersey, entry.age]]})
         age_chart = {
-            'chart': {'type':'scatter', 'borderColor':'black', 'borderWidth':2},
+            'chart': {'type':'scatter', 'height':600, 'borderColor':'black', 'borderWidth':2},
             'credits': {'enabled':False},
             'title': {'text':'Age vs. Jersey'},
-            'xAxis': {'title': {'text':'Age'}},
-            'yAxis': {'title': {'text':'Jersey #'}},
-            'tooltip': {'pointFormat':'<b>{series.name}</b><br>Age: {point.x}, Jersey: {point.y}'},
+            'xAxis': {'title': {'text':'Jersey #'}},
+            'yAxis': {'title': {'text':'Age'}},
+            'tooltip': {'headerFormat':'', 'pointFormat':'<b>{series.name}</b><br>Age: {point.y}, Jersey: {point.x}'},
+            'plotOptions' : {'series':{'dataLabels':{'enabled':True, 'allowOverlap':True, 'backgroundColor':'black', 'color':'white', 'format':'{series.name}'}}},
             'series': age_data
         }
         return age_chart
@@ -73,12 +74,13 @@ class RosterView(generic.ListView):
         for entry in dataset:
             hw_data.append({'name':entry.name, 'data':[[entry.weight, entry.height]]})
         hw_chart = {
-            'chart': {'type':'scatter', 'borderColor':'black', 'borderWidth':2},
+            'chart': {'type':'scatter', 'height':600, 'borderColor':'black', 'borderWidth':2},
             'credits': {'enabled':False},
-            'title': {'text':'Roster Weight vs. Height'},
-            'xAxis': {'title': {'text':'Height'}},
-            'yAxis': {'title': {'text':'Weight'}},
-            'tooltip': {'pointFormat':'<b>{series.name}</b><br>Height: {point.x}, Weight: {point.y}'},
+            'title': {'text':'Roster Height vs. Weight'},
+            'xAxis': {'title': {'text':'Weight (lbs)'}},
+            'yAxis': {'title': {'text':'Height (in)'}},
+            'tooltip': {'headerFormat':'', 'pointFormat':'<b>{series.name}</b><br>Height: {point.y}, Weight: {point.x}'},
+            'plotOptions' : {'series':{'dataLabels':{'enabled':True, 'allowOverlap':True, 'backgroundColor':'black', 'color':'white', 'format':'{series.name}'}}},
             'series': hw_data
         }
         return hw_chart
@@ -89,11 +91,11 @@ class RosterView(generic.ListView):
         for entry in dataset:
             map_data.append({'type':'mappoint', 'name':entry.name, 'data':[{'name':entry.birthplace, 'lat':entry.bp_lat, 'lon':entry.bp_long}]})
         map_chart = {
-            'chart': {'map':'custom/world', 'borderColor':'black', 'borderWidth':2},
+            'chart': {'map':'custom/world', 'height':600, 'borderColor':'black', 'borderWidth':2},
             'credits': {'enabled':False},
             'title': {'text':'Player Birthplaces'},
             'mapNavigation': {'enabled':True},
-            'tooltip': {'pointFormat':'<b>{series.name}</b><br>Lat: {point.lat}, Lon: {point.lon}'},
+            'tooltip': {'headerFormat':'', 'pointFormat':'<b>{series.name}</b><br>Lat: {point.lat}, Lon: {point.lon}'},
             'series': map_data
         }
         return map_chart
@@ -127,7 +129,7 @@ class ScheduleView(generic.ListView):
             months_list.append(month.strftime("%B"))
         max_count = max(item[2] for item in count_list)
         month_chart = {
-            'chart': {'type':'heatmap', 'borderColor':'black', 'borderWidth':2},
+            'chart': {'type':'heatmap', 'height':600, 'borderColor':'black', 'borderWidth':2},
             'credits': {'enabled':False},
             'title': {'text':'Opponents Faced by Month'},
             'xAxis': {'categories':opponents},
@@ -148,7 +150,7 @@ class ScheduleView(generic.ListView):
                 count_list.append([opponents.index(opponent), results.index(r), x])
         max_count = max(item[2] for item in count_list)
         results_chart = {
-            'chart': {'type':'heatmap', 'borderColor':'black', 'borderWidth':2},
+            'chart': {'type':'heatmap', 'height':600, 'borderColor':'black', 'borderWidth':2},
             'credits': {'enabled':False},
             'title': {'text':'Results by Opponent'},
             'xAxis': {'categories':opponents},
@@ -178,13 +180,14 @@ class SkaterStatsView(generic.ListView):
         for entry in dataset:
             goals_data.append({'name':entry.player.name, 'data':[entry.goals]})
         goals_chart = {
-            'chart': {'type':'column', 'borderColor':'black', 'borderWidth':2},
+            'chart': {'type':'column', 'height':600, 'borderColor':'black', 'borderWidth':2},
             'credits': {'enabled':False},
-            'title': {'text':'Goals Distribution'},
+            'title': {'text':'Goals % Breakdown'},
+            'colorAxis': {'minColor':'#ffff00', 'maxColor':'#ff0000'},
             'xAxis': {'categories':['Goals']},
             'yAxis': {'title': {'text':'Goals Percentage'}, 'stackLabels': {'enabled':True, 'format':'Total Goals: {total}', 'overflow':'allow', 'crop':False}},
             'tooltip': {'headerFormat':'', 'pointFormat':'{series.name}: {point.y} ({point.percentage:.0f}%)'},
-            'plotOptions' : {'series':{'dataLabels':{'enabled':True, 'format':'{series.name}: {point.y}'}}, 'column': {'stacking':'percent'}},
+            'plotOptions' : {'series':{'borderColor':'black', 'dataLabels':{'enabled':True, 'backgroundColor':'black', 'color':'white', 'format':'{series.name}: {point.y}'}}, 'column': {'stacking':'percent'}},
             'series' : goals_data
         }
         return goals_chart
@@ -194,13 +197,14 @@ class SkaterStatsView(generic.ListView):
         for entry in dataset:
             assists_data.append({'name':entry.player.name, 'data':[entry.assists]})
         assists_chart = {
-            'chart': {'type':'column', 'borderColor':'black', 'borderWidth':2},
+            'chart': {'type':'column', 'height':600, 'borderColor':'black', 'borderWidth':2},
             'credits': {'enabled':False},
-            'title': {'text': 'Assists Distribution'},
+            'title': {'text': 'Assists % Breakdown'},
+            'colorAxis': {'minColor':'#ffff00', 'maxColor':'#ff0000'},
             'xAxis': {'categories':['Assists']},
             'yAxis': {'title': {'text':'Assist Percentage'}, 'stackLabels': {'enabled':True, 'format':'Total Assists: {total}', 'overflow':'allow', 'crop':False}},
             'tooltip': {'headerFormat':'', 'pointFormat':'{series.name}: {point.y} ({point.percentage:.0f}%)'},
-            'plotOptions' : {'series':{'dataLabels':{'enabled':True, 'format':'{series.name}: {point.y}'}}, 'column': {'stacking':'percent'}},
+            'plotOptions' : {'series':{'borderColor':'black', 'dataLabels':{'enabled':True, 'backgroundColor':'black', 'color':'white', 'format':'{series.name}: {point.y}'}}, 'column': {'stacking':'percent'}},
             'series' : assists_data
         }
         return assists_chart
@@ -210,13 +214,14 @@ class SkaterStatsView(generic.ListView):
         for entry in dataset:
             points_data.append({'name':entry.player.name, 'data':[entry.points]})
         points_chart = {
-            'chart': {'type':'column', 'borderColor':'black', 'borderWidth':2},
+            'chart': {'type':'column', 'height':600, 'borderColor':'black', 'borderWidth':2},
             'credits': {'enabled':False},
-            'title': {'text': 'Points Distribution'},
+            'title': {'text': 'Points % Breakdown'},
+            'colorAxis': {'minColor':'#ffff00', 'maxColor':'#ff0000'},
             'xAxis': {'categories':['Points']},
             'yAxis': {'title': {'text':'Point Percentage'}, 'stackLabels': {'enabled':True, 'format':'Total Points: {total}', 'overflow':'allow', 'crop':False}},
             'tooltip': {'headerFormat':'', 'pointFormat':'{series.name}: {point.y} ({point.percentage:.0f}%)'},
-            'plotOptions' : {'series':{'dataLabels':{'enabled':True, 'format':'{series.name}: {point.y}'}}, 'column': {'stacking':'percent'}},
+            'plotOptions' : {'series':{'borderColor':'black', 'dataLabels':{'enabled':True, 'backgroundColor':'black', 'color':'white', 'format':'{series.name}: {point.y}'}}, 'column': {'stacking':'percent'}},
             'series' : points_data
         }
         return points_chart
@@ -226,13 +231,14 @@ class SkaterStatsView(generic.ListView):
         for entry in dataset:
             pim_data.append({'name':entry.player.name, 'data':[entry.pim]})
         pim_chart = {
-            'chart': {'type':'column', 'borderColor':'black', 'borderWidth':2},
+            'chart': {'type':'column', 'height':600, 'borderColor':'black', 'borderWidth':2},
             'credits': {'enabled':False},
-            'title': {'text': 'PIM Distribution'},
+            'title': {'text': 'PIM % Breakdown'},
+            'colorAxis': {'minColor':'#ffff00', 'maxColor':'#ff0000'},
             'xAxis': {'categories':['Penalty Minutes']},
             'yAxis': {'title': {'text':'PIM Percentage'}, 'stackLabels': {'enabled':True, 'format':'Total Penalty Minutes: {total}', 'overflow':'allow', 'crop':False}},
             'tooltip': {'headerFormat':'', 'pointFormat':'{series.name}: {point.y} ({point.percentage:.0f}%)'},
-            'plotOptions' : {'series':{'dataLabels':{'enabled':True, 'format':'{series.name}: {point.y}'}}, 'column': {'stacking':'percent'}},
+            'plotOptions' : {'series':{'borderColor':'black', 'dataLabels':{'enabled':True, 'allowOverlap':True, 'backgroundColor':'black', 'color':'white', 'format':'{series.name}: {point.y}'}}, 'column': {'stacking':'percent'}},
             'series' : pim_data
         }
         return pim_chart
@@ -242,13 +248,14 @@ class SkaterStatsView(generic.ListView):
         for entry in dataset:
             plus_data.append({'name':entry.player.name, 'data':[entry.plusmin]})
         plus_chart = {
-            'chart': {'type':'column', 'borderColor':'black', 'borderWidth':2},
+            'chart': {'type':'column', 'height':600, 'borderColor':'black', 'borderWidth':2},
             'credits': {'enabled':False},
             'title': {'text': '+/- Distribution'},
+            'colorAxis': {'minColor':'#ffff00', 'maxColor':'#ff0000'},
             'xAxis': {'categories':['Plus Minus']},
             'yAxis': {'title': {'text':'Rating'}},
             'tooltip': {'headerFormat':'', 'pointFormat':'{series.name}: {point.y}'},
-            'plotOptions' : {'series':{'dataLabels':{'enabled':True, 'allowOverlap':True, 'backgroundColor':'black', 'color':'white', 'format':'{series.name}: {point.y}'}}},
+            'plotOptions' : {'series':{'borderColor':'black', 'dataLabels':{'enabled':True, 'allowOverlap':True, 'backgroundColor':'black', 'color':'white', 'format':'{series.name}: {point.y}'}}},
             'series' : plus_data
         }
         return plus_chart
@@ -258,9 +265,9 @@ class SkaterStatsView(generic.ListView):
         for entry in dataset:
             shot_data.append({'name':entry.player.name, 'data':[[entry.shotpct, entry.shots]]})
         shot_chart = {
-            'chart': {'type':'scatter', 'borderColor':'black', 'borderWidth':2},
+            'chart': {'type':'scatter', 'height':600, 'borderColor':'black', 'borderWidth':2},
             'credits': {'enabled':False},
-            'title': {'text':'Shots vs. Shot Percentage'},
+            'title': {'text':'Shots vs. Shot%'},
             'xAxis': {'title': {'text':'Shot Percentage'}},
             'yAxis': {'title': {'text':'Shots'}},
             'tooltip' : {'pointFormat':'Shots Taken: {point.y}</br>Shot%: {point.x}'},
@@ -297,11 +304,12 @@ class GoalieStatsView(generic.ListView):
             wlt_data.append([entry.player.name + ' Wins', entry.wins])
             wlt_data.append([entry.player.name + ' Losses', entry.losses])
         wlt_chart = {
-            'chart': {'borderColor':'black', 'borderWidth':2},
+            'chart': {'height':600, 'borderColor':'black', 'borderWidth':2},
             'credits': {'enabled':False},
             'title': {'text': 'Goalie Results Breakdown'},
-            'plotOptions': {'pie': {'dataLabels':{'enabled':True, 'distance':-30}, 'startAngle':-90, 'endAngle':90, 'center':['50%', '75%'], 'size':'150%'}},
-            'tooltip' : {'headerFormat':'<b>{point.key}</b>', 'pointFormat':'</br>{point.y}'},
+            'colorAxis': {'minColor':'#ffff00', 'maxColor':'#ff0000'},
+            'plotOptions': {'pie': {'borderColor':'black', 'dataLabels':{'enabled':True, 'allowOverlap':True, 'backgroundColor':'black', 'color':'white', 'distance':-30}, 'startAngle':-90, 'endAngle':90, 'center':['50%', '75%'], 'size':'150%'}},
+            'tooltip' : {'headerFormat':'{point.key}: ', 'pointFormat':'{point.y}'},
             'series': [{'type':'pie', 'data':wlt_data}]
         }
         return wlt_chart
@@ -311,7 +319,7 @@ class GoalieStatsView(generic.ListView):
         for entry in dataset:
             gaa_data.append({'name':entry.player.name, 'data':[[entry.svpct, entry.gaa]]})
         gaa_chart = {
-            'chart': {'type':'scatter', 'borderColor':'black', 'borderWidth':2},
+            'chart': {'type':'scatter', 'height':600, 'borderColor':'black', 'borderWidth':2},
             'credits': {'enabled':False},
             'title': {'text':'GAA vs. Save Percentage'},
             'xAxis': {'title': {'text':'Save Percentage'}},
@@ -333,13 +341,14 @@ class GoalieStatsView(generic.ListView):
             ppsave_data.append(entry.ppsaves)
             shsave_data.append(entry.shsaves)
         save_chart = {
-            'chart': {'type':'column', 'borderColor':'black', 'borderWidth':2},
+            'chart': {'type':'column', 'height':600, 'borderColor':'black', 'borderWidth':2},
             'credits': {'enabled':False},
             'title': {'text': 'Save Type Breakdown'},
+            'colorAxis': {'minColor':'#ffff00', 'maxColor':'#ff0000'},
             'xAxis': {'categories':name_data},
             'yAxis': {'title': {'text':'Save Count'}, 'stackLabels': {'enabled':True, 'format':'Total Saves: {total}', 'overflow':'allow', 'crop':False}},
             'tooltip': {'headerFormat':'<b>{point.x}</b><br/>', 'pointFormat':'{series.name}: {point.y}'},
-            'plotOptions' : {'series':{'dataLabels':{'enabled':True, 'format':'{series.name}: {point.y}'}}, 'column': {'stacking':'normal'}},
+            'plotOptions' : {'series':{'borderColor':'black', 'dataLabels':{'enabled':True, 'allowOverlap':True, 'backgroundColor':'black', 'color':'white', 'format':'{series.name}: {point.y}'}}, 'column': {'stacking':'normal'}},
             'series' : [{'name':'Shorthanded Saves', 'data':shsave_data}, {'name':'Power Play Saves', 'data': ppsave_data}, {'name':'Even Saves', 'data':essave_data}]
         }
         return save_chart
@@ -355,13 +364,14 @@ class GoalieStatsView(generic.ListView):
             ppshot_data.append(entry.ppshots)
             shshot_data.append(entry.shshots)
         shot_chart = {
-            'chart': {'type':'column', 'borderColor':'black', 'borderWidth':2},
+            'chart': {'type':'column', 'height':600, 'borderColor':'black', 'borderWidth':2},
             'credits': {'enabled':False},
             'title': {'text': 'Shots Faced Type Breakdown'},
+            'colorAxis': {'minColor':'#ffff00', 'maxColor':'#ff0000'},
             'xAxis': {'categories':name_data},
             'yAxis': {'title': {'text':'Shot Count'}, 'stackLabels': {'enabled':True, 'format':'Total Shots Faced: {total}', 'overflow':'allow', 'crop':False}},
             'tooltip': {'headerFormat':'<b>{point.x}</b><br/>', 'pointFormat':'{series.name}: {point.y}'},
-            'plotOptions' : {'series':{'dataLabels':{'enabled':True, 'format':'{series.name}: {point.y}'}}, 'column': {'stacking':'normal'}},
+            'plotOptions' : {'series':{'borderColor':'black', 'dataLabels':{'enabled':True, 'allowOverlap':True, 'backgroundColor':'black', 'color':'white', 'format':'{series.name}: {point.y}'}}, 'column': {'stacking':'normal'}},
             'series' : [{'name':'Shorthanded Shots', 'data':shshot_data}, {'name':'Power Play Shots', 'data': ppshot_data}, {'name':'Even Shots', 'data':esshot_data}]
         }
         return shot_chart
@@ -379,13 +389,14 @@ class GoalieStatsView(generic.ListView):
             ppsvpct_data.append(entry.ppsvpct)
             shsvpct_data.append(entry.shsvpct)
         svpct_chart = {
-            'chart': {'type':'column', 'borderColor':'black', 'borderWidth':2},
+            'chart': {'type':'column', 'height':600, 'borderColor':'black', 'borderWidth':2},
             'credits': {'enabled':False},
             'title': {'text': 'Save Percentage Distribution'},
+            'colorAxis': {'minColor':'#ffff00', 'maxColor':'#ff0000'},
             'xAxis': {'categories':name_data},
             'yAxis': {'title': {'text':'Save Percentage'}, 'stackLabels': {'enabled':True}},
             'tooltip': {'headerFormat':'<b>{point.x}</b><br/>', 'pointFormat':'{series.name}: {point.y}'},
-            'plotOptions' : {'series':{'dataLabels':{'enabled':True, 'allowOverlap':True, 'backgroundColor':'black', 'color':'white', 'format':'{series.name}: {point.y}'}}},
+            'plotOptions' : {'series':{'borderColor':'black', 'dataLabels':{'enabled':True, 'allowOverlap':True, 'backgroundColor':'black', 'color':'white', 'format':'{series.name}: {point.y}'}}},
             'series' : [{'name':'Overall Save Percentage', 'data':svpct_data}, {'name':'Even Save Percentage', 'data':essvpct_data}, {'name':'Power Play Save Percentage', 'data': ppsvpct_data}, {'name':'Shorthanded Save Percentage', 'data':shsvpct_data}]
         }
         return svpct_chart    
@@ -415,12 +426,13 @@ class SkaterGameStatsByGameView(generic.ListView):
         for entry in dataset:
             goals_data.append({'name':entry.player.name, 'data':[self.zero_check(entry.goals), self.zero_check(entry.assists), self.zero_check(entry.points)]})
         goals_chart = {
-            'chart': {'type':'column', 'borderColor':'black', 'borderWidth':2},
+            'chart': {'type':'column', 'height':600, 'borderColor':'black', 'borderWidth':2},
             'credits': {'enabled':False},
             'title': {'text': 'Game Points Distribution'},
+            'colorAxis': {'minColor':'#ffff00', 'maxColor':'#ff0000'},
             'xAxis': {'categories':['Goals', 'Assists', 'Points']},
             'yAxis': {'title': {'text':'Value Count'}, 'stackLabels': {'enabled':True, 'format':'Total {series.name}: {total}', 'overflow':'allow', 'crop':False}},
-            'plotOptions' : {'series':{'dataLabels':{'enabled':True, 'format':'{series.name}: {point.y}'}}, 'column': {'stacking':'normal'}},
+            'plotOptions' : {'series':{'borderColor':'black', 'dataLabels':{'enabled':True, 'allowOverlap':True, 'backgroundColor':'black', 'color':'white', 'format':'{series.name}: {point.y}'}}, 'column': {'stacking':'normal'}},
             'tooltip': {'headerFormat':'<b>{point.x}</b><br/>', 'pointFormat':'{series.name}: {point.y}'},
             'series' : goals_data
         }
@@ -442,13 +454,14 @@ class SkaterGameStatsByGameView(generic.ListView):
             pptoi_data.append(time_to_seconds(entry.pptoi))
             shtoi_data.append(time_to_seconds(entry.shtoi))
         toi_chart = {
-            'chart': {'type':'column', 'borderColor':'black', 'borderWidth':2},
+            'chart': {'type':'column', 'height':600, 'borderColor':'black', 'borderWidth':2},
             'credits': {'enabled':False},
             'title': {'text': 'Time on Ice Breakdown'},
+            'colorAxis': {'minColor':'#ffff00', 'maxColor':'#ff0000'},
             'xAxis': {'categories':name_data},
             'yAxis': {'title': {'text':'Time on Ice(s)'}, 'stackLabels': {'enabled':True, 'format':'Total TOI(s): {total}', 'overflow':'allow', 'crop':False}},
             'tooltip': {'headerFormat':'<b>{point.x}</b><br/>', 'pointFormat':'{series.name}: {point.y}'},
-            'plotOptions' : {'series':{'dataLabels':{'enabled':True, 'format':'{series.name}: {point.y}'}}, 'column': {'stacking':'normal'}},
+            'plotOptions' : {'series':{'borderColor':'black', 'dataLabels':{'enabled':True, 'format':'{series.name}: {point.y}'}}, 'column': {'stacking':'normal'}},
             'series' : [{'name':'SHTOI', 'data':shtoi_data}, {'name':'PPTOI', 'data': pptoi_data}, {'name':'ETOI', 'data':etoi_data}]
         }
         return toi_chart
@@ -458,13 +471,14 @@ class SkaterGameStatsByGameView(generic.ListView):
         for entry in dataset:
             plus_data.append({'name':entry.player.name, 'data':[entry.plusmin]})
         plus_chart = {
-            'chart': {'type':'column', 'borderColor':'black', 'borderWidth':2},
+            'chart': {'type':'column', 'height':600, 'borderColor':'black', 'borderWidth':2},
             'credits': {'enabled':False},
             'title': {'text': '+/- Distribution'},
+            'colorAxis': {'minColor':'#ffff00', 'maxColor':'#ff0000'},
             'xAxis': {'categories':['Plus Minus']},
             'yAxis': {'title': {'text':'Rating'}},
             'tooltip': {'headerFormat':'', 'pointFormat':'{series.name}: {point.y}'},
-            'plotOptions' : {'series':{'dataLabels':{'enabled':True, 'allowOverlap':True, 'backgroundColor':'black', 'color':'white', 'format':'{series.name}: {point.y}'}}},
+            'plotOptions' : {'series':{'borderColor':'black', 'dataLabels':{'enabled':True, 'allowOverlap':True, 'backgroundColor':'black', 'color':'white', 'format':'{series.name}: {point.y}'}}},
             'series' : plus_data
         }
         return plus_chart
@@ -535,21 +549,32 @@ class SkaterGameStatsByPlayerView(generic.ListView):
             point_data.append(points)
         goals_series = {
             'name': 'Goals',
-            'color': 'red',
-            'data': goal_data
+            'color': 'black',
+            'dashStyle': 'longdash',
+            'data': goal_data,
+            'marker': {
+                'fillColor':'red'
+            }
         }
         assists_series = {
             'name': 'Assists',
-            'color': 'blue',
-            'data': assist_data
+            'color': 'black',
+            'dashStyle': 'dot',
+            'data': assist_data,
+            'marker': {
+                'fillColor':'gold'
+            }
         }
         points_series = {
             'name': 'Points',
-            'color': 'purple',
-            'data': point_data
+            'color': 'black',
+            'data': point_data,
+            'marker': {
+                'fillColor':'orange'
+            }
         }
         stats_chart = {
-            'chart': {'borderColor':'black', 'borderWidth':2},
+            'chart': {'height':600, 'borderColor':'black', 'borderWidth':2},
             'credits': {'enabled':False},
             'title': {'text':'Player Points Progression'},
             'xAxis': {'title': {'text':'Game Date'}, 'categories':dates},
@@ -575,21 +600,32 @@ class SkaterGameStatsByPlayerView(generic.ListView):
             short_data.append(time_to_seconds(entry.shtoi))
         even_series = {
             'name': 'ETOI',
-            'color': 'green',
-            'data': even_data
+            'color': 'black',
+            'data': even_data,
+            'marker': {
+                'fillColor':'orange'
+            }
         }
         power_series = {
             'name': 'PPTOI',
-            'color': 'red',
-            'data': power_data
+            'color': 'black',
+            'data': power_data,
+            'dashStyle': 'longdash',
+            'marker': {
+                'fillColor':'red'
+            }
         }
         short_series = {
             'name': 'SHTOI',
-            'color': 'blue',
-            'data': short_data
+            'color': 'black',
+            'data': short_data,
+            'dashStyle': 'dot',
+            'marker': {
+                'fillColor':'orange'
+            }
         }
         time_chart = {
-            'chart': {'borderColor':'black', 'borderWidth':2},
+            'chart': {'height':600, 'borderColor':'black', 'borderWidth':2},
             'credits': {'enabled':False},
             'title': {'text':'Player Time on Ice'},
             'xAxis': {'title': {'text':'Game Date'}, 'categories':dates},
@@ -608,13 +644,14 @@ class SkaterGameStatsByPlayerView(generic.ListView):
             plus_data.append(pm)
         pm_series = {
             'name': '+/-',
-            'color': 'red',
+            'color': 'black',
             'data': plus_data
         }
         plus_chart = {
-            'chart': {'borderColor':'black', 'borderWidth':2},
+            'chart': {'height':600, 'borderColor':'black', 'borderWidth':2},
             'credits': {'enabled':False},
             'title': {'text':'Player Plus/Minus Progression'},
+            'colorAxis': {'minColor':'#ffff00', 'maxColor':'#ff0000'},
             'xAxis': {'title': {'text':'Game Date'}, 'categories':dates},
             'yAxis': {'title': {'text':'Rating'}},
             'series': [pm_series]
@@ -635,14 +672,14 @@ class SkaterGameStatsByPlayerView(generic.ListView):
             'data':points_data
         }
         pointsopp_chart = {
-            'chart': {'type':'column', 'borderColor':'black', 'borderWidth':2},
+            'chart': {'type':'column', 'height':600, 'borderColor':'black', 'borderWidth':2},
             'credits': {'enabled':False},
             'title': {'text': 'Points Per Opponent'},
             'colorAxis': {'minColor':'#ffff00', 'maxColor':'#ff0000'},
             'xAxis': {'title': {'text':'Opponent'}, 'categories':opponents},
             'yAxis': {'title': {'text':'Points Per Opponent'}, 'stackLabels': {'enabled':True}},
             'tooltip': {'headerFormat':'', 'pointFormat':'{series.name}: {point.y}'},
-            'plotOptions' : {'series':{'dataLabels':{'enabled':True}}},
+            'plotOptions' : {'series':{'borderColor':'black', 'dataLabels':{'enabled':True, 'backgroundColor': 'black', 'color':'white'}}},
             'series' : [points_series]
         }
         return pointsopp_chart
@@ -661,14 +698,14 @@ class SkaterGameStatsByPlayerView(generic.ListView):
             'data':plus_data
         }
         plusopp_chart = {
-            'chart': {'type':'column', 'borderColor':'black', 'borderWidth':2},
+            'chart': {'type':'column', 'height':600, 'borderColor':'black', 'borderWidth':2},
             'credits': {'enabled':False},
             'title': {'text': 'Rating Per Opponent'},
             'colorAxis': {'minColor':'#ffff00', 'maxColor':'#ff0000'},
             'xAxis': {'title': {'text':'Opponent'}, 'categories':opponents},
             'yAxis': {'title': {'text':'Rating'}, 'stackLabels': {'enabled':True}},
             'tooltip': {'headerFormat':'', 'pointFormat':'{series.name}: {point.y}'},
-            'plotOptions' : {'series':{'dataLabels':{'enabled':True}}},
+            'plotOptions' : {'series':{'borderColor':'black', 'dataLabels':{'enabled':True, 'backgroundColor': 'black', 'color':'white'}}},
             'series' : [plus_series]
         }
         return plusopp_chart
@@ -732,13 +769,14 @@ class GoalieGameStatsByGameView(generic.ListView):
             ppshot_data.append(entry.ppshots)
             shshot_data.append(entry.shshots)
         save_chart = {
-            'chart': {'type':'column', 'borderColor':'black', 'borderWidth':2},
+            'chart': {'type':'column', 'height':600, 'borderColor':'black', 'borderWidth':2},
             'credits': {'enabled':False},
             'title': {'text': 'Save/Shot Type Breakdown'},
+            'colorAxis': {'minColor':'#ffff00', 'maxColor':'#ff0000'},
             'xAxis': {'categories':name_data},
-            'yAxis': {'title': {'text':'Save/Shot Count'}, 'stackLabels': {'enabled':True, 'format':'Total {stack}: {total}', 'overflow':'allow', 'crop':False}},
+            'yAxis': {'title': {'text':'Save/Shot Count'}, 'stackLabels': {'enabled':True, 'color':'black', 'format':'Total {stack}: {total}', 'overflow':'allow', 'crop':False}},
             'tooltip': {'headerFormat':'<b>{point.x}</b><br/>', 'pointFormat':'{series.name}: {point.y}'},
-            'plotOptions' : {'series':{'dataLabels':{'enabled':True, 'format':'{series.name}: {point.y}'}}, 'column': {'stacking':'normal'}},
+            'plotOptions' : {'series':{'borderColor':'black', 'dataLabels':{'enabled':True, 'backgroundColor':'black', 'color':'white', 'format':'{series.name}: {point.y}'}}, 'column': {'stacking':'normal'}},
             'series' : [{
                 'name':'Shorthanded Saves', 'data':shsave_data, 'stack':'Saves'
             }, {
@@ -771,10 +809,11 @@ class GoalieGameStatsByGameView(generic.ListView):
             'chart': {'type':'column', 'borderColor':'black', 'borderWidth':2},
             'credits': {'enabled':False},
             'title': {'text': 'Save Percentage Distribution'},
+            'colorAxis': {'minColor':'#ffff00', 'maxColor':'#ff0000'},
             'xAxis': {'categories':name_data},
             'yAxis': {'title': {'text':'Save Percentage'}, 'stackLabels': {'enabled':True}},
             'tooltip': {'headerFormat':'<b>{point.x}</b><br/>', 'pointFormat':'{series.name}: {point.y}'},
-            'plotOptions' : {'series':{'dataLabels':{'enabled':True, 'allowOverlap':True, 'backgroundColor':'black', 'color':'white', 'format':'{series.name}: {point.y}'}}},
+            'plotOptions' : {'series':{'borderColor':'black', 'dataLabels':{'enabled':True, 'allowOverlap':True, 'backgroundColor':'black', 'color':'white', 'format':'{series.name}: {point.y}'}}},
             'series' : [{'name':'Overall Save Percentage', 'data':svpct_data}, {'name':'Even Save Percentage', 'data':essvpct_data}, {'name':'Power Play Save Percentage', 'data': ppsvpct_data}, {'name':'Shorthanded Save Percentage', 'data':shsvpct_data}]
         }
         return svpct_chart  
@@ -838,28 +877,32 @@ class GoalieGameStatsByPlayerView(generic.ListView):
             shsave_data.append(entry.shsaves)
         save_series = {
             'name': 'Total Saves',
-            'color': 'purple',
+            'color': 'black',
             'data': save_data
         }
         essave_series = {
             'name': 'Even Saves',
-            'color': 'blue',
+            'color': 'black',
+            'dashStyle': 'longdash',
             'data': essave_data
         }
         ppsave_series = {
             'name': 'PP Saves',
-            'color': 'red',
+            'color': 'black',
+            'dashStyle': 'shortdot',
             'data': ppsave_data
         }
         shsave_series = {
             'name': 'SH Saves',
-            'color': 'green',
+            'color': 'black',
+            'dashStyle': 'dashdot',
             'data': shsave_data
         }
         save_chart = {
-            'chart': {'borderColor':'black', 'borderWidth':2},
+            'chart': {'height':600, 'borderColor':'black', 'borderWidth':2},
             'credits': {'enabled':False},
             'title': {'text':'Saves Per Game'},
+            'colorAxis': {'minColor':'#ffff00', 'maxColor':'#ff0000'},
             'xAxis': {'title': {'text':'Game Date'}, 'categories':dates},
             'yAxis': {'title': {'text':'Save Count'}},
             'series': [save_series, essave_series, ppsave_series, shsave_series]
@@ -880,28 +923,32 @@ class GoalieGameStatsByPlayerView(generic.ListView):
             shshot_data.append(entry.shshots)
         shot_series = {
             'name': 'Total Shots Against',
-            'color': 'purple',
+            'color': 'black',
             'data': shot_data
         }
         esshot_series = {
             'name': 'Even Shots Against',
-            'color': 'blue',
+            'color': 'black',
+            'dashStyle': 'longdash',
             'data': esshot_data
         }
         ppshot_series = {
             'name': 'PP Shots Against',
-            'color': 'red',
+            'color': 'black',
+            'dashStyle': 'shortdot',
             'data': ppshot_data
         }
         shshot_series = {
             'name': 'SH Shots Against',
-            'color': 'green',
+            'color': 'black',
+            'dashStyle': 'dashdot',
             'data': shshot_data
         }
         shot_chart = {
-            'chart': {'borderColor':'black', 'borderWidth':2},
+            'chart': {'height':600, 'borderColor':'black', 'borderWidth':2},
             'credits': {'enabled':False},
             'title': {'text':'Shots Against Per Game'},
+            'colorAxis': {'minColor':'#ffff00', 'maxColor':'#ff0000'},
             'xAxis': {'title': {'text':'Game Date'}, 'categories':dates},
             'yAxis': {'title': {'text':'Shot Count'}},
             'series': [shot_series, esshot_series, ppshot_series, shshot_series]
@@ -922,28 +969,32 @@ class GoalieGameStatsByPlayerView(generic.ListView):
             shsvpct_data.append(entry.shsvpct)
         svpct_series = {
             'name': 'Total Save %',
-            'color': 'purple',
+            'color': 'black',
             'data': svpct_data
         }
         essvpct_series = {
             'name': 'Even Save %',
-            'color': 'blue',
+            'color': 'black',
+            'dashStyle': 'longdash',
             'data': essvpct_data
         }
         ppsvpct_series = {
             'name': 'PP Save %',
-            'color': 'red',
+            'color': 'black',
+            'dashStyle': 'shortdot',
             'data': ppsvpct_data
         }
         shsvpct_series = {
             'name': 'SH Save %',
-            'color': 'green',
+            'color': 'black',
+            'dashStyle': 'dashdot',
             'data': shsvpct_data
         }
         svpct_chart = {
-            'chart': {'borderColor':'black', 'borderWidth':2},
+            'chart': {'height':600, 'borderColor':'black', 'borderWidth':2},
             'credits': {'enabled':False},
             'title': {'text':'Save Percentage Per Game'},
+            'colorAxis': {'minColor':'#ffff00', 'maxColor':'#ff0000'},
             'xAxis': {'title': {'text':'Game Date'}, 'categories':dates},
             'yAxis': {'title': {'text':'Save Percentage'}},
             'series': [svpct_series, essvpct_series, ppsvpct_series, shsvpct_series]
@@ -964,18 +1015,18 @@ class GoalieGameStatsByPlayerView(generic.ListView):
             shot_data.append(shotsA)
         goal_series = {
             'name': 'Goals Against',
-            'color': '#0000ff',
-            'fillOpacity': 0.75,
+            'color': '#ff0000',
+            'fillOpacity': 0.95,
             'data': goal_data
         }
         shot_series = {
             'name': 'Shots Against',
-            'color': '#ff0000',
-            'fillOpacity': 0.5,
+            'color': '#ffff00',
+            'fillOpacity': 0.75,
             'data': shot_data
         }
         goal_chart = {
-            'chart': {'type':'area', 'borderColor':'black', 'borderWidth':2},
+            'chart': {'type':'area', 'height':600, 'borderColor':'black', 'borderWidth':2},
             'credits': {'enabled':False},
             'title': {'text':'Shots vs. Goals Progression'},
             'xAxis': {'title': {'text':'Game Date'}, 'categories':dates},
@@ -995,7 +1046,7 @@ class GoalieGameStatsByPlayerView(generic.ListView):
                 count_list.append([opponents.index(opponent), results.index(r), x])
         max_count = max(item[2] for item in count_list)
         results_chart = {
-            'chart': {'type':'heatmap', 'borderColor':'black', 'borderWidth':2},
+            'chart': {'type':'heatmap', 'height':600, 'borderColor':'black', 'borderWidth':2},
             'credits': {'enabled':False},
             'title': {'text':'Goalie Decision by Opponent'},
             'xAxis': {'categories':opponents},
@@ -1026,14 +1077,14 @@ class GoalieGameStatsByPlayerView(generic.ListView):
             'data':svpct_data
         }
         svpctopp_chart = {
-            'chart': {'type':'column', 'borderColor':'black', 'borderWidth':2},
+            'chart': {'type':'column', 'height':600, 'borderColor':'black', 'borderWidth':2},
             'credits': {'enabled':False},
             'title': {'text': 'Save Percentage Per Opponent'},
             'colorAxis': {'minColor':'#ffff00', 'maxColor':'#ff0000'},
             'xAxis' : {'title': {'text':'Opponent'}, 'categories':opponents},
             'yAxis': {'title': {'text':'GAA'}, 'stackLabels': {'enabled':True}},
             'tooltip': {'headerFormat':'', 'pointFormat':'{series.name}: {point.y}'},
-            'plotOptions' : {'series':{'dataLabels':{'enabled':True}}},
+            'plotOptions' : {'series':{'borderColor':'black', 'dataLabels':{'enabled':True, 'backgroundColor':'black', 'color':'white'}}},
             'series' : [svpctopp_series]
         }
         return svpctopp_chart
@@ -1055,14 +1106,14 @@ class GoalieGameStatsByPlayerView(generic.ListView):
             'data':gaa_data
         }
         gaaopp_chart = {
-            'chart': {'type':'column', 'borderColor':'black', 'borderWidth':2},
+            'chart': {'type':'column', 'height':600, 'borderColor':'black', 'borderWidth':2},
             'credits': {'enabled':False},
             'title': {'text': 'GAA Per Opponent'},
             'colorAxis': {'minColor':'#ffff00', 'maxColor':'#ff0000'},
             'xAxis' : {'title': {'text':'Opponent'}, 'categories':opponents},
             'yAxis': {'title': {'text':'GAA'}, 'stackLabels': {'enabled':True}},
             'tooltip': {'headerFormat':'', 'pointFormat':'{series.name}: {point.y}'},
-            'plotOptions' : {'series':{'dataLabels':{'enabled':True}}},
+            'plotOptions' : {'series':{'borderColor':'black', 'dataLabels':{'enabled':True, 'backgroundColor':'black', 'color':'white'}}},
             'series' : [gaaopp_series]
         }
         return gaaopp_chart 
