@@ -110,6 +110,26 @@ def roster_build(players:dict, url:str) -> dict:
             # Add the player to the roster dictionary:
         roster[player["id"]] = player
         # Add Taxi Squad players manually until NHL fixes their roster API:
+   roster[8474581] = {
+        "id" : 8474581,
+        "fullName" : "Jake Gardiner",
+        "firstName" : "Jake",
+        "lastName" : "Gardiner",
+        "primaryNumber" : "51",
+        "birthDate" : "1990-07-04",
+        "currentAge" : 30,
+        "birthCity" : "Minnetonka",
+        "birthStateProvince" : "MN",
+        "birthCountry" : "USA",
+        "height" : "6' 2\"",
+        "weight" : 203,
+        "primaryPosition" : {
+            "code" : "D",
+            "name" : "Defenseman",
+            "type" : "Defenseman",
+            "abbreviation" : "D"
+        }
+    } 
     roster[8479987] = {
         "id" : 8479987,
         "fullName" : "Morgan Geekie",
