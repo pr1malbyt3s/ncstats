@@ -1,0 +1,156 @@
+{% extends 'stormstats/base.html' %}
+
+{% block title %}{{ title }}{% endblock title %}
+
+{% block content %}
+    <h2>Skater Game Stats</h2>
+    <body>
+        StormStats Skater Game Stats Page<br><br>
+        {% if error_message %}
+        <h3><span class="error">{{ error_message }}</span></h3><br>
+        {% endif %}
+        <form method="POST" action="">
+            {% csrf_token %}
+            <select class="selectpicker" data-live-search="true" data-style="btn-danger" data-width="fit" name="gameId">
+                {% for game in games %}
+                <option value="{{ game.game_id }}">{{ game.date }} - {{ game.opponent }}</option>
+                {% endfor %} 
+            </select>
+            <input class="btn btn-dark" type="submit" value="Data Me">
+        </form><br>
+        <b>Showing data for {{ current_game }}</b></br>
+
+        <script>
+            $(document).ready(function() {
+                $('table.table').DataTable({
+                    responsive: true,
+                    scrollY: 400,
+                    scrollX: true,
+                    scrollCollapse: true,
+                    paging: false,
+                    fixedColumns: true,
+                    fixedHeader: true,
+                    info: false,
+                    oLanguage: {
+                        sSearch: "Search the Table: "
+                    }
+                });
+
+                $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                    $($.fn.dataTable.tables(true)).DataTable()
+                        .columns.adjust()
+                        .responsive.recalc();
+                });
+            });
+        </script>
+
+        <ul class="nav nav-tabs">
+            <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#basictab">Basic Skater Stats</a></li>
+            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#exptab">Expanded Skater Stats</a></li>
+        </ul>
+        <div class="tab-content">
+            <div id="basictab" class="tab-pane active">
+                <table id="basic-skater-stats" class="table table-dark table-hover" cellspacing="0" width="100%"><caption>Basic Stats</caption>
+                    <thead>
+                        <tr>
+                            <th id="P">Player</th>
+                            <th id="G">Goals</th>
+                            <th id="A">Assists</th>
+                            <th id="P">Points</th>
+                            <th id="PIM">PIM</th>
+                            <th id="PM">+/-</th>
+                            <th id="T">TOI</th>
+                            <th id="PPG">PPG</th>
+                            <th id="PPA">PPA</th>
+                            <th id="SHG">SHG</th>
+                            <th id="SHA">SHA</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for skaterstat in skatergamestats %}
+                        <tr>
+                            <td headers="P">{{ skaterstat.player.name }}</td>
+                            <td headers="G">{{ skaterstat.goals }}</td>
+                            <td headers="A">{{ skaterstat.assists }}</td>
+                            <td headers="P">{{ skaterstat.points }}</td>
+                            <td headers="PIM">{{ skaterstat.pim }}</td>
+                            <td headers="PM">{{ skaterstat.plusmin }}</td>
+                            <td headers="T">{{ skaterstat.toi }}</td>
+                            <td headers="PPG">{{ skaterstat.ppg }}</td>
+                            <td headers="PPA">{{ skaterstat.ppa }}</td>
+                            <td headers="SHG">{{ skaterstat.shg }}</td>
+                            <td headers="SHA">{{ skaterstat.sha }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div id="exptab" class="tab-pane">
+                <table id="expanded-skater-stats" class="table table-dark table-hover" cellspacing="0" width="100%"><caption>Expanded Stats</caption>
+                    <thead>
+                        <tr>
+                            <th id="P">Player</th>
+                            <th id="ETOI">ETOI</th>
+                            <th id="SHTOI">SHTOI</th>
+                            <th id="PPTOI">PPTOI</th>
+                            <th id="S">Shots</th>
+                            <th id="B">Blocks</th>
+                            <th id="H">Hits</th>
+                            <th id="FOW">FOW</th>
+                            <th id="FOT">FOT</th>
+                            <th id="TA">Takeaways</th>
+                            <th id="GA">Giveaways</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for skaterstat in skatergamestats %}
+                        <tr>
+                            <td headers="P">{{ skaterstat.player.name }}</td>
+                            <td headers="ETOI">{{ skaterstat.etoi }}</td>
+                            <td headers="SHTOI">{{ skaterstat.shtoi }}</td>
+                            <td headers="PPTOI">{{ skaterstat.pptoi }}</td>
+                            <td headers="S">{{ skaterstat.shots }}</td>
+                            <td headers="B">{{ skaterstat.blocks }}</td>
+                            <td headers="H">{{ skaterstat.hits }}</td>
+                            <td headers="FOW">{{ skaterstat.fow }}</td>
+                            <td headers="FOT">{{ skaterstat.fot }}</td>
+                            <td headers="TA">{{ skaterstat.ta }}</td>
+                            <td headers="GA">{{ skaterstat.ga }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div></br>
+        
+        <script src="https://code.highcharts.com/highcharts.js"></script>
+        <script src="https://code.highcharts.com/modules/heatmap.js"></script>
+        <script src="https://code.highcharts.com/modules/exporting.js"></script>
+        <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+        <ul class="nav nav-tabs">
+            <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#pointstab">Game Points Distribution</a></li>
+            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#timetab">Player Time on Ice</a></li>
+            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#plustab">Plus/Minus Distribution</a></li>
+        </ul>
+        <div class="tab-content">
+            <div id="pointstab" class="tab-pane active">
+                <div id="container1"></div>
+                <script>
+                Highcharts.chart('container1', {{ stack_chart|safe }});
+                </script>
+            </div>
+            <div id="timetab" class="tab-pane">
+                <div id="container2"></div>
+                <script>
+                Highcharts.chart('container2', {{ toi_chart|safe }});
+                </script>
+            </div>
+            <div id="plustab" class="tab-pane">
+                <div id="container3"></div>
+                <script>
+                Highcharts.chart('container3', {{ plus_chart|safe }});
+                </script>
+            </div>
+        </div>
+    </body>
+{% endblock content %}

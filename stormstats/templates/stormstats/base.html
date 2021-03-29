@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        {% load static %}
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.18/css/bootstrap-select.min.css">
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.10.23/css/dataTables.bootstrap4.min.css">
+        <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/3.2.4/css/fixedColumns.bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="{% static 'stormstats/style.css' %}">
+        
+        <!-- JavaScript -->
+        <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.18/js/bootstrap-select.min.js"></script>
+        <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+        <script src="https://cdn.datatables.net/1.10.23/js/dataTables.bootstrap4.min.js"></script>
+        <script src="https://cdn.datatables.net/fixedcolumns/3.3.2/js/dataTables.fixedColumns.min.js"></script>
+        
+        <title>
+            {% block title %}
+            {{ page_title|default:"StormStats" }}
+            {% endblock title %}
+        </title>
+    </head>
+    <body>
+        <nav class="nav nav-pills red">
+            <a class="nav-item nav-link {{ home_activate }}" href="{% url 'stormstats:home' %}">Home</a>
+            <a class="nav-item nav-link {{ about_activate }}" href="{% url 'stormstats:about' %}">About</a>
+            <a class="nav-item nav-link {{ roster_activate }}" href="{% url 'stormstats:roster' %}">Roster</a>
+            <a class="nav-item nav-link {{ schedule_activate }}" href="{% url 'stormstats:schedule' %}">Schedule</a>
+            <a class="nav-item nav-link {{ skaterstats_activate }}" href="{% url 'stormstats:skaterstats' %}">Skater Stats</a>
+            <a class="nav-item nav-link {{ goaliestats_activate }}" href="{% url 'stormstats:goaliestats' %}">Goalie Stats</a>
+            <div class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle {{ skatergamestats_activate }}" data-toggle="dropdown" href="">Skater Game Stats</a>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="{% url 'stormstats:skatergamestatsbygame' %}">By Game</a>
+                    <a class="dropdown-item" href="{% url 'stormstats:skatergamestatsbyplayer' %}">By Player</a>
+                </div>
+            </div>
+            <div class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle {{ goaliegamestats_activate }}" data-toggle="dropdown" href="">Goalie Game Stats</a>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="{% url 'stormstats:goaliegamestatsbygame' %}">By Game</a>
+                    <a class="dropdown-item" href="{% url 'stormstats:goaliegamestatsbyplayer' %}">By Player</a>
+                </div>
+            </div>    
+        </nav>
+        <div class="content">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </body>
+</html>

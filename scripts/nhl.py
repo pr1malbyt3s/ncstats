@@ -5,11 +5,12 @@ import json
 import requests
 
 # Set API Urls:
-schedule_url = "https://statsapi.web.nhl.com/api/v1/schedule?teamId=12&season=20202021"
+schedule_url = "https://statsapi.web.nhl.com/api/v1/schedule?teamId=12&season=SEASON"
 roster_url = "https://statsapi.web.nhl.com/api/v1/teams/12?expand=team.roster"
 player_url = "https://statsapi.web.nhl.com/api/v1/people/PLAYER_ID"
-player_overall_stats_url = "https://statsapi.web.nhl.com/api/v1/people/PLAYER_ID/stats?stats=statsSingleSeason&season=20192020"
+player_overall_stats_url = "https://statsapi.web.nhl.com/api/v1/people/PLAYER_ID/stats?stats=statsSingleSeason&season=SEASON"
 game_stats_url = "https://statsapi.web.nhl.com/api/v1/game/GAME_ID/boxscore"
+game_score_url = "https://statsapi.web.nhl.com/api/v1/game/GAME_ID/linescore"
 
 # Locations dictionary used to specify game location based on home/away and/or opponent:
 locations = {
@@ -24,22 +25,25 @@ locations = {
 }
 
 # Function used to build the game schedule. It accepts the API URL as the parameter and returns a dictionary of games:
-def schedule_build(url:str) -> dict:
+def schedule_build(schedule_url:str, score_url:str, season:int) -> dict:
     # Initialize the schedule dictionary:
     schedule = {}
+    url1 = schedule_url.replace("SEASON", str(season))
     # Get the API response as JSON:
-    response = requests.get(url).json()
+    response1 = requests.get(url1).json()
     # Iterate through each game:
-    for x in response["dates"]:
+    for x in response1["dates"]:
         # Initialize the individual game dictionary:
         game = {}
         # Parse the game ID:
         game["gameId"] = x["games"][0]["gamePk"]
+        # Parse the game season:
+        game["season"] = x["games"][0]["season"]
         # Parse the game date:
         game["date"] = x["date"]
         # Parse the away and home teams:
-        away = x["games"][0]["teams"]["home"]["team"]["name"]
-        home = x["games"][0]["teams"]["away"]["team"]["name"]
+        away = x["games"][0]["teams"]["away"]["team"]["name"]
+        home = x["games"][0]["teams"]["home"]["team"]["name"]
         # Set the opponent based on the away and home teams:
         if  (away == "Carolina Hurricanes"):
             game["opponent"] = home
@@ -49,6 +53,21 @@ def schedule_build(url:str) -> dict:
         game["location"] = locations[home]
         # Parse the gameDate datetime object, convert it to Eastern time, and return the HH:MM format:
         game["time"] = parse(x["games"][0]["gameDate"]).astimezone(timezone("US/Eastern")).strftime("%H:%M")
+        # Parse the game state and mark it True for played and false for not played:
+        status = x["games"][0]["status"]["detailedState"]
+        if (status == "Final"):
+            game["played"] = True
+            url2 = score_url.replace("GAME_ID", str(game["gameId"]))
+            response2 = requests.get(url2).json()
+            if (away == "Carolina Hurricanes"):
+                game["carScore"] = response2["teams"]["away"]["goals"]
+                game["oppScore"] = response2["teams"]["home"]["goals"]
+            else:
+                game["carScore"] = response2["teams"]["home"]["goals"]
+                game["oppScore"] = response2["teams"]["away"]["goals"]
+            game["period"] = response2["currentPeriodOrdinal"]
+        else:
+            game["played"] = False
         # Add the game to the schedule dictionary:
         schedule[game["gameId"]] = game
     # Return the final schedule:
@@ -73,7 +92,7 @@ def players_build(url:str) -> dict:
     return players
 
 # Function used to build the team roster. It accepts the players dictionary and the API URL as parameters and returns the roster as a dictionary of players:
-def roster_build(players:dict, url:str) -> list:
+def roster_build(players:dict, url:str) -> dict:
     # Initialize the roster dictionary:
     roster = {}
     # Iterate through each player ID in the player list:
@@ -90,6 +109,167 @@ def roster_build(players:dict, url:str) -> list:
             player[key] = val
             # Add the player to the roster dictionary:
         roster[player["id"]] = player
+        # Add Taxi Squad players manually until NHL fixes their roster API:
+    roster[8479987] = {
+        "id" : 8479987,
+        "fullName" : "Morgan Geekie",
+        "firstName" : "Morgan",
+        "lastName" : "Geekie",
+        "primaryNumber" : "67",
+        "birthDate" : "1998-07-20",
+        "currentAge" : 22,
+        "birthCity" : "Strathclair",
+        "birthStateProvince" : "MB",
+        "birthCountry" : "CAN",
+        "height" : "6' 3\"",
+        "weight" : 192,
+        "primaryPosition" : {
+            "code" : "C",
+            "name" : "Center",
+            "type" : "Forward",
+            "abbreviation" : "C"
+        }
+    }
+    roster[8478904] = {
+        "id" : 8478904,
+        "fullName" : "Steven Lorentz",
+        "firstName" : "Steven",
+        "lastName" : "Lorentz",
+        "primaryNumber" : "78",
+        "birthDate" : "1996-04-13",
+        "currentAge" : 24,
+        "birthCity" : "Kitchener",
+        "birthStateProvince" : "ON",
+        "birthCountry" : "CAN",
+        "height" : "6' 4\"",
+        "weight" : 206,
+        "primaryPosition" : {
+            "code" : "C",
+            "name" : "Center",
+            "type" : "Forward",
+            "abbreviation" : "C"
+        }
+    }
+    roster[8476323] = {
+        "id" : 8476323,
+        "fullName" : "Max McCormick",
+        "firstName" : "Max",
+        "lastName" : "McCormick",
+        "primaryNumber" : "28",
+        "birthDate" : "1992-05-01",
+        "currentAge" : 28,
+        "birthCity" : "De Pere",
+        "birthStateProvince" : "WI",
+        "birthCountry" : "USA",
+        "height" : "5' 11\"",
+        "weight" : 188,
+        "primaryPosition" : {
+            "code" : "L",
+            "name" : "Left Wing",
+            "type" : "Forward",
+            "abbreviation" : "LW"
+        }
+    }
+    roster[8479402] = {
+        "id" : 8479402,
+        "fullName" : "Jake Bean",
+        "firstName" : "Jake",
+        "lastName" : "Bean",
+        "primaryNumber" : "24",
+        "birthDate" : "1998-06-09",
+        "currentAge" : 22,
+        "birthCity" : "Calgary",
+        "birthStateProvince" : "AB",
+        "birthCountry" : "CAN",
+        "height" : "6' 1\"",
+        "weight" : 186,
+        "primaryPosition" : {
+            "code" : "D",
+            "name" : "Defenseman",
+            "type" : "Defenseman",
+            "abbreviation" : "D"
+        }
+    }
+    roster[8477968] = {
+        "id" : 8477968,
+        "fullName" : "Alex Nedeljkovic",
+        "firstName" : "Alex",
+        "lastName" : "Nedeljkovic",
+        "primaryNumber" : "39",
+        "birthDate" : "1996-01-07",
+        "currentAge" : 25,
+        "birthCity" : "Parma",
+        "birthStateProvince" : "OH",
+        "birthCountry" : "USA",
+        "height" : "6' 0\"",
+        "weight" : 189,
+        "primaryPosition" : {
+            "code" : "G",
+            "name" : "Goalie",
+            "type" : "Goalie",
+            "abbreviation" : "G"
+        }
+    }
+    roster[8480776] = {
+        "id" : 8480776,
+        "fullName" : "Sheldon Rempal",
+        "firstName" : "Sheldon",
+        "lastName" : "Rempal",
+        "primaryNumber" : "41",
+        "birthDate" : "1995-08-07",
+        "currentAge" : 25,
+        "birthCity" : "Calgary",
+        "birthStateProvince" : "AB",
+        "birthCountry" : "CAN",
+        "height" : "5' 10\"",
+        "weight" : 165,
+        "primaryPosition" : {
+            "code" : "R",
+            "name" : "Right Wing",
+            "type" : "Forward",
+            "abbreviation" : "RW"
+        }
+    }
+    roster[8475213] = {
+        "id" : 8475213,
+        "fullName" : "Drew Shore",
+        "firstName" : "Drew",
+        "lastName" : "Shore",
+        "primaryNumber" : "29",
+        "birthDate" : "1991-01-29",
+        "currentAge" : 30,
+        "birthCity" : "Denver",
+        "birthStateProvince" : "CO",
+        "birthCountry" : "USA",
+        "height" : "6' 2\"",
+        "weight" : 209,
+        "primaryPosition" : {
+            "code" : "C",
+            "name" : "Center",
+            "type" : "Forward",
+            "abbreviation" : "C"
+        }
+    }
+    roster[8476288] = {
+        "id" : 8476288,
+        "fullName" : "Ryan Dzingel",
+        "firstName" : "Ryan",
+        "lastName" : "Dzingel",
+        "primaryNumber" : "10",
+        "birthDate" : "1992-03-09",
+        "currentAge" : 28,
+        "birthCity" : "Wheaton",
+        "birthStateProvince" : "IL",
+        "birthCountry" : "USA",
+        "height" : "6' 0\"",
+        "weight" : 190,
+        "primaryPosition" : {
+            "code" : "L",
+            "name" : "Left Wing",
+            "type" : "Forward",
+            "abbreviation" : "LW"
+        }
+    }
     # Return the final roster dictionary:
     return roster
 
@@ -109,7 +289,7 @@ def overall_stats_individual_build(stats:list, player_id:int, name:str) -> dict:
     return player    
 
 # Function used to get overall stats. It accepts the roster dictionary and the API url as parameters and returns a dictionary of overall stats for every player:
-def overall_stats_total_build(roster:dict, url:str) -> dict:
+def overall_stats_total_build(roster:dict, url:str, season:int) -> dict:
     # Initialize the goalie stats dictionary:
     goalie_stats = {}
     # Initialize the skater stats dictionary:
@@ -117,7 +297,7 @@ def overall_stats_total_build(roster:dict, url:str) -> dict:
     # Iterate through each player on the roster:
     for key in roster:
         # Adjust the API url for player_id:
-        url2 = url.replace("PLAYER_ID", str(key))
+        url2 = url.replace("PLAYER_ID", str(key)).replace("SEASON", str(season))
         # Get the API response as JSON. This uses the individual player URL by their ID:
         response = requests.get(url2).json()
         # Check if the player is a goalie:
@@ -159,7 +339,7 @@ def game_stats_individual_build(player:dict) -> dict:
 # Function used to get individual game stats. It accepts the game_id and the API url and returns a dictionary of stats for the provided game_id:
 def game_stats_total_build(game_id:int, url:str) -> dict:
     # Initialize the game_stats dictionary with the game_id:
-    game_stats = {"gameId": game_id}
+    game_stats = {}
     # Update the url based on the game_id:
     url2 = url.replace("GAME_ID", str(game_id))
     # Get the API response as JSON:
@@ -182,10 +362,10 @@ def game_stats_total_build(game_id:int, url:str) -> dict:
     # Return the game stats dictionary:
     return game_stats
 
-def main():
+def run():
     # Generate the schedule:
-    #schedule = schedule_build(schedule_url)
-    #print(json.dumps(schedule, indent=4))
+    schedule = schedule_build(schedule_url, game_score_url, 20202021)
+    print(json.dumps(schedule, indent=4))
     # Generate the player list:
     #players = players_build(roster_url)
     #print(json.dumps(players, indent=4))
@@ -193,10 +373,8 @@ def main():
     #roster = roster_build(players, player_url)
     #print(json.dumps(roster, indent=4))
     # Generate the overall basic skater stats:
-    #overall_stats = overall_stats_total_build(roster, player_overall_stats_url)
+    #overall_stats = overall_stats_total_build(roster, player_overall_stats_url, 20202021)
+    #print(json.dumps(overall_stats, indent=4))
     # Generate game stats for a sample game:
-    game_stats = game_stats_total_build(2019020569, game_stats_url)
-    print(json.dumps(game_stats, indent=4))
-    
-if __name__ == "__main__":
-    main()
+    #game_stats = game_stats_total_build(2020020025, game_stats_url)
+    #print(json.dumps(game_stats, indent=4))

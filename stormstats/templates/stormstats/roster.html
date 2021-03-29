@@ -1,0 +1,105 @@
+{% extends 'stormstats/base.html' %}
+
+{% block title %}{{ title }}{% endblock title %}
+
+{% block content %}
+
+<h2>Roster</h2>
+        Stormstats Roster Page<br>
+        
+        <script>
+            $(document).ready(function() {
+                $('table.table').DataTable({
+                    responsive: true,
+                    scrollY: 400,
+                    scrollX: true,
+                    scrollCollapse: true,
+                    paging: false,
+                    fixedColumns: true,
+                    fixedHeader: true,
+                    info: false,
+                    oLanguage: {
+                        sSearch: "Search the Table: "
+                    }
+                });
+
+                $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                    $($.fn.dataTable.tables(true)).DataTable()
+                        .columns.adjust()
+                        .responsive.recalc();
+                });
+            });
+        </script>
+        <div class="table-responsive">
+            <table id="roster" class="table table-dark table-hover" cellspacing="0" width="100%" ><caption>Roster</caption>
+                <thead>
+                    <tr>
+                        <th id="N">Name</th>
+                        <th id="J">Jersey</th>
+                        <th id="P">Position</th>
+                        <th id="A">Age</th>
+                        <th id="H">Height</th>
+                        <th id="W">Weight</th>
+                        <th id="BP">Birth Place</th>
+                        <th id="BD">Birthday</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for player in players %}
+                <tr>
+                    <td headers="N">{{ player.name }}</td>
+                    <td headers="J">{{ player.jersey }}</td>
+                    <td headers="P">{{ player.position }}</td>
+                    <td headers="A">{{ player.age }}</td>
+                    <td headers="H">{{ player.height_str }}</td>
+                    <td headers="W">{{ player.weight }}</td>
+                    <td headers="BP">{{ player.birthplace }}</td>
+                    <td headers="BD">{{ player.birthdate }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div><br>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.3.6/proj4.js"></script>
+        <script src="https://code.highcharts.com/maps/highmaps.js"></script>
+        <script src="https://code.highcharts.com/highcharts-more.js"></script>
+        <script src="https://code.highcharts.com/mapdata/custom/world.js"></script>
+        <script src="https://code.highcharts.com/highcharts.src.js"></script>
+        <script src="https://code.highcharts.com/modules/exporting.js"></script>
+        <script src="https://code.highcharts.com/modules/export-data.js"></script>
+        <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+        <script src="https://code.highcharts.com/modules/heatmap.js"></script>
+        <ul class="nav nav-tabs">
+            <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#postab">Position Distribution</a></li>
+            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#agetab">Player Age vs. Jersey</a></li>
+            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#hwtab">Player Height vs. Weight</a></li>
+            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#bptab">Player Birthplace Map</a></li>
+        </ul>
+        <div class="tab-content">
+            <div id="postab" class="tab-pane active">
+                <div id="container1"></div>
+                <script>
+                Highcharts.chart('container1', {{ pos_chart|safe }});
+                </script>
+            </div>
+            <div id="agetab" class="tab-pane">
+                <div id="container2"></div>
+                <script>
+                Highcharts.chart('container2', {{ age_chart|safe }});
+                </script>
+            </div>
+            <div id="hwtab" class="tab-pane">
+                <div id="container3"></div>
+                <script>
+                Highcharts.chart('container3', {{ hw_chart|safe }});
+                </script>
+            </div>
+            <div id="bptab" class="tab-pane">
+                <div id="container4"></div>
+                <script>
+                Highcharts.mapChart('container4', {{ map_chart|safe }});
+                </script>
+            </div>
+        </div>
+
+{% endblock content %}

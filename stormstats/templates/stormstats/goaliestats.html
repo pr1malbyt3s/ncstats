@@ -1,0 +1,161 @@
+{% extends 'stormstats/base.html' %}
+
+{% block title %}{{ title }}{% endblock title %}
+
+{% block content %}
+
+    <h2>Goalie Overall Stats</h2>
+    <body>
+        StormStats Goalie Stats Page<br>
+
+        <script>
+            $(document).ready(function() {
+                $('table.table').DataTable({
+                    responsive: true,
+                    scrollY: 400,
+                    scrollX: true,
+                    scrollCollapse: true,
+                    paging: false,
+                    fixedColumns: true,
+                    fixedHeader: true,
+                    info: false,
+                    oLanguage: {
+                        sSearch: "Search the Table: "
+                    }
+                });
+
+                $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                    $($.fn.dataTable.tables(true)).DataTable()
+                        .columns.adjust()
+                        .responsive.recalc();
+                });
+            });
+        </script>
+
+        <ul class="nav nav-tabs">
+            <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#basictab">Basic Goalie Stats</a></li>
+            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#exptab">Expanded Goalie Stats</a></li>
+        </ul>
+        <div class="tab-content">
+            <div id="basictab" class="tab-pane active">
+                <table id="basic-goalie-stats" class="table table-dark table-hover" cellspacing="0" width="100%"><caption>Basic Stats</caption>
+                    <thead>
+                        <tr>
+                            <th id="P">Player</th>
+                            <th id="GP">Games</th>
+                            <th id="W">Wins</th>
+                            <th id="L">Losses</th>
+                            <th id="ST">Starts</th>
+                            <th id="S">Saves</th>
+                            <th id="SA">ShotsA</th>
+                            <th id="GA">GoalsA</th>
+                            <th id="TOIPG">TOIPG</th>
+                            <th id="SP">SV%</th>
+                            <th id="GAA">GAA</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for goaliestat in goaliestats %}
+                        <tr>
+                            <td headers="P">{{ goaliestat.player.name }}</td>
+                            <td headers="GP">{{ goaliestat.games }}</td>
+                            <td headers="W">{{ goaliestat.wins }}</td>
+                            <td headers="L">{{ goaliestat.losses }}</td>
+                            <td headers="ST">{{ goaliestat.started }}</td>
+                            <td headers="S">{{ goaliestat.saves }}</td>
+                            <td headers="SA">{{ goaliestat.shotsa }}</td>
+                            <td headers="GA">{{ goaliestat.goalsa }}</td>
+                            <td headers="TOIPG">{{ goaliestat.toipg }}</td>
+                            <td headers="SP">{{ goaliestat.svpct }}</td>
+                            <td headers="GAA">{{ goaliestat.gaa }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div id="exptab" class="tab-pane">
+                <table id="expanded-goalie-stats" class="table table-dark" cellspacing="0" width="100%"><caption>Expanded Stats</caption>
+                    <thead>
+                        <tr>
+                            <th id="P">Player</th>
+                            <th id="OT">OT</th>
+                            <th id="SO">Shutouts</th>
+                            <th id="ESSV">ES Saves</th>
+                            <th id="PPSV">PP Saves</th>
+                            <th id="SHSV">SH Saves</th>
+                            <th id="ESS">ES Shots</th>
+                            <th id="PPS">PP Shots</th>
+                            <th id="SHS">SH Shots</th>
+                            <th id="ESP">ES SV%</th>
+                            <th id="PPP">PP SV%</th>
+                            <th id="SHP">SH SV%</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for goaliestat in goaliestats %}
+                        <tr>
+                            <td headers="P">{{ goaliestat.player.name }}</td>
+                            <td headers="OT">{{ goaliestat.ot }}</td>
+                            <td headers="SO">{{ goaliestat.shutouts }}</td>
+                            <td headers="ESSV">{{ goaliestat.essaves }}</td>
+                            <td headers="PPSV">{{ goaliestat.ppsaves }}</td>
+                            <td headers="SHSV">{{ goaliestat.shsaves }}</td>
+                            <td headers="ESS">{{ goaliestat.esshots }}</td>
+                            <td headers="PPS">{{ goaliestat.ppshots }}</td>
+                            <td headers="SHS">{{ goaliestat.shshots }}</td>
+                            <td headers="ESP">{{ goaliestat.essvpct }}</td>
+                            <td headers="PPP">{{ goaliestat.ppsvpct }}</td>
+                            <td headers="SHP">{{ goaliestat.shsvpct }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div></br>
+        
+        <script src="https://code.highcharts.com/highcharts.js"></script>
+        <script src="https://code.highcharts.com/modules/heatmap.js"></script>
+        <script src="https://code.highcharts.com/modules/exporting.js"></script>
+        <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+        <ul class="nav nav-tabs">
+            <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#wlttab">Results Breakdown</a></li>
+            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#gaatab">GAA vs. Save %</a></li>
+            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#savetab">Save Type Breakdown</a></li>
+            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#shottab">Shots Faced Type Breakdown</a></li>
+            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#svpcttab">Save Percentage Distribution</a></li>
+        </ul>
+        <div class="tab-content">
+            <div id="wlttab" class="tab-pane active">
+                <div id="container1"></div>
+                <script>
+                Highcharts.chart('container1', {{ wlt_chart|safe }});
+                </script>
+            </div>
+            <div id="gaatab" class="tab-pane">
+                <div id="container2"></div>
+                <script>
+                Highcharts.chart('container2', {{ gaa_chart|safe }});
+                </script>
+            </div>
+            <div id="savetab" class="tab-pane">
+                <div id="container3"></div>
+                <script>
+                Highcharts.chart('container3', {{ save_chart|safe }});
+                </script>
+            </div>
+            <div id="shottab" class="tab-pane">
+                <div id="container4"></div>
+                <script>
+                Highcharts.chart('container4', {{ shot_chart|safe }});
+                </script>
+            </div>
+            <div id="svpcttab" class="tab-pane">
+                <div id="container5"></div>
+                <script>
+                Highcharts.chart('container5', {{ svpct_chart|safe }});
+                </script>
+            </div>
+        </div>
+        
+    </body>
+{% endblock content %}

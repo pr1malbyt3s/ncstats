@@ -1,0 +1,79 @@
+body {
+    background-color: rgb(202, 202, 202);
+    font-family: 'Courier New', Courier, monospace;
+    margin: 20px;
+}
+
+.nav-item {
+  background-color: black;
+  margin: 5px;
+}
+
+.nav-link {
+  color: white;
+}
+
+.nav-link:hover {
+  color: gray;
+}
+
+.nav-pills .nav-link.active {
+  background-color: #dc3545;
+  color: black;
+}
+
+.btn-danger {
+  border-color: black;
+}
+
+.btn-dark {
+  border-color: black;
+}
+
+caption {
+  caption-side: bottom;
+}
+
+thead {
+  background: black;
+  color: white;
+  top: 0;
+}
+
+.error {
+  display: inline;
+  background-color: black;
+  color: #dc3545;
+}
+
+.page-item.active .page-link {
+  background-color: black;
+  border-color: black;
+}
+
+.page-link {
+  color: black;
+}
+
+.bootstrap-select > .dropdown-toggle {
+  color: black;
+  border-color: black;
+}
+
+.dropdown-item.active {
+  background-color: #dc3545;
+  color: black;
+}
+
+.dropdown-item:hover {
+  background-color: black;
+  color:white;
+}
+
+.dataTables_filter input {
+  border-color: black;
+}
+
+th:first-child, td:first-child {
+  background-color: #dc3545 !important;
+}

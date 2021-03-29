@@ -1,0 +1,167 @@
+{% extends 'stormstats/base.html' %}
+
+{% block title %}{{ title }}{% endblock title %}
+
+{% block content %}
+
+    <h2>Skater Overall Stats</h2>
+        StormStats Skater Stats Page<br>
+
+        
+        <ul class="nav nav-tabs">
+            <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#basictab">Basic Skater Stats</a></li>
+            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#exptab">Expanded Skater Stats</a></li>
+        </ul>
+        <script>
+            $(document).ready(function() {
+                $('table.table').DataTable({
+                    responsive: true,
+                    scrollY: 400,
+                    scrollX: true,
+                    scrollCollapse: true,
+                    paging: false,
+                    fixedColumns: true,
+                    fixedHeader: true,
+                    info: false,
+                    oLanguage: {
+                        sSearch: "Search the Table: "
+                    }
+                });
+
+                $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                    $($.fn.dataTable.tables(true)).DataTable()
+                        .columns.adjust()
+                        .responsive.recalc();
+                });
+            });
+        </script>
+        <div class="tab-content">
+            <div id="basictab" class="tab-pane active">
+                <table id="basic-skater-stats" class="table table-dark table-hover" cellspacing="0" width="100%"><caption>Basic Stats</caption>
+                    <thead>
+                        <tr>
+                            <th id="P">Player</th>
+                            <th id="GP">Games</th>
+                            <th id="G">Goals</th>
+                            <th id="A">Assists</th>
+                            <th id="P">Points</th>
+                            <th id="PIM">PIM</th>
+                            <th id="PM">+/-</th>
+                            <th id="T">TOIPG</th>
+                            <th id="PPG">PPG</th>
+                            <th id="PPA">PPA</th>
+                            <th id="SHG">SHG</th>
+                            <th id="SHA">SHA</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for skaterstat in skaterstats %}
+                        <tr>
+                            <td headers="P">{{ skaterstat.player.name }}</td>
+                            <td headers="GP">{{ skaterstat.games }}</td>
+                            <td headers="G">{{ skaterstat.goals }}</td>
+                            <td headers="A">{{ skaterstat.assists }}</td>
+                            <td headers="P">{{ skaterstat.points }}</td>
+                            <td headers="PIM">{{ skaterstat.pim }}</td>
+                            <td headers="PM">{{ skaterstat.plusmin }}</td>
+                            <td headers="T">{{ skaterstat.toipg }}</td>
+                            <td headers="PPG">{{ skaterstat.ppg }}</td>
+                            <td headers="PPA">{{ skaterstat.ppa }}</td>
+                            <td headers="SHG">{{ skaterstat.shg }}</td>
+                            <td headers="SHA">{{ skaterstat.sha }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>  
+                </table>
+            </div>
+            <div id="exptab" class="tab-pane">
+                <table id="expanded-skater-stats" class="table table-dark table-hover" cellspacing="0" width="100%"><caption>Expanded Stats</caption>
+                    <thead>
+                        <tr>
+                            <th id="P">Player</th>
+                            <th id="ETOIPG">ETOIPG</th>
+                            <th id="SHTOIPG">SHTOIPG</th>
+                            <th id="PPTOIPG">PPTOIPG</th>
+                            <th id="S">Shots</th>
+                            <th id="SP">S%</th>
+                            <th id="FP">FO%</th>
+                            <th id="B">Blocks</th>
+                            <th id="H">Hits</th>
+                            <th id="SH">Shifts</th>
+                            <th id="GWG">GWG</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for skaterstat in skaterstats %}
+                        <tr>
+                            <td headers="P">{{ skaterstat.player.name }}</td>
+                            <td headers="ETOIPG">{{ skaterstat.etoipg }}</td>
+                            <td headers="SHTOIPG">{{ skaterstat.shtoipg }}</td>
+                            <td headers="PPTOIPG">{{ skaterstat.pptoipg }}</td>
+                            <td headers="S">{{ skaterstat.shots }}</td>
+                            <td headers="SP">{{ skaterstat.shotpct }}</td>
+                            <td headers="FP">{{ skaterstat.fopct }}</td>
+                            <td headers="B">{{ skaterstat.blocks }}</td>
+                            <td headers="H">{{ skaterstat.hits }}</td>
+                            <td headers="SH">{{ skaterstat.shifts }}</td>
+                            <td headers="GWG">{{ skaterstat.gwg }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div></br>
+        
+        <script src="https://code.highcharts.com/maps/highcharts.js"></script>
+        <script src="https://code.highcharts.com/modules/heatmap.js"></script>
+        <script src="https://code.highcharts.com/modules/exporting.js"></script>
+        <script src="https://code.highcharts.com/modules/export-data.js"></script>
+        <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+        <ul class="nav nav-tabs">
+            <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#goalstab">Goals Breakdown</a></li>
+            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#asstab">Assists Breakdown</a></li>
+            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#pointstab">Points Breakdown</a></li>
+            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#pimstab">PIM Breakdown</a></li>
+            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#plustab">Plus/Minus Distribution</a></li>
+            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#shottab">Shots vs. Shot%</a></li>
+        </ul>
+        <div class="tab-content">
+            <div id="goalstab" class="tab-pane active">
+                <div id="container1"></div>
+                <script>
+                Highcharts.chart('container1', {{ goals_chart|safe }});
+                </script>
+            </div>
+            <div id="asstab" class="tab-pane">
+                <div id="container2"></div>
+                <script>
+                Highcharts.chart('container2', {{ assists_chart|safe }});
+                </script>
+            </div>
+            <div id="pointstab" class="tab-pane">
+                <div id="container3"></div>
+                <script>
+                Highcharts.chart('container3', {{ points_chart|safe }});
+                </script>
+            </div>
+            <div id="pimstab" class="tab-pane">
+                <div id="container4"></div>
+                <script>
+                Highcharts.chart('container4', {{ pim_chart|safe }});
+                </script>
+            </div>
+            <div id="plustab" class="tab-pane">
+                <div id="container5"></div>
+                <script>
+                Highcharts.chart('container5', {{ plus_chart|safe }});
+                </script>
+            </div>
+            <div id="shottab" class="tab-pane">
+                <div id="container6"></div>
+                <script>
+                Highcharts.chart('container6', {{ shot_chart|safe }});
+                </script>
+            </div>
+        </div>
+
+{% endblock content %}
