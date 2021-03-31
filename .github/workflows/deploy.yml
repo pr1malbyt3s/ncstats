@@ -1,0 +1,24 @@
+name: Remote Code Deployment
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+      
+jobs:
+  deploy:
+    name: Deploy Code
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update on Server via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: ${{ secrets.PORT }}
+          script: cd ${{ secrets.PATH }} && git pull
+          
