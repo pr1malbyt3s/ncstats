@@ -3,11 +3,11 @@ name: Python Security Scan
 on:
   push:
     branches:
-      -master
-      -dev
+      - master
+      - dev
   pull_request:
     branches: 
-      -master
+      - master
 
 jobs:
   security_checks:
