@@ -4,13 +4,14 @@
 
 {% block content %}
 
-    <h2>Skater Overall Stats</h2>
-        StormStats Skater Stats Page<br>
-
+<br><h2>Schedule</h2>
+<body>
+    The Skater Stats features include tables and visualizations detailing attributes for skaters. Attribute details can be found in the Skater Attributes tab. Skater tables:
         
         <ul class="nav nav-tabs">
             <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#basictab">Basic Skater Stats</a></li>
             <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#exptab">Expanded Skater Stats</a></li>
+            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#atttab">Skater Attributes</a></li>
         </ul>
         <script>
             $(document).ready(function() {
@@ -110,6 +111,36 @@
                     </tbody>
                 </table>
             </div>
+            <div id="atttab" class="tab-pane">
+                <br>The skater stats tables contain the following attributes:<br>
+                <b>Basic Stats</b>
+                <ul>
+                    <li><b>Games:</b> Skater number of games played</li>
+                    <li><b>Goals:</b> Skater total goals scored</li>
+                    <li><b>Assists:</b> Skater total assists made</li>
+                    <li><b>Points:</b> Skater total points (points is the sum of goals and assists)</li>
+                    <li><b>PIM:</b> Skater total penalty minutes</li>
+                    <li><b>+/-:</b> Skater plus/minus rating (a player receives +1 for each team goal for while on ice and -1 for each team goal against while on ice)</li>
+                    <li><b>TOIPG:</b> Skater time on ice per game in MM:SS format</li>
+                    <li><b>PPG:</b> Skater total power play goals scored</li>
+                    <li><b>PPA:</b> Skater total power play assists made</li>
+                    <li><b>SHG:</b> Skater total shorthanded goals scored</li>
+                    <li><b>SHA:</b> Skater total shorthanded assists made</li>
+                </ul>
+                <b>Expanded Stats</b>>
+                <ul>
+                    <li><b>ETOIPG:</b> Skater even strength time on ice per game in MM:SS format</li>
+                    <li><b>SHTOIPG:</b> Skater shorthanded time on ice per game in MM:SS format</li>
+                    <li><b>PPTOIPG:</b> Skater power play time on ice per game in MM:SS format</li>
+                    <li><b>Shots:</b> Skater total shot attempts</li>
+                    <li><b>S%:</b> Skater shot percentage (shot percentage is goals/shots)</li>
+                    <li><b>FO%:</b> Skater faceoff percentage</li>
+                    <li><b>Blocks:</b> Skater total shots blocked</li>
+                    <li><b>Hits:</b> Skater total hits made</li>
+                    <li><b>Shifts:</b> Skater total shifts completed</li>
+                    <li><b>GWG:</b> Skater total game winning goals</li>
+                </ul>
+            </div>
         </div></br>
         
         <script src="https://code.highcharts.com/maps/highcharts.js"></script>
@@ -117,6 +148,7 @@
         <script src="https://code.highcharts.com/modules/exporting.js"></script>
         <script src="https://code.highcharts.com/modules/export-data.js"></script>
         <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+        Visualizations related to skater stats (details for each found in respective tab):
         <ul class="nav nav-tabs">
             <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#goalstab">Goals Breakdown</a></li>
             <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#asstab">Assists Breakdown</a></li>
@@ -127,36 +159,43 @@
         </ul>
         <div class="tab-content">
             <div id="goalstab" class="tab-pane active">
+                <br>The Goals Breakdown visualization shows the makeup of total team goals scored by individual skaters using total number and percentage.
                 <div id="container1"></div>
                 <script>
                 Highcharts.chart('container1', {{ goals_chart|safe }});
                 </script>
             </div>
             <div id="asstab" class="tab-pane">
+                <br>The Assists Breakdown visualization shows the makeup of total team assists made by individual skaters using total number and percentage.
                 <div id="container2"></div>
                 <script>
                 Highcharts.chart('container2', {{ assists_chart|safe }});
                 </script>
             </div>
             <div id="pointstab" class="tab-pane">
+                <br>The Points Breakdown visualization shows the makeup of total team points accrued by individual skaters using total number and percentage.
                 <div id="container3"></div>
                 <script>
                 Highcharts.chart('container3', {{ points_chart|safe }});
                 </script>
             </div>
             <div id="pimstab" class="tab-pane">
+                <br>The PIM Breakdown visualization shows the makeup of total team penalty minutes committed by individual skaters using total number and percentage.
                 <div id="container4"></div>
                 <script>
                 Highcharts.chart('container4', {{ pim_chart|safe }});
                 </script>
             </div>
             <div id="plustab" class="tab-pane">
+                <br>The Plus/Minus Distribution visualization shows the rating spectrum for each team skater.
                 <div id="container5"></div>
                 <script>
                 Highcharts.chart('container5', {{ plus_chart|safe }});
                 </script>
             </div>
             <div id="shottab" class="tab-pane">
+                <br>The Shots vs. Shot% visualization shows the correlation between player shots and player shot percentage.<br>
+                Left and Up: More shots with less success. Left and Down: Less shots with less success. Right and Up: More shots with more success. Right and Down: Less shots with more success.
                 <div id="container6"></div>
                 <script>
                 Highcharts.chart('container6', {{ shot_chart|safe }});
