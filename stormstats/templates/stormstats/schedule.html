@@ -4,12 +4,9 @@
 
 {% block content %}
 
-
-
-    <h2>Schedule</h2>
+    <br><h2>Schedule</h2>
     <body>
-        Stormstats Schedule Page<br>
-
+        The schedule features include tables and visualizations detailing game attributes. Attribute details can be found in the Schedule Attributes tab. Game tables:
         <script>
             $(document).ready(function() {
                 $('#played-games').DataTable({
@@ -54,6 +51,7 @@
         <ul class="nav nav-tabs">
             <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#playedtab">Played Games</a></li>
             <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#remtab">Remaining Games</a></li>
+            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#atttab">Schedule Attributes</a></li>
         </ul>
         <div class="tab-content">
             <div id="playedtab" class="tab-pane active">
@@ -102,6 +100,16 @@
                     </tbody>
                 </table>
             </div>
+            <div id="atttab" class="tab-pane">
+                <br>The schedule tables contain the following game attributes:<br>
+                <ul>
+                    <li><b>Date:</b> Game date in Month DD, YYYY format</li>
+                    <li><b>Time:</b> Game time according to eastern time zone</li>
+                    <li><b>Opponent:</b> Game opponent team name</li>
+                    <li><b>Location:</b> Game city, state location</li>
+                    <li><b>Result:</b> Game result for played games (Note Hurricanes goals presented first and shootouts/overtimes annotated)</li>
+                </ul>
+            </div>
         </div>
 
         <script src="https://code.highcharts.com/highcharts.js"></script>
@@ -109,18 +117,22 @@
         <script src="https://code.highcharts.com/modules/exporting.js"></script>
         <script src="https://code.highcharts.com/modules/export-data.js"></script>
         <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+        
+        Visualizations related to game attributes (details for each found in respective tab):
         <ul class="nav nav-tabs">
             <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#monthtab">Opponents Per Month</a></li>
             <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#restab">Results Per Opponent</a></li>
         </ul>
         <div class="tab-content">
             <div id="monthtab" class="tab-pane active">
+                <br>The Opponents Per Month visualization shows the number of games against each opponent by month based on the current schedule.
                 <div id="container1"></div>
                 <script>
                 Highcharts.chart('container1', {{ month_chart|safe }});
                 </script>
             </div>
             <div id="restab" class="tab-pane">
+                <br>The Results Per Opponent visualization shows the number of wins and losses against each opponent based on played games.
                 <div id="container2"></div>
                 <script>
                 Highcharts.chart('container2', {{ results_chart|safe }});
