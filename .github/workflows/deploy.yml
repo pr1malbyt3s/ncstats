@@ -18,5 +18,8 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
-          script: cd ${{ secrets.PATH }} && git pull
+          script: |
+            cd ${{ secrets.PATH }}
+            git pull
+            sudo systemctl restart gunicorn
           
