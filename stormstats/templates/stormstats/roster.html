@@ -4,8 +4,8 @@
 
 {% block content %}
 
-<h2>Roster</h2>
-        Stormstats Roster Page<br>
+<br><h2>Roster</h2>
+        The roster features include tables and visualizations detailing player attributes. Attribute details can be found in the Player Attributes tab. Players table:
         
         <script>
             $(document).ready(function() {
@@ -30,35 +30,55 @@
                 });
             });
         </script>
-        <div class="table-responsive">
-            <table id="roster" class="table table-dark table-hover" cellspacing="0" width="100%" ><caption>Roster</caption>
-                <thead>
+
+        <ul class="nav nav-tabs">
+            <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#rostertab">Players</a></li>
+            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#atttab">Player Attributes</a></li>
+        </ul>
+        <div class="tab-content">
+            <div id="rostertab" class="tab-pane active">
+                <table id="roster" class="table table-dark table-hover" cellspacing="0" width="100%" ><caption>Roster</caption>
+                    <thead>
+                        <tr>
+                            <th id="N">Name</th>
+                            <th id="J">Jersey</th>
+                            <th id="P">Position</th>
+                            <th id="A">Age</th>
+                            <th id="H">Height</th>
+                            <th id="W">Weight</th>
+                            <th id="BP">Birth Place</th>
+                            <th id="BD">Birthday</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for player in players %}
                     <tr>
-                        <th id="N">Name</th>
-                        <th id="J">Jersey</th>
-                        <th id="P">Position</th>
-                        <th id="A">Age</th>
-                        <th id="H">Height</th>
-                        <th id="W">Weight</th>
-                        <th id="BP">Birth Place</th>
-                        <th id="BD">Birthday</th>
+                        <td headers="N">{{ player.name }}</td>
+                        <td headers="J">{{ player.jersey }}</td>
+                        <td headers="P">{{ player.position }}</td>
+                        <td headers="A">{{ player.age }}</td>
+                        <td headers="H">{{ player.height_str }}</td>
+                        <td headers="W">{{ player.weight }}</td>
+                        <td headers="BP">{{ player.birthplace }}</td>
+                        <td headers="BD">{{ player.birthdate }}</td>
                     </tr>
-                </thead>
-                <tbody>
-                    {% for player in players %}
-                <tr>
-                    <td headers="N">{{ player.name }}</td>
-                    <td headers="J">{{ player.jersey }}</td>
-                    <td headers="P">{{ player.position }}</td>
-                    <td headers="A">{{ player.age }}</td>
-                    <td headers="H">{{ player.height_str }}</td>
-                    <td headers="W">{{ player.weight }}</td>
-                    <td headers="BP">{{ player.birthplace }}</td>
-                    <td headers="BD">{{ player.birthdate }}</td>
-                </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div id=atttab class=tab-pane>
+                <br>The roster table contains the following individual player attributes:<br>
+                <ul>
+                    <li><b>Name:</b> Player's name</li>
+                    <li><b>Jersey:</b> Player's jersey number on active roster</li>
+                    <li><b>Position:</b> Player's position on ice (Note there is no discernment for defensive side)</li>
+                    <li><b>Age:</b> Player's age in years</li>
+                    <li><b>Height:</b> Player's height in feet and inches</li>
+                    <li><b>Weight:</b> Player's weight in pounds</li>
+                    <li><b>Birthplace:</b></b> Player's city, territory (if available), and country of birth</li>
+                    <li><b>Birthday:</b> Player's date of birth</li>
+                </ul>
+            </div>
         </div><br>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.3.6/proj4.js"></script>
         <script src="https://code.highcharts.com/maps/highmaps.js"></script>
@@ -69,6 +89,8 @@
         <script src="https://code.highcharts.com/modules/export-data.js"></script>
         <script src="https://code.highcharts.com/modules/accessibility.js"></script>
         <script src="https://code.highcharts.com/modules/heatmap.js"></script>
+
+        Visualizations related to player attributes (details for each found in respective tab):
         <ul class="nav nav-tabs">
             <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#postab">Position Distribution</a></li>
             <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#agetab">Player Age vs. Jersey</a></li>
@@ -77,24 +99,30 @@
         </ul>
         <div class="tab-content">
             <div id="postab" class="tab-pane active">
+                <br>The Position Distribution visualization shows the number of rostered players by position.
                 <div id="container1"></div>
                 <script>
                 Highcharts.chart('container1', {{ pos_chart|safe }});
                 </script>
             </div>
             <div id="agetab" class="tab-pane">
+                <br>The Player Age vs. Jersey visualization offers some fun (but useless) insight for jersey numbers selected by rostered players.<br>
+                Left and Up: Older player with low jersey number. Left and Down: Younger player with low jersey number. Right and Up: Older player with high jersey number. Right and Down: Younger player with low jersey number.
                 <div id="container2"></div>
                 <script>
                 Highcharts.chart('container2', {{ age_chart|safe }});
                 </script>
             </div>
             <div id="hwtab" class="tab-pane">
+                <br>The Player Height vs. Weight visualization shows the correlation between player heights and player weights.<br>
+                Left and Up: Taller and lighter players. Left and Down: Shorter and lighter players. Right and Up: Taller and heavier players (aka beefcakes). Right and Down: Shorter and heavier players.
                 <div id="container3"></div>
                 <script>
                 Highcharts.chart('container3', {{ hw_chart|safe }});
                 </script>
             </div>
             <div id="bptab" class="tab-pane">
+                <br>The Player Birthplace Map visualization simply shows where each player was born at on a global map.
                 <div id="container4"></div>
                 <script>
                 Highcharts.mapChart('container4', {{ map_chart|safe }});

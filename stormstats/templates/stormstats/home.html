@@ -3,9 +3,31 @@
 {% block title %}{{ title }}{% endblock title %}
 
 {% block content %}
-    <h2>Home</h2>
+    <br><h2>Welcome to Stormstats!</h2>
     <body>
-        Welcome to Stormstats!<br>
-        Site Navigation:
+        Stormstats' purpose is to present hockey statistics from public data sources using open-source (and mostly free) technology. The hope is to provide a framework for others to contribute their sports statistics and data science ideas.<br>
+        <br>
+        Currently, the site is designed around the Carolina Hurricanes using standard statistics. Future work will incorporate the entire league along with advanced, descriptive statistics and predictive data mining features. The application source code and project progress can be found <a href=https://github.com/pr1malbyt3s/ncstats>here.</a><br>
+        <br>
+        The following features are currently available:
+        <ul>
+            <li><a href="{% url 'stormstats:roster' %}">Roster</a>: Details individual player attributes.</li>
+            <li><a href="{% url 'stormstats:schedule' %}">Schedule</a>: Details the current season's games.</li>
+            <li><a href="{% url 'stormstats:skaterstats' %}">Skater Stats</a>: Details collective stats for non-goalie players.</li>
+            <li><a href="{% url 'stormstats:goaliestats' %}">Goalie Stats</a>: Details collective stats for goalies.</li>
+            <li>Skater Game Stats:
+                <ul>
+                    <li><a href="{% url 'stormstats:skatergamestatsbygame' %}">By Game</a>: Details collective game stats for non-goalie players.</li>
+                    <li><a href="{% url 'stormstats:skatergamestatsbyplayer' %}">By Player</a>: Details individual season stats for non-goalie players.</li>
+                </ul>
+            </li>
+            <li>Goalie Game Stats:
+                <ul>
+                    <li><a href="{% url 'stormstats:goaliegamestatsbygame' %}">By Game</a>: Details collective game stats for goalies.</li>
+                    <li><a href="{% url 'stormstats:goaliegamestatsbyplayer' %}">By Player</a>: Details individual season stats for goalies.</li>
+                </ul>
+            </li>
+            <li><a href="{% url 'stormstats:about' %}">About</a>: Details more information.</li>
+        </ul>
     </body>
 {% endblock content %}
