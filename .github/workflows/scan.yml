@@ -3,7 +3,6 @@ name: Python Security Scan
 on:
   push:
     branches:
-      - master
       - dev
   pull_request:
     branches: 
