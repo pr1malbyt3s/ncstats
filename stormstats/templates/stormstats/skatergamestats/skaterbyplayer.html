@@ -3,9 +3,9 @@
 {% block title %}{{ title }}{% endblock title %}
 
 {% block content %}
-    <h2>Skater Game Stats</h2>
+    <br><h2>Skater Game Stats by Player</h2>
     <body>
-        StormStats Skater Game Stats Page<br><br>
+    The Skater Game Stats by Player features include tables and visualizations detailing attributes for all games a specific skater has played in. Please select a player from the dropdown below. You can utilize the search feature in the dropdown to filter by player name. Attribute details can be found in the Skater Game Stats Attributes tab.
         {% if error_message %}
         <h3><span class="error">{{ error_message }}</span></h3><br>
         {% endif %}
@@ -16,10 +16,10 @@
                 <option value="{{ player.player_id }}">{{ player.name }}</option>
                 {% endfor %} 
             </select>
-            <input class="btn btn-dark" type="submit" value="Data Me">
+            <input class="btn btn-dark" type="submit" value="Show Player Data">
         </form><br>
         <b>Showing data for {{ current_skater}}</b></br>
-
+        Skater tables:
         <script>
             $(document).ready(function() {
                 $('table.table').DataTable({
@@ -49,6 +49,7 @@
         <ul class="nav nav-tabs">
             <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#basictab">Basic Skater Stats</a></li>
             <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#exptab">Expanded Skater Stats</a></li>
+            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#atttab">Skater Game Stats Attributes</a></li>
         </ul>
         <div class="tab-content">
             <div id="basictab" class="tab-pane active">
@@ -127,10 +128,40 @@
                     </tbody>
                 </table>
             </div>
+            <div id="atttab" class="tab-pane">
+                <br>The skater stats tables contain the following attributes:<br>
+                <b>Basic Stats</b>
+                <ul>
+                    <li><b>Goals:</b> Skater goals scored in game</li>
+                    <li><b>Assists:</b> Skater assists made in game</li>
+                    <li><b>Points:</b> Skater total game points (points is the sum of goals and assists)</li>
+                    <li><b>PIM:</b> Skater penalty minutes in game</li>
+                    <li><b>+/-:</b> Skater plus/minus rating in game (a player receives +1 for each team goal for while on ice and -1 for each team goal against while on ice)</li>
+                    <li><b>TOI:</b> Skater time on ice in MM:SS format</li>
+                    <li><b>PPG:</b> Skater power play goals scored</li>
+                    <li><b>PPA:</b> Skater power play assists made</li>
+                    <li><b>SHG:</b> Skater shorthanded goals scored</li>
+                    <li><b>SHA:</b> Skater shorthanded assists made</li>
+                </ul>
+                <b>Expanded Stats</b>>
+                <ul>
+                    <li><b>ETOI:</b> Skater even strength time on ice in MM:SS format</li>
+                    <li><b>SHTOI:</b> Skater shorthanded time on ice in MM:SS format</li>
+                    <li><b>PPTOI:</b> Skater power play time on ice in MM:SS format</li>
+                    <li><b>Shots:</b> Skater shot attempts in game</li>
+                    <li><b>Blocks:</b> Skater shots blocked in game</li>
+                    <li><b>Hits:</b> Skater hits made in game</li>
+                    <li><b>FOW:</b> Skater faceoffs won in game</li>
+                    <li><b>FOT:</b> Skater faceoffs taken in game</li>
+                    <li><b>Takeaways:</b> Opponent turnovers forced by skater in game</li>
+                    <li><b>Giveaways:</b> Skater turnovers forced by opponent in game</li>
+                </ul>
+            </div>
         </div></br>
         
         <script src="https://code.highcharts.com/highcharts.js"></script>
         <script src="https://code.highcharts.com/modules/heatmap.js"></script>
+        Visualizations related to skater stats (details for each found in respective tab):
         <ul class="nav nav-tabs">
             <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#pointstab">Player Point Progression</a></li>
             <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#timetab">Player Time on Ice</a></li>
@@ -140,30 +171,35 @@
         </ul>
         <div class="tab-content">
             <div id="pointstab" class="tab-pane active">
+                <br>The Player Point Progression visualization shows the change in the player's goals, assists, and total points throughout the season.
                 <div id="container1"></div>
                 <script>
                 Highcharts.chart('container1', {{ stats_chart|safe }});
                 </script>
             </div>
             <div id="timetab" class="tab-pane">
+                <br>The Player Time on Ice visualization shows the game breakdown in the player's time on ice by type throughout the season.
                 <div id="container2"></div>
                 <script>
                 Highcharts.chart('container2', {{ time_chart|safe }});
                 </script>
             </div>
             <div id="plustab" class="tab-pane">
+                <br>The Player +/- Progression visualization shows the change in the player's plus/minus rating throughout the season.
                 <div id="container3"></div>
                 <script>
                 Highcharts.chart('container3', {{ plus_chart|safe }});
                 </script>
             </div>
             <div id="pointsopptab" class="tab-pane">
+                <br>The Points Per Opponent visualization shows the player's total points versus each opponent.
                 <div id="container4"></div>
                 <script>
                 Highcharts.chart('container4', {{ pointsopp_chart|safe }});
                 </script>
             </div>
             <div id="plusopptab" class="tab-pane">
+                <br>The +/- Per Opponent visualization shows the player's plus/minus rating versus each opponent.
                 <div id="container5"></div>
                 <script>
                 Highcharts.chart('container5', {{ plusopp_chart|safe }});

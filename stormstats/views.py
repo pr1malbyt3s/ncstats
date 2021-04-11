@@ -428,7 +428,7 @@ class SkaterGameStatsByGameView(generic.ListView):
         goals_chart = {
             'chart': {'type':'column', 'height':600, 'borderColor':'black', 'borderWidth':2},
             'credits': {'enabled':False},
-            'title': {'text': 'Game Points Distribution'},
+            'title': {'text': 'Game Points Breakdown'},
             'colorAxis': {'minColor':'#ffff00', 'maxColor':'#ff0000'},
             'xAxis': {'categories':['Goals', 'Assists', 'Points']},
             'yAxis': {'title': {'text':'Value Count'}, 'stackLabels': {'enabled':True, 'format':'Total {series.name}: {total}', 'overflow':'allow', 'crop':False}},
