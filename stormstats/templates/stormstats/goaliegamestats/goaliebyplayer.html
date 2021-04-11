@@ -3,9 +3,9 @@
 {% block title %}{{ title }}{% endblock title %}
 
 {% block content %}
-    <h2>Goalie Game Stats</h2>
+    <br><h2>Goalie Game Stats by Player</h2>
     <body>
-        StormStats Goalie Game Stats Page<br><br>
+    The Goalie Game Stats by Player features include tables and visualizations detailing attributes for all games a specific goalie has played in. Please select a player from the dropdown below. You can utilize the search feature in the dropdown to filter by player name. Attribute details can be found in the Goalie Game Stats Attributes tab.
         {% if error_message %}
         <h3><span class="error">{{ error_message }}</span></h3><br>
         {% endif %}
@@ -16,13 +16,14 @@
                 <option value="{{ player.player_id }}">{{ player.name }}</option>
                 {% endfor %} 
             </select>
-            <input class="btn btn-dark" type="submit" value="Data Me">
+            <input class="btn btn-dark" type="submit" value="Show Player Data">
         </form><br>
         <b>Showing data for {{ current_goalie }}</b></br>
-
+        Goalie tables:
         <ul class="nav nav-tabs">
             <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#basictab">Basic Goalie Stats</a></li>
             <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#exptab">Expanded Goalie Stats</a></li>
+            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#atttab">Goalie Game Stats Attributes</a></li>
         </ul>
 
         <script>
@@ -124,6 +125,33 @@
                     </tbody>
                 </table>
             </div>
+            <div id="atttab" class="tab-pane">
+                <br>The goalie stats tables contain the following attributes:<br>
+                <b>Basic Stats</b>
+                <ul>
+                    <li><b>Decision:</b> Goalie result decision for game</li>
+                    <li><b>GoalsA:</b> Goalie number of goals allowed in game</li>
+                    <li><b>ShotsA</b> Goalie number of shots faced in game</li>
+                    <li><b>Saves:</b> Goalie number of saves made in game</li>
+                    <li><b>SV%:</b> Goalie save percentage in game</li>
+                    <li><b>TOI:</b> Goalie game time on ice in MM:SS format</li>
+                    <li><b>PIM:</b> Goalie penalty minutes committed in game</li>
+                    <li><b>Goals:</b> Goalie number of goals scored in game</li>
+                    <li><b>Assists:</b> Goalie number of assists completed in game</li>
+                </ul>
+                <b>Expanded Stats</b>
+                <ul>
+                    <li><b>ES Saves:</b> Goalie number of even strength saves made</li>
+                    <li><b>PP Saves:</b> Goalie number of powerplay saves made</li>
+                    <li><b>SH Saves:</b> Goalie number of shorthanded saves made</li>
+                    <li><b>ES Shots:</b> Goalie number of even strength shots faced</li>
+                    <li><b>PP Shots:</b> Goalie number of powerplay shots faced</li>
+                    <li><b>SH Shots:</b> Goalie number of shorthanded shots faced</li>
+                    <li><b>ES SV%:</b> Goalie even strength save percentage</li>
+                    <li><b>PP SV%:</b> Goalie powerplay save percentage</li>
+                    <li><b>SH SV%:</b> Goalie shorthanded save percentage</li>
+                </ul>
+            </div>
         </div></br>
 
         <script src="https://code.highcharts.com/highcharts.js"></script>
@@ -131,6 +159,7 @@
         <script src="https://code.highcharts.com/modules/exporting.js"></script>
         <script src="https://code.highcharts.com/modules/export-data.js"></script>
         <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+        Visualizations related to goalie stats (details for each found in respective tab):
         <ul class="nav nav-tabs">
             <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#savetab">Save Count Per Game</a></li>
             <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#shottab">Shots Against Per Game</a></li>
@@ -142,42 +171,49 @@
         </ul>
         <div class="tab-content">
             <div id="savetab" class="tab-pane active">
+                <br>The Save Count Per Game visualization shows the game breakdown in the goalie's saves by type throughout the season.
                 <div id="container1"></div>
                 <script>
                 Highcharts.chart('container1', {{ save_chart|safe }});
                 </script>
             </div>
             <div id="shottab" class="tab-pane">
+                <br>The Shots Against Per Game visualization shows the game breakdown in the goalie's shots faced by type throughout the season.
                 <div id="container2"></div>
                 <script>
                 Highcharts.chart('container2', {{ shot_chart|safe }});
                 </script>
             </div>
             <div id="svpcttab" class="tab-pane">
+                <br>The Save% Per Game visualization shows the game breakdown in the goalie's save percentage by shot type faced throughout the season.
                 <div id="container3"></div>
                 <script>
                 Highcharts.chart('container3', {{ svpct_chart|safe }});
                 </script>
             </div>
             <div id="goaltab" class="tab-pane">
+                <br>The GoalsA vs. ShotsA Progression visualization shows the change in the goalie's shots faced compared to goals allowed throughout the season.
                 <div id="container4"></div>
                 <script>
                 Highcharts.chart('container4', {{ goal_chart|safe }});
                 </script>
             </div>
             <div id="restab" class="tab-pane">
+                <br>The Goalie Result by Opponent visualization shows the change in the goalie's game decisions broken down per opponent.
                 <div id="container5"></div>
                 <script>
                 Highcharts.chart('container5', {{ results_chart|safe }});
                 </script>
             </div>
             <div id="svpctopptab" class="tab-pane">
+                <br>The Save% by Opponent visualization shows the goalie's total save percentage broken down per opponent.
                 <div id="container6"></div>
                 <script>
                 Highcharts.chart('container6', {{ svpctopp_chart|safe }});
                 </script>
             </div>
             <div id="gaaopptab" class="tab-pane">
+                <br>The GAA by Opponent visualization shows the goalie's goals against average broken down per opponent.
                 <div id="container7"></div>
                 <script>
                 Highcharts.chart('container7', {{ gaaopp_chart|safe }});
