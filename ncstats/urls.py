@@ -16,7 +16,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
-urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('stormstats.urls')),
-]
+if settings.ADMIN_ENABLED:
+    urlpatterns = [
+        path('admin/', admin.site.urls),
+        path('', include('stormstats.urls')),
+    ]
+else:
+    urlpatterns = [
+        path('', include('stormstats.urls')),
+    ]
