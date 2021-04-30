@@ -290,6 +290,26 @@ def roster_build(players:dict, url:str) -> dict:
             "abbreviation" : "LW"
         }
     }
+    roster[8477046] = {
+        "id" : 8477046,
+        "fullName" : "Joakim Ryan",
+        "firstName" : "Joakim",
+        "lastName" : "Ryan",
+        "primaryNumber" : "33",
+        "birthDate" : "1993-06-17",
+        "currentAge" : 27,
+        "birthCity" : "Rumson",
+        "birthStateProvince" : "NJ",
+        "birthCountry" : "USA",
+        "height" : "5' 11\"",
+        "weight" : 185,
+        "primaryPosition" : {
+            "code" : "D",
+            "name" : "Defenseman",
+            "type" : "Defenseman",
+            "abbreviation" : "D"
+        }
+    }
     # Return the final roster dictionary:
     return roster
 
