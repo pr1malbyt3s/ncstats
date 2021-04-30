@@ -51,6 +51,12 @@ def player_construct(player_dict:dict) -> Player:
         feet = int(x[0])
         inches = int(x[1])
         return feet*12 + inches
+
+    def province_check(d:dict) -> str:
+        if "birthStateProvince" in d:
+            return d.get("birthCity", "CITY") + ', ' + d.get("birthStateProvince", "PROVINCE") + ', ' + d.get("birthCountry", "COUNTRY")
+        return d.get("birthCity", "CITY") + ', ' + d.get("birthCountry", "COUNTRY")
+    
     def geolocate(p:str) -> list:
         geolocator = Nominatim(user_agent="StormStats")
         x = p.split(', ')
@@ -81,29 +87,29 @@ def player_construct(player_dict:dict) -> Player:
     player, _ = Player.objects.update_or_create(player_id=player_dict["id"],
     defaults={
         # Parse the player's name:
-        "name": player_dict["fullName"],
+        "name": player_dict.get("fullName", "NAME"),
         # Parse the player's jersey number:
-        "jersey": player_dict["primaryNumber"],
+        "jersey": player_dict.get("primaryNumber", 00),
         # Parse the player's age:
-        "age": player_dict["currentAge"],
+        "age": player_dict.get("currentAge", 00),
         # Parse the player's height:
-        "height_str": player_dict["height"].replace('"', ''),
+        "height_str": player_dict.get("height", "0' 0\"").replace('"', ''),
         # Convert height:
-        "height": height_in_inches(player_dict["height"].replace('"', '')),
+        "height": height_in_inches(player_dict.get("height", "0' 0\"").replace('"', '')),
         # Parse the player's weight:
-        "weight": player_dict["weight"],
+        "weight": player_dict.get("weight", 0),
         # Parse the player's position type:
-        "group": player_dict["primaryPosition"]["type"],
+        "group": player_dict.get("primaryPosition", "type").get("type", "POS_TYPE"),
         # Parse the player's position:
-        "position": player_dict["primaryPosition"]["name"],
+        "position": player_dict.get("primaryPosition", "name").get("name", "POS_NAME"),
         # Parse the player's birth place. If it has a province/state include it. If not, birthplace is city and country:
-        "birthplace": player_dict["birthCity"] + ', ' + player_dict["birthStateProvince"] + ', ' + player_dict["birthCountry"] if "birthStateProvince" in player_dict else player_dict["birthCity"] + ', ' + player_dict["birthCountry"],
+        "birthplace": province_check(player_dict),
         # Parse the player's birthplace latitude:
-        "bp_lat": geolocate(player_dict["birthCity"] + ', ' + player_dict["birthStateProvince"] + ', ' + player_dict["birthCountry"])[0] if "birthStateProvince" in player_dict else geolocate(player_dict["birthCity"] + ', ' + player_dict["birthCountry"])[0],
+        "bp_lat": geolocate(province_check(player_dict))[0],
         # Parse the player's birthplace longitude:
-        "bp_long": geolocate(player_dict["birthCity"] + ', ' + player_dict["birthStateProvince"] + ', ' + player_dict["birthCountry"])[1] if "birthStateProvince" in player_dict else geolocate(player_dict["birthCity"] + ', ' + player_dict["birthCountry"])[1],
+        "bp_long": geolocate(province_check(player_dict))[1],
         # Parse the player's birthday:
-        "birthdate": player_dict["birthDate"]
+        "birthdate": player_dict.get("birthDate", "2000-01-01")
     })
     # Return the player object:
     return player
@@ -221,45 +227,45 @@ def skater_game_stats_construct(game_id:int, player_stats:dict) -> SkaterGameSta
     skater_game_stats, _ = SkaterGameStats.objects.update_or_create(game=Game.objects.get(game_id=game_id), player=Player.objects.get(player_id=player_stats["playerId"]),
     defaults={
         # Parse the skater's goals:
-        "goals": player_stats["goals"],
+        "goals": player_stats.get("goals", 0),
         # Parse the skater's assists:
-        "assists": player_stats["assists"],
+        "assists": player_stats.get("assists", 0),
         # Parse the skater's points:
-        "points": player_stats["goals"] + player_stats["assists"],
+        "points": player_stats.get("goals", 0) + player_stats.get("assists", 0),
         # Parse the skater's penalty minutes:
-        "pim": player_stats["penaltyMinutes"],
+        "pim": player_stats.get("penaltyMinutes", 0),
         # Parse the skater's +/- rating:
-        "plusmin": player_stats["plusMinus"],
+        "plusmin": player_stats.get("plusMinus", 0),
         # Parse the skater's time on ice per game:
-        "toi": player_stats["timeOnIce"],
+        "toi": player_stats.get("timeOnIce", "00:00"),
         # Parse the skater's powerplay goals:
-        "ppg": player_stats["powerPlayGoals"],
+        "ppg": player_stats.get("powerPlayGoals", 0),
         # Parse the skater's powerplay assists:
-        "ppa": player_stats["powerPlayAssists"],
+        "ppa": player_stats.get("powerPlayAssists", 0),
         # Parse the skater's shorthanded goals:
-        "shg": player_stats["shortHandedGoals"],
+        "shg": player_stats.get("shortHandedGoals", 0),
         # Parse the skater's shorthanded assists:
-        "sha": player_stats["shortHandedAssists"],
+        "sha": player_stats.get("shortHandedAssists", 0),
         # Parse the skater's even time on ice per game:
-        "etoi": player_stats["evenTimeOnIce"],
+        "etoi": player_stats.get("evenTimeOnIce", "00:00"),
         # Parse the skater's shorthanded time on ice per game:
-        "shtoi": player_stats["shortHandedTimeOnIce"],
+        "shtoi": player_stats.get("shortHandedTimeOnIce", "00:00"),
         # Parse the skater's powerplay time on ice per game:
-        "pptoi": player_stats["powerPlayTimeOnIce"],
+        "pptoi": player_stats.get("powerPlayTimeOnIce", "00:00"),
         # Parse the skater's shots:
-        "shots": player_stats["shots"],
+        "shots": player_stats.get("shots", 0),
         # Parse the skater's blocks:
-        "blocks": player_stats["blocked"],
+        "blocks": player_stats.get("blocked", 0),
         # Parse the skater's hits:
-        "hits": player_stats["hits"],
+        "hits": player_stats.get("hits", 0),
         # Parse the skater's faceoff wins:
-        "fow": player_stats["faceOffWins"],
+        "fow": player_stats.get("faceOffWins", 0),
         # Parse the skater's faceoffs taken:
-        "fot": player_stats["faceoffTaken"],
+        "fot": player_stats.get("faceoffTaken", 0),
         # Parse the skater's takeaways:
-        "ta": player_stats["takeaways"],
+        "ta": player_stats.get("takeaways", 0),
         # Parse the skater's giveaways:
-        "ga": player_stats["giveaways"]
+        "ga": player_stats.get("giveaways", 0)
     })
     # Return the skater_game_stats object:
     return skater_game_stats
